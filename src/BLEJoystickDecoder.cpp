@@ -19,6 +19,18 @@ command_t select_command(char in)
     case 'd':
       command = LEFT;
     break;
+    case 'e':
+      command = UP_TRIANGLE;
+    break;
+    case 'f':
+      command = RIGHT_CIRCLE;
+    break;
+    case 'g':
+      command = DOWN_X;
+    break;
+    case 'h':
+      command = LEFT_SQUARE;
+    break;
 
   }
 
