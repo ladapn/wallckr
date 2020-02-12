@@ -54,7 +54,7 @@ command_t command_decoder(HardwareSerial &cmdSerial)
 
   prev = cmdSerial.read();
 
-  while(command == 0) 
+  while(command == NO_COMMAND) 
   {
     while(!cmdSerial.available())
     {
@@ -83,6 +83,79 @@ command_t command_decoder(HardwareSerial &cmdSerial)
     }
 
     prev = current; 
+  }
+
+  return command; 
+  
+}
+
+command_t command_decoder_fast(HardwareSerial &cmdSerial)
+{
+  command_t command = NO_COMMAND; 
+  char current, prev;
+  const int DIFF_LOWER_UPPER = 'a' - 'A';
+
+  while(!cmdSerial.available())
+  {
+    ;
+  }
+
+  prev = cmdSerial.read();
+
+  while(command == NO_COMMAND) 
+  {
+    while(!cmdSerial.available())
+    {
+      ;
+    }
+    
+    current = cmdSerial.read();
+    
+    if(current - prev == DIFF_LOWER_UPPER) 
+    {
+      command = select_command(current);
+    }
+
+    prev = current; 
+  }
+
+  return command; 
+  
+}
+
+command_t command_decoder_fastest(HardwareSerial &cmdSerial)
+{
+  command_t command = NO_COMMAND; 
+  char current, prev;
+  const int DIFF_LOWER_UPPER = 'a' - 'A';
+
+  /*while(!cmdSerial.available())
+  {
+    ;
+  }
+
+  prev = cmdSerial.read();*/
+
+  while(command == NO_COMMAND) 
+  {
+    while(!cmdSerial.available())
+    {
+      ;
+    }
+    
+    current = cmdSerial.read();
+
+    // Loopback to test BLE data transmittion to PC
+    // cmdSerial.write(current);
+
+    if(current < 'a') // if upperacase
+    {
+      current += DIFF_LOWER_UPPER;  // make it lower case
+    }
+    
+    command = select_command(current);
+  
+    //prev = current; 
   }
 
   return command; 
