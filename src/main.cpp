@@ -80,8 +80,8 @@ void loop() {
   while(true)
   {
     incommingByte = command_decoder_fastest(Serial3); //Serial.read();
-    //if(incommingByte != -1)
-    //{
+    if(incommingByte != NO_COMMAND)
+    {
       switch(incommingByte)
       {
         case UP:
@@ -134,13 +134,13 @@ void loop() {
 
         //Serial.println(desiredServo);
       }
-    //}
+    }
 
     currentMillis = millis();
     if(currentMillis - lastMillis > STATUS_PRINT_INTERVAL_MS)
     {
       lastMillis = currentMillis;
-      Serial.println(analogRead(SNS_BATTERY_VLTG)); // * 5.0 / 1023.0);
+      Serial3.println(analogRead(SNS_BATTERY_VLTG)); // * 5.0 / 1023.0);
 
       //Serial.println(analogRead(SNS_A));
       //TODO: print status - voltages, currents etc.

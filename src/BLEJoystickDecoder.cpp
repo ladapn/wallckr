@@ -136,12 +136,12 @@ command_t command_decoder_fastest(HardwareSerial &cmdSerial)
 
   prev = cmdSerial.read();*/
 
-  while(command == NO_COMMAND) 
+  if(cmdSerial.available()) 
   {
-    while(!cmdSerial.available())
+    /*while(!cmdSerial.available())
     {
       ;
-    }
+    }*/
     
     current = cmdSerial.read();
 
