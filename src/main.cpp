@@ -6,6 +6,9 @@
 
 // TODO: when BLE signal lost for 5 sec, go to idle
 
+#define TRIGGER_PIN_RIGHT  34
+#define ECHO_PIN_RIGHT     35 
+
 #define TRIGGER_PIN  36  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     37  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 200 
@@ -86,6 +89,7 @@ void loop() {
   long int currentMillis = 0;
   
   NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
+  NewPing sonar_right(TRIGGER_PIN_RIGHT, ECHO_PIN_RIGHT, MAX_DISTANCE);
 
   while(true)
   {
@@ -156,6 +160,12 @@ void loop() {
 
       sp.id = 101;
       sp.sonar_data = sonar.ping_cm();
+      sp.tick = currentMillis;
+      sp.crc = 0;
+      Serial3.write((uint8_t*)&sp, sizeof(sp));
+
+      sp.id = 102;
+      sp.sonar_data = sonar_right.ping_cm();
       sp.tick = currentMillis;
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
