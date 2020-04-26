@@ -3,6 +3,7 @@
 #include <NewPing.h>
 #include "BLEJoystickDecoder.h"
 #include "BLEPackets.h"
+#include "CRegulator.h"
 
 // TODO: when BLE signal lost for 5 sec, go to idle
 
@@ -12,6 +13,8 @@
 #define TRIGGER_PIN  36  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     37  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 200 
+
+typedef enum state {AVOIDING = 0, FOLLOWING} state_t;
 
 const int PWM_A   = 3;
 const int DIR_A   = 12;
@@ -27,9 +30,16 @@ const int SERVO_CENTER = 80;
 const int SERVO_MIN_RIGHT = 20;
 const int SERVO_MAX_LEFT = 160;
 
-const int STATUS_PRINT_INTERVAL_MS = 1000;
+const int STATUS_PRINT_INTERVAL_MS = 500;
 
 const int SNS_BATTERY_VLTG = A14;
+
+const float K_GAIN = 2;
+const int SETPOINT_CM = 30;
+const int INSENSITIV_CM = 3;
+
+const int LED1 = 24; 
+const int LED2 = 25; 
 
 Servo myservo;  // create servo object to control a servo
 
@@ -77,6 +87,9 @@ void setup() {
   //Serial.write("Zadejte prikaz AT: \n\n");
 
 //  analogReference(INTERNAL1V1);
+  pinMode(LED1, OUTPUT);
+  pinMode(LED2, OUTPUT);
+
 }
 
 void loop() {
@@ -87,9 +100,18 @@ void loop() {
   int oldServo = SERVO_CENTER;
   long int lastMillis = 0;
   long int currentMillis = 0;
+  bool automatic_operation_en = true;
   
+  state_t automatic_state = FOLLOWING;
+  int avoiding_counter = 0;
+  //int following_counter = 0;
+
   NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
   NewPing sonar_right(TRIGGER_PIN_RIGHT, ECHO_PIN_RIGHT, MAX_DISTANCE);
+
+  CRegulator K_regulator(K_GAIN, SETPOINT_CM, INSENSITIV_CM);
+
+  int avoiding_counter_max = 3;
 
   while(true)
   {
@@ -132,23 +154,24 @@ void loop() {
           //myservo.write(45);
         //Serial.println(incommingByte);
       }
-
-      if(oldSPD != desiredSPD)
-      {
-        oldSPD = desiredSPD;
-        motorCMD(desiredSPD);
-
-        //Serial.println(desiredSPD);
-      }
-
-      if(oldServo != desiredServo)
-      {
-        oldServo = desiredServo;
-        myservo.write(desiredServo);
-
-        //Serial.println(desiredServo);
-      }
     }
+
+    if(oldSPD != desiredSPD)
+    {
+      oldSPD = desiredSPD;
+      motorCMD(desiredSPD);
+
+      //Serial.println(desiredSPD);
+    }
+
+    if(oldServo != desiredServo)
+    {
+      oldServo = desiredServo;
+      myservo.write(desiredServo);
+
+      //Serial.println(desiredServo);
+    }
+    
 
     currentMillis = millis();
     if(currentMillis - lastMillis > STATUS_PRINT_INTERVAL_MS)
@@ -164,12 +187,57 @@ void loop() {
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
 
+      if (sp.sonar_data < 50 && sp.sonar_data > 0)
+      {
+        if(avoiding_counter < avoiding_counter_max + 1)  //FIXME magic value -> avioding_counter_max + 1
+        {
+          avoiding_counter++;
+        }
+      }
+      else if (sp.sonar_data > 70 || sp.sonar_data == 0)
+      {
+        if(avoiding_counter)
+        {
+          avoiding_counter--;
+        }
+        //following_counter++;
+      }
+
+      if(avoiding_counter > avoiding_counter_max) // FIXME magic value -> avoiding_counter_max
+      {
+        automatic_state = AVOIDING;
+        // LED 2 on
+        //FIXME -> get rid of arduino call
+        digitalWrite(LED2, 0);
+        digitalWrite(LED1, 1);
+      }
+      else if(avoiding_counter == 0)
+      {
+        automatic_state = FOLLOWING;
+        // LED 1 on
+        //FIXME -> get rid of arduino call
+        digitalWrite(LED1, 0);
+        digitalWrite(LED2, 1);
+      }
+      
       sp.id = 102;
       sp.sonar_data = sonar_right.ping_cm();
       sp.tick = currentMillis;
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
 
+      if(automatic_operation_en)
+      {
+        switch(automatic_state)
+        {
+          case FOLLOWING:
+            desiredServo = int(K_regulator.action(sp.sonar_data)) + SERVO_CENTER; 
+          break;
+          case AVOIDING:
+            desiredServo = SERVO_MAX_LEFT;
+          break;
+        }
+      }
 
       //Serial.println(analogRead(SNS_A));
       //TODO: print status - voltages, currents etc.
