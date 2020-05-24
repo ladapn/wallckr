@@ -126,7 +126,7 @@ command_t command_decoder_fast(HardwareSerial &cmdSerial)
 command_t command_decoder_fastest(HardwareSerial &cmdSerial)
 {
   command_t command = NO_COMMAND; 
-  char current, prev;
+  char current;
   const int DIFF_LOWER_UPPER = 'a' - 'A';
 
   /*while(!cmdSerial.available())
