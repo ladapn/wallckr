@@ -30,7 +30,7 @@ const int SERVO_CENTER = 80;
 const int SERVO_MIN_RIGHT = 20;
 const int SERVO_MAX_LEFT = 160;
 
-const int STATUS_PRINT_INTERVAL_MS = 500;
+const int STATUS_PRINT_INTERVAL_MS = 200;
 
 const int SNS_BATTERY_VLTG = A14;
 
@@ -40,6 +40,8 @@ const int INSENSITIV_CM = 3;
 
 const int LED1 = 24; 
 const int LED2 = 25; 
+
+const int AVOIDING_DISTANCE_THR_CM = 50;
 
 Servo myservo;  // create servo object to control a servo
 
@@ -108,6 +110,9 @@ void loop() {
 
   NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
   NewPing sonar_right(TRIGGER_PIN_RIGHT, ECHO_PIN_RIGHT, MAX_DISTANCE);
+
+  CExpFilter front_sonar_filter;
+  CExpFilter right_sonar_filter;
 
   CRegulator K_regulator(K_GAIN, SETPOINT_CM, INSENSITIV_CM);
 
@@ -182,19 +187,20 @@ void loop() {
       
 
       sp.id = 101;
-      sp.sonar_data = sonar.ping_cm();
+      sp.sonar_data = sonar.ping_cm(); //front_sonar_filter.next_3_4(sonar.ping_cm());
       sp.tick = currentMillis;
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
+      
 
-      if (sp.sonar_data < 50 && sp.sonar_data > 0)
+      if (sp.sonar_data < AVOIDING_DISTANCE_THR_CM && sp.sonar_data > 0)
       {
         if(avoiding_counter < avoiding_counter_max + 1)  //FIXME magic value -> avioding_counter_max + 1
         {
           avoiding_counter++;
         }
       }
-      else if (sp.sonar_data > 70 || sp.sonar_data == 0)
+      else if (sp.sonar_data > (AVOIDING_DISTANCE_THR_CM + 20) || sp.sonar_data == 0)
       {
         if(avoiding_counter)
         {
@@ -221,10 +227,16 @@ void loop() {
       }
       
       sp.id = 102;
-      sp.sonar_data = sonar_right.ping_cm();
+      sp.sonar_data = sonar_right.ping_cm(); //right_sonar_filter.next_3_4(sonar_right.ping_cm());
       sp.tick = currentMillis;
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
+
+      /*sp.id = 103;
+      sp.sonar_data = right_sonar_filter.next_3_4(sp.sonar_data);
+      sp.tick = currentMillis;
+      sp.crc = 0;
+      Serial3.write((uint8_t*)&sp, sizeof(sp));*/
 
       if(automatic_operation_en)
       {
