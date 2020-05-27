@@ -30,13 +30,13 @@ const int SERVO_CENTER = 80;
 const int SERVO_MIN_RIGHT = 20;
 const int SERVO_MAX_LEFT = 160;
 
-const int STATUS_PRINT_INTERVAL_MS = 200;
+const int STATUS_PRINT_INTERVAL_MS = 100;
 
 const int SNS_BATTERY_VLTG = A14;
 
 const float K_GAIN = 2;
 const int SETPOINT_CM = 30;
-const int INSENSITIV_CM = 3;
+const int INSENSITIV_CM = 5;
 
 const int LED1 = 24; 
 const int LED2 = 25; 
@@ -82,7 +82,7 @@ void setup() {
   TCCR3B = (TCCR3B & 0b11111000) | 0x01;
 
     // Itialize BLE UART
-  Serial3.begin(9600);
+  Serial3.begin(115200); // 9600 default 
 
   // Set BLE's name
   Serial3.write("AT NAMERCcar\r\n");
@@ -91,6 +91,9 @@ void setup() {
 //  analogReference(INTERNAL1V1);
   pinMode(LED1, OUTPUT);
   pinMode(LED2, OUTPUT);
+
+  digitalWrite(LED2, 1);
+  digitalWrite(LED1, 0);
 
 }
 
@@ -105,8 +108,7 @@ void loop() {
   bool automatic_operation_en = true;
   
   state_t automatic_state = FOLLOWING;
-  int avoiding_counter = 0;
-  //int following_counter = 0;
+  int following_counter = 0;
 
   NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
   NewPing sonar_right(TRIGGER_PIN_RIGHT, ECHO_PIN_RIGHT, MAX_DISTANCE);
@@ -116,7 +118,7 @@ void loop() {
 
   CRegulator K_regulator(K_GAIN, SETPOINT_CM, INSENSITIV_CM);
 
-  int avoiding_counter_max = 3;
+  int following_counter_max = 15;
 
   while(true)
   {
@@ -185,52 +187,37 @@ void loop() {
       lastMillis = currentMillis;
       //Serial3.println(analogRead(SNS_BATTERY_VLTG)); // * 5.0 / 1023.0);
       
+      unsigned long front_sonar_cm = sonar.ping_cm();
+       
+      if(front_sonar_cm == 0) // Zero means out of range -> change the library, so I can distinguish actual zero and out of range? 
+      {
+        front_sonar_cm = MAX_DISTANCE;
+      }
+
+      front_sonar_cm = front_sonar_filter.next_3_4(front_sonar_cm);
 
       sp.id = 101;
-      sp.sonar_data = sonar.ping_cm(); //front_sonar_filter.next_3_4(sonar.ping_cm());
+      sp.sonar_data = front_sonar_cm;
       sp.tick = currentMillis;
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
-      
 
-      if (sp.sonar_data < AVOIDING_DISTANCE_THR_CM && sp.sonar_data > 0)
+      unsigned long right_sonar_cm = sonar_right.ping_cm();
+
+      if(right_sonar_cm == 0) // Zero means out of range -> change the library, so I can distinguish actual zero and out of range? 
       {
-        if(avoiding_counter < avoiding_counter_max + 1)  //FIXME magic value -> avioding_counter_max + 1
-        {
-          avoiding_counter++;
-        }
-      }
-      else if (sp.sonar_data > (AVOIDING_DISTANCE_THR_CM + 20) || sp.sonar_data == 0)
-      {
-        if(avoiding_counter)
-        {
-          avoiding_counter--;
-        }
-        //following_counter++;
+        right_sonar_cm = MAX_DISTANCE;
       }
 
-      if(avoiding_counter > avoiding_counter_max) // FIXME magic value -> avoiding_counter_max
-      {
-        automatic_state = AVOIDING;
-        // LED 2 on
-        //FIXME -> get rid of arduino call
-        digitalWrite(LED2, 0);
-        digitalWrite(LED1, 1);
-      }
-      else if(avoiding_counter == 0)
-      {
-        automatic_state = FOLLOWING;
-        // LED 1 on
-        //FIXME -> get rid of arduino call
-        digitalWrite(LED1, 0);
-        digitalWrite(LED2, 1);
-      }
-      
+      right_sonar_cm = right_sonar_filter.next_3_4(right_sonar_cm);
+
       sp.id = 102;
-      sp.sonar_data = sonar_right.ping_cm(); //right_sonar_filter.next_3_4(sonar_right.ping_cm());
+      sp.sonar_data = right_sonar_cm;
       sp.tick = currentMillis;
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
+
+      // TODO Status packet!
 
       /*sp.id = 103;
       sp.sonar_data = right_sonar_filter.next_3_4(sp.sonar_data);
@@ -243,10 +230,39 @@ void loop() {
         switch(automatic_state)
         {
           case FOLLOWING:
-            desiredServo = int(K_regulator.action(sp.sonar_data)) + SERVO_CENTER; 
+            desiredServo = int(K_regulator.action(right_sonar_cm)) + SERVO_CENTER; 
+            
+            if (front_sonar_cm < AVOIDING_DISTANCE_THR_CM)
+            {
+              automatic_state = AVOIDING;
+              // LED 1 on
+              //FIXME -> get rid of arduino call
+              digitalWrite(LED1, 1);
+              digitalWrite(LED2, 0);
+              
+            }
           break;
           case AVOIDING:
             desiredServo = SERVO_MAX_LEFT;
+
+            if (front_sonar_cm > (AVOIDING_DISTANCE_THR_CM + 20))
+            {  
+              if(following_counter < following_counter_max) 
+              {
+                following_counter++;
+              }              
+            }
+
+            if(following_counter >= following_counter_max)
+            {
+              automatic_state = FOLLOWING;
+              following_counter = 0;
+              // LED 2 on
+              //FIXME -> get rid of arduino call
+              digitalWrite(LED1, 0);
+              digitalWrite(LED2, 1);
+            }          
+
           break;
         }
       }
@@ -256,25 +272,3 @@ void loop() {
     }
   }
 }
-
-
-/*void setup() {
-  // put your setup code here, to run once:
-
-  Serial.begin(9600);
-
-  // Itialize BLE UART
-  Serial3.begin(9600);
-
-  // Set BLE's name
-  Serial3.write("AT NAMERCcar\r\n");
-  //Serial.write("Zadejte prikaz AT: \n\n");
-
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  
-  
-  Serial.write(command_decoder(Serial3));
-}*/
