@@ -1,4 +1,6 @@
-// TODO includion guard
+#ifndef BLEPACKETS_H
+#define BLEPACKETS_H
+
 #include <Arduino.h>
 
 typedef struct sonar_packet{
@@ -7,3 +9,5 @@ typedef struct sonar_packet{
     unsigned long sonar_data;
     byte crc;
     } sonar_packet_t;
+
+#endif
