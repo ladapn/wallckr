@@ -8,14 +8,17 @@
 
 // TODO: when BLE signal lost for 5 sec, go to idle
 
-#define TRIGGER_PIN_BACK  32
-#define ECHO_PIN_BACK     33 
+#define TRIGGER_PIN_RIGHT_FRONT 30
+#define ECHO_PIN_RIGHT_FRONT    31 
 
-#define TRIGGER_PIN_RIGHT  34
-#define ECHO_PIN_RIGHT     35 
+#define TRIGGER_PIN_RIGHT_BACK  32
+#define ECHO_PIN_RIGHT_BACK     33 
 
-#define TRIGGER_PIN  36  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_PIN     37  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define TRIGGER_PIN_RIGHT_CENTER  34
+#define ECHO_PIN_RIGHT_CENTER     35 
+
+#define TRIGGER_PIN_FRONT  36  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN_FRONT     37  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 200 
 
 typedef enum state {AVOIDING = 0, FOLLOWING} state_t;
@@ -116,13 +119,15 @@ void loop() {
   state_t automatic_state = FOLLOWING;
   int following_counter = 0;
 
-  NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
-  NewPing sonar_right(TRIGGER_PIN_RIGHT, ECHO_PIN_RIGHT, MAX_DISTANCE);
-  NewPing sonar_back(TRIGGER_PIN_BACK, ECHO_PIN_BACK, MAX_DISTANCE);
+  NewPing sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
+  NewPing sonar_right_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
+  NewPing sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE);
+  NewPing sonar_right_back(TRIGGER_PIN_RIGHT_BACK, ECHO_PIN_RIGHT_BACK, MAX_DISTANCE);
 
   CExpFilter front_sonar_filter;
-  CExpFilter right_sonar_filter;
-  CExpFilter back_sonar_filter;
+  CExpFilter right_front_sonar_filter;
+  CExpFilter right_center_sonar_filter;
+  CExpFilter right_back_sonar_filter;
 
   CRegulator K_regulator(K_GAIN, SETPOINT_CM, INSENSITIV_CM);
 
@@ -195,7 +200,7 @@ void loop() {
       lastMillis = currentMillis;
       //Serial3.println(analogRead(SNS_BATTERY_VLTG)); // * 5.0 / 1023.0);
       
-      unsigned long front_sonar_cm = sonar.ping_cm();
+      unsigned long front_sonar_cm = sonar_front.ping_cm();
        
       if(front_sonar_cm == 0) // Zero means out of range -> change the library, so I can distinguish actual zero and out of range? 
       {
@@ -210,14 +215,14 @@ void loop() {
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
 
-      unsigned long right_sonar_cm = sonar_right.ping_cm();
+      unsigned long right_sonar_cm = sonar_right_center.ping_cm();
 
       if(right_sonar_cm == 0) // Zero means out of range -> change the library, so I can distinguish actual zero and out of range? 
       {
         right_sonar_cm = MAX_DISTANCE;
       }
 
-      right_sonar_cm = right_sonar_filter.next_3_4(right_sonar_cm);
+      right_sonar_cm = right_center_sonar_filter.next_3_4(right_sonar_cm);
 
       sp.id = 102;
       sp.sonar_data = right_sonar_cm; //sensor2.getDistance();//
@@ -227,7 +232,7 @@ void loop() {
 
       // TODO Status packet!
      
-      unsigned long back_sonar_cm = sonar_back.ping_cm();
+      unsigned long back_sonar_cm = sonar_right_back.ping_cm();
 
       if(back_sonar_cm == 0) // Zero means out of range -> change the library, so I can distinguish actual zero and out of range? 
       {
@@ -235,7 +240,7 @@ void loop() {
       }
 
       sp.id = 103;
-      sp.sonar_data = back_sonar_filter.next_3_4(back_sonar_cm);
+      sp.sonar_data = right_back_sonar_filter.next_3_4(back_sonar_cm);
       sp.tick = currentMillis;
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
