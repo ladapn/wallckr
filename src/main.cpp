@@ -1,11 +1,15 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <NewPing.h>
+#include <SharpIR.h>
 #include "BLEJoystickDecoder.h"
 #include "BLEPackets.h"
 #include "CRegulator.h"
 
 // TODO: when BLE signal lost for 5 sec, go to idle
+
+#define TRIGGER_PIN_BACK  32
+#define ECHO_PIN_BACK     33 
 
 #define TRIGGER_PIN_RIGHT  34
 #define ECHO_PIN_RIGHT     35 
@@ -19,7 +23,7 @@ typedef enum state {AVOIDING = 0, FOLLOWING} state_t;
 const int PWM_A   = 3;
 const int DIR_A   = 12;
 const int BRAKE_A = 9;
-const int SNS_A   = A0;
+//const int SNS_A   = A0;
 const int SERVO_A = 47;
 
 const int MAX_SPD = 255;  //200; //TBD
@@ -32,7 +36,7 @@ const int SERVO_MAX_LEFT = 160;
 
 const int STATUS_PRINT_INTERVAL_MS = 100;
 
-const int SNS_BATTERY_VLTG = A14;
+//const int SNS_BATTERY_VLTG = A14;
 
 const float K_GAIN = 2;
 const int SETPOINT_CM = 30;
@@ -44,6 +48,8 @@ const int LED2 = 25;
 const int AVOIDING_DISTANCE_THR_CM = 50;
 
 Servo myservo;  // create servo object to control a servo
+SharpIR sensor(SharpIR::GP2Y0A21YK0F, A5);
+SharpIR sensor2(SharpIR::GP2Y0A21YK0F, A4);
 
 // TODO: class to encapsulate motor
 bool motorCMD(int commandSPD)
@@ -105,16 +111,18 @@ void loop() {
   int oldServo = SERVO_CENTER;
   long int lastMillis = 0;
   long int currentMillis = 0;
-  bool automatic_operation_en = true;
+  bool automatic_operation_en = false;
   
   state_t automatic_state = FOLLOWING;
   int following_counter = 0;
 
   NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
   NewPing sonar_right(TRIGGER_PIN_RIGHT, ECHO_PIN_RIGHT, MAX_DISTANCE);
+  NewPing sonar_back(TRIGGER_PIN_BACK, ECHO_PIN_BACK, MAX_DISTANCE);
 
   CExpFilter front_sonar_filter;
   CExpFilter right_sonar_filter;
+  CExpFilter back_sonar_filter;
 
   CRegulator K_regulator(K_GAIN, SETPOINT_CM, INSENSITIV_CM);
 
@@ -197,7 +205,7 @@ void loop() {
       front_sonar_cm = front_sonar_filter.next_3_4(front_sonar_cm);
 
       sp.id = 101;
-      sp.sonar_data = front_sonar_cm;
+      sp.sonar_data = front_sonar_cm; // sensor.getDistance(); //;
       sp.tick = currentMillis;
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
@@ -212,18 +220,25 @@ void loop() {
       right_sonar_cm = right_sonar_filter.next_3_4(right_sonar_cm);
 
       sp.id = 102;
-      sp.sonar_data = right_sonar_cm;
+      sp.sonar_data = right_sonar_cm; //sensor2.getDistance();//
       sp.tick = currentMillis;
       sp.crc = 0;
       Serial3.write((uint8_t*)&sp, sizeof(sp));
 
       // TODO Status packet!
+     
+      unsigned long back_sonar_cm = sonar_back.ping_cm();
 
-      /*sp.id = 103;
-      sp.sonar_data = right_sonar_filter.next_3_4(sp.sonar_data);
+      if(back_sonar_cm == 0) // Zero means out of range -> change the library, so I can distinguish actual zero and out of range? 
+      {
+        back_sonar_cm = MAX_DISTANCE;
+      }
+
+      sp.id = 103;
+      sp.sonar_data = back_sonar_filter.next_3_4(back_sonar_cm);
       sp.tick = currentMillis;
       sp.crc = 0;
-      Serial3.write((uint8_t*)&sp, sizeof(sp));*/
+      Serial3.write((uint8_t*)&sp, sizeof(sp));
 
       if(automatic_operation_en)
       {
