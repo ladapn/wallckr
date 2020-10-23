@@ -1,4 +1,6 @@
 // incl guard
+#ifndef CREGULATOR_H
+#define CREGULATOR_H
 
 class CRegulator
 {
@@ -116,3 +118,4 @@ class CVectorDriver
 
 };
 
+#endif

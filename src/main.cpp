@@ -5,6 +5,7 @@
 #include "BLEJoystickDecoder.h"
 #include "BLEPackets.h"
 #include "CRegulator.h"
+#include "UltraSoundSensor.h"
 
 // TODO: when BLE signal lost for 5 sec, go to idle
 
@@ -119,17 +120,15 @@ void loop() {
   state_t automatic_state = FOLLOWING;
   int following_counter = 0;
 
-  NewPing sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
-  NewPing sonar_right_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
-  NewPing sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE);
-  NewPing sonar_right_back(TRIGGER_PIN_RIGHT_BACK, ECHO_PIN_RIGHT_BACK, MAX_DISTANCE);
-
-  CExpFilter front_sonar_filter;
-  CExpFilter right_front_sonar_filter;
-  CExpFilter right_center_sonar_filter;
-  CExpFilter right_back_sonar_filter;
+  CExpFilter right_sonar_filter;
 
   CRegulator K_regulator(K_GAIN, SETPOINT_CM, INSENSITIV_CM);
+
+  BLE_printer BLE_out(Serial3); 
+  UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
+  UltraSoundSensor sonar_right_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
+  UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE);
+  UltraSoundSensor sonar_right_back(TRIGGER_PIN_RIGHT_BACK, ECHO_PIN_RIGHT_BACK, MAX_DISTANCE);
 
   int following_counter_max = 15;
 
@@ -196,55 +195,45 @@ void loop() {
     currentMillis = millis();
     if(currentMillis - lastMillis > STATUS_PRINT_INTERVAL_MS)
     {
-      sonar_packet_t sp;
       lastMillis = currentMillis;
       //Serial3.println(analogRead(SNS_BATTERY_VLTG)); // * 5.0 / 1023.0);
-      
-      unsigned long front_sonar_cm = sonar_front.ping_cm();
-       
-      if(front_sonar_cm == 0) // Zero means out of range -> change the library, so I can distinguish actual zero and out of range? 
+
+      // Fire front sonar
+      unsigned long front_sonar_cm = sonar_front.get_distance_filtered_cm();
+
+      BLE_out.BLE_print_US_data(FRONT_US_ID, currentMillis,  front_sonar_cm);
+
+      // Fire right front sonar      
+      unsigned long right_front_sonar_cm = sonar_right_front.get_distance_filtered_cm(); 
+       unsigned long right_sonar_cm = right_front_sonar_cm;
+
+      BLE_out.BLE_print_US_data(RIGHT_FRONT_US_ID, currentMillis,  right_front_sonar_cm);
+
+      // Fire right center sonar 
+      unsigned long right_center_sonar_cm = sonar_right_center.get_distance_filtered_cm();
+
+      if(right_center_sonar_cm < right_sonar_cm)
       {
-        front_sonar_cm = MAX_DISTANCE;
+        right_sonar_cm = right_center_sonar_cm;
       }
 
-      front_sonar_cm = front_sonar_filter.next_3_4(front_sonar_cm);
+      BLE_out.BLE_print_US_data(RIGHT_CENTER_US_ID, currentMillis, right_center_sonar_cm);
 
-      sp.id = 101;
-      sp.sonar_data = front_sonar_cm; // sensor.getDistance(); //;
-      sp.tick = currentMillis;
-      sp.crc = 0;
-      Serial3.write((uint8_t*)&sp, sizeof(sp));
+      // Fire right back sonar 
+      unsigned long right_back_sonar_cm = sonar_right_back.get_distance_filtered_cm();
 
-      unsigned long right_sonar_cm = sonar_right_center.ping_cm();
-
-      if(right_sonar_cm == 0) // Zero means out of range -> change the library, so I can distinguish actual zero and out of range? 
+      if(right_back_sonar_cm < right_sonar_cm)
       {
-        right_sonar_cm = MAX_DISTANCE;
+        right_sonar_cm = right_back_sonar_cm;
       }
 
-      right_sonar_cm = right_center_sonar_filter.next_3_4(right_sonar_cm);
+      BLE_out.BLE_print_US_data(RIGHT_BACK_US_ID, currentMillis, right_back_sonar_cm);
 
-      sp.id = 102;
-      sp.sonar_data = right_sonar_cm; //sensor2.getDistance();//
-      sp.tick = currentMillis;
-      sp.crc = 0;
-      Serial3.write((uint8_t*)&sp, sizeof(sp));
+      // TODO raw inputs!!!
+      right_sonar_cm = right_sonar_filter.next_3_4(right_sonar_cm);
 
-      // TODO Status packet!
+      // Driving state machine
      
-      unsigned long back_sonar_cm = sonar_right_back.ping_cm();
-
-      if(back_sonar_cm == 0) // Zero means out of range -> change the library, so I can distinguish actual zero and out of range? 
-      {
-        back_sonar_cm = MAX_DISTANCE;
-      }
-
-      sp.id = 103;
-      sp.sonar_data = right_back_sonar_filter.next_3_4(back_sonar_cm);
-      sp.tick = currentMillis;
-      sp.crc = 0;
-      Serial3.write((uint8_t*)&sp, sizeof(sp));
-
       if(automatic_operation_en)
       {
         switch(automatic_state)
