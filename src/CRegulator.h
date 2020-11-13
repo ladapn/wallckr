@@ -52,6 +52,23 @@ class CExpFilter
 
         }
        
+        // TODO virtual class and inheritance?
+        int next_1_2(int input)
+        {
+            if(m_first_step)
+            {
+                m_first_step = false;
+                m_state = input;                  
+            }
+            else
+            {                               
+                // This is na fact average
+                m_state = (m_state  + input) >> 2; 
+            }
+                
+            return m_state;
+        }
+       
 };
 const int atan2_1D_table[] = {0,2,3,5,7,8,10,11,13,14,16,17,19,20,22,23,25,26,27,28,30,31,32,33,34,36,37,38,39,40,41,42,42,43,44,45,46,47,47,48,49,50,50,51,51,52,53,53,54,54,55,56,56,57,57,58,58,58,59,59,60};
 const int atan2_1D_table_max = sizeof(atan2_1D_table) / sizeof(atan2_1D_table[0]);
