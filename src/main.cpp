@@ -6,20 +6,21 @@
 #include "BLEPackets.h"
 #include "CRegulator.h"
 #include "UltraSoundSensor.h"
+#include "LEDBar.h"
 
 // TODO: when BLE signal lost for 5 sec, go to idle
 
-#define TRIGGER_PIN_RIGHT_FRONT 30
-#define ECHO_PIN_RIGHT_FRONT    31 
+#define TRIGGER_PIN_RIGHT_FRONT 32
+#define ECHO_PIN_RIGHT_FRONT    33 
 
-#define TRIGGER_PIN_RIGHT_BACK  32
-#define ECHO_PIN_RIGHT_BACK     33 
+#define TRIGGER_PIN_RIGHT_BACK  36
+#define ECHO_PIN_RIGHT_BACK     37  
 
 #define TRIGGER_PIN_RIGHT_CENTER  34
 #define ECHO_PIN_RIGHT_CENTER     35 
 
-#define TRIGGER_PIN_FRONT  36  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_PIN_FRONT     37  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define TRIGGER_PIN_FRONT  30  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN_FRONT     31  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 200 
 
 typedef enum state {AVOIDING = 0, FOLLOWING} state_t;
@@ -42,14 +43,11 @@ const int STATUS_PRINT_INTERVAL_MS = 100;
 
 //const int SNS_BATTERY_VLTG = A14;
 
-const float K_GAIN = 2;
+const float K_GAIN = 5;
 const int SETPOINT_CM = 30;
-const int INSENSITIV_CM = 5;
+const int INSENSITIV_CM = 2;
 
-const int LED1 = 24; 
-const int LED2 = 25; 
-
-const int AVOIDING_DISTANCE_THR_CM = 50;
+const int AVOIDING_DISTANCE_THR_CM = 35;
 
 Servo myservo;  // create servo object to control a servo
 SharpIR sensor(SharpIR::GP2Y0A21YK0F, A5);
@@ -89,6 +87,7 @@ void setup() {
   myservo.attach(SERVO_A);
 
   // set prescaler for Timer 3 (pin 3) to 1 to get 31372.55 Hz
+  // TODO: what for?
   TCCR3B = (TCCR3B & 0b11111000) | 0x01;
 
     // Itialize BLE UART
@@ -99,11 +98,9 @@ void setup() {
   //Serial.write("Zadejte prikaz AT: \n\n");
 
 //  analogReference(INTERNAL1V1);
-  pinMode(LED1, OUTPUT);
-  pinMode(LED2, OUTPUT);
 
-  digitalWrite(LED2, 1);
-  digitalWrite(LED1, 0);
+  //digitalWrite(LED2, 1);
+  //digitalWrite(LED1, 0);
 
 }
 
@@ -115,10 +112,10 @@ void loop() {
   int oldServo = SERVO_CENTER;
   long int lastMillis = 0;
   long int currentMillis = 0;
-  bool automatic_operation_en = false;
+  bool automatic_operation_en = true;
   
   state_t automatic_state = FOLLOWING;
-  int following_counter = 0;
+  //int following_counter = 0;
 
   CExpFilter right_sonar_filter;
 
@@ -126,11 +123,15 @@ void loop() {
 
   BLE_printer BLE_out(Serial3); 
   UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
-  UltraSoundSensor sonar_right_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
+  UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE);
   UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE);
   UltraSoundSensor sonar_right_back(TRIGGER_PIN_RIGHT_BACK, ECHO_PIN_RIGHT_BACK, MAX_DISTANCE);
 
-  int following_counter_max = 15;
+  LEDBar ledbar;
+  ledbar.switchLEDon(LED1);
+  ledbar.switchLEDoff(LED2);
+
+  //int following_counter_max = 15;
 
   while(true)
   {
@@ -175,20 +176,19 @@ void loop() {
       }
     }
 
+    // TODO: motor.setSpeed(desiredSPD);
+    // TODO: servo.setAngle(desiredServo);
+
     if(oldSPD != desiredSPD)
     {
       oldSPD = desiredSPD;
       motorCMD(desiredSPD);
-
-      //Serial.println(desiredSPD);
     }
 
     if(oldServo != desiredServo)
     {
       oldServo = desiredServo;
       myservo.write(desiredServo);
-
-      //Serial.println(desiredServo);
     }
     
 
@@ -204,13 +204,13 @@ void loop() {
       BLE_out.BLE_print_US_data(FRONT_US_ID, currentMillis,  front_sonar_cm);
 
       // Fire right front sonar      
-      unsigned long right_front_sonar_cm = sonar_right_front.get_distance_filtered_cm(); 
+      unsigned long right_front_sonar_cm = sonar_right_front.get_distance_raw_cm(); 
        unsigned long right_sonar_cm = right_front_sonar_cm;
 
       BLE_out.BLE_print_US_data(RIGHT_FRONT_US_ID, currentMillis,  right_front_sonar_cm);
 
       // Fire right center sonar 
-      unsigned long right_center_sonar_cm = sonar_right_center.get_distance_filtered_cm();
+      unsigned long right_center_sonar_cm = sonar_right_center.get_distance_raw_cm();
 
       if(right_center_sonar_cm < right_sonar_cm)
       {
@@ -220,7 +220,7 @@ void loop() {
       BLE_out.BLE_print_US_data(RIGHT_CENTER_US_ID, currentMillis, right_center_sonar_cm);
 
       // Fire right back sonar 
-      unsigned long right_back_sonar_cm = sonar_right_back.get_distance_filtered_cm();
+      unsigned long right_back_sonar_cm = sonar_right_back.get_distance_raw_cm();
 
       if(right_back_sonar_cm < right_sonar_cm)
       {
@@ -229,7 +229,6 @@ void loop() {
 
       BLE_out.BLE_print_US_data(RIGHT_BACK_US_ID, currentMillis, right_back_sonar_cm);
 
-      // TODO raw inputs!!!
       right_sonar_cm = right_sonar_filter.next_3_4(right_sonar_cm);
 
       // Driving state machine
@@ -246,30 +245,33 @@ void loop() {
               automatic_state = AVOIDING;
               // LED 1 on
               //FIXME -> get rid of arduino call
-              digitalWrite(LED1, 1);
-              digitalWrite(LED2, 0);
+              ledbar.switchLEDon(LED1);
+              ledbar.switchLEDoff(LED2);
+              //digitalWrite(LED1, 1);
+              //digitalWrite(LED2, 0);
               
             }
           break;
           case AVOIDING:
             desiredServo = SERVO_MAX_LEFT;
 
-            if (front_sonar_cm > (AVOIDING_DISTANCE_THR_CM + 20))
+            if (front_sonar_cm > (AVOIDING_DISTANCE_THR_CM + 20))  //FIXME magic constant
             {  
-              if(following_counter < following_counter_max) 
+              /*if(following_counter < following_counter_max) 
               {
                 following_counter++;
-              }              
-            }
+              }             
+            }*/
 
-            if(following_counter >= following_counter_max)
-            {
+            /*if(following_counter >= following_counter_max)
+            {*/
               automatic_state = FOLLOWING;
-              following_counter = 0;
+              /*following_counter = 0;*/
               // LED 2 on
-              //FIXME -> get rid of arduino call
-              digitalWrite(LED1, 0);
-              digitalWrite(LED2, 1);
+              ledbar.switchLEDoff(LED1);
+              ledbar.switchLEDon(LED2);
+              //digitalWrite(LED1, 0);
+              //digitalWrite(LED2, 1);
             }          
 
           break;
@@ -277,7 +279,7 @@ void loop() {
       }
 
       //Serial.println(analogRead(SNS_A));
-      //TODO: print status - voltages, currents etc.
+      
     }
   }
 }
