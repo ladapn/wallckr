@@ -44,10 +44,17 @@ const int STATUS_PRINT_INTERVAL_MS = 100;
 //const int SNS_BATTERY_VLTG = A14;
 
 const float K_GAIN = 5;
-const int SETPOINT_CM = 30;
+const int RIGHT_DISTANCE_SETPOINT_CM = 30;
 const int INSENSITIV_CM = 2;
 
-const int AVOIDING_DISTANCE_THR_CM = 35;
+const int TURNING_RADIUS_CM = 15;
+
+// Distance to front obstacle that triggers turning, to end up with desired
+// side distance after the turn, this has to consist of the distance setpoint
+// and turning radius 
+const int AVOIDING_DISTANCE_THR_CM = RIGHT_DISTANCE_SETPOINT_CM + TURNING_RADIUS_CM;
+
+const int AVOIDING_DISTANCE_HYSTERESIS_CM = 20; 
 
 Servo myservo;  // create servo object to control a servo
 SharpIR sensor(SharpIR::GP2Y0A21YK0F, A5);
@@ -69,6 +76,7 @@ bool motorCMD(int commandSPD)
 
     digitalWrite(DIR_A, motorDirection);    // Set motor direction
     analogWrite(PWM_A, commandSPD);     // Set the speed of the motor, 255 is the maximum value
+    
     retval = true;
   }
 
@@ -119,7 +127,7 @@ void loop() {
 
   CExpFilter right_sonar_filter;
 
-  CRegulator K_regulator(K_GAIN, SETPOINT_CM, INSENSITIV_CM);
+  CRegulator K_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
 
   BLE_printer BLE_out(Serial3); 
   UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
@@ -205,7 +213,7 @@ void loop() {
 
       // Fire right front sonar      
       unsigned long right_front_sonar_cm = sonar_right_front.get_distance_raw_cm(); 
-       unsigned long right_sonar_cm = right_front_sonar_cm;
+      unsigned long right_sonar_cm = right_front_sonar_cm;
 
       BLE_out.BLE_print_US_data(RIGHT_FRONT_US_ID, currentMillis,  right_front_sonar_cm);
 
@@ -244,34 +252,20 @@ void loop() {
             {
               automatic_state = AVOIDING;
               // LED 1 on
-              //FIXME -> get rid of arduino call
               ledbar.switchLEDon(LED1);
-              ledbar.switchLEDoff(LED2);
-              //digitalWrite(LED1, 1);
-              //digitalWrite(LED2, 0);
-              
+              ledbar.switchLEDoff(LED2);                        
             }
           break;
           case AVOIDING:
             desiredServo = SERVO_MAX_LEFT;
 
-            if (front_sonar_cm > (AVOIDING_DISTANCE_THR_CM + 20))  //FIXME magic constant
+            if (front_sonar_cm > (AVOIDING_DISTANCE_THR_CM + AVOIDING_DISTANCE_HYSTERESIS_CM))
             {  
-              /*if(following_counter < following_counter_max) 
-              {
-                following_counter++;
-              }             
-            }*/
-
-            /*if(following_counter >= following_counter_max)
-            {*/
+              
               automatic_state = FOLLOWING;
-              /*following_counter = 0;*/
               // LED 2 on
               ledbar.switchLEDoff(LED1);
               ledbar.switchLEDon(LED2);
-              //digitalWrite(LED1, 0);
-              //digitalWrite(LED2, 1);
             }          
 
           break;
