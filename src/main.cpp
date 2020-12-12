@@ -47,7 +47,7 @@ const float K_GAIN = 5;
 const int RIGHT_DISTANCE_SETPOINT_CM = 30;
 const int INSENSITIV_CM = 2;
 
-const int TURNING_RADIUS_CM = 15;
+const int TURNING_RADIUS_CM = 25;
 
 // Distance to front obstacle that triggers turning, to end up with desired
 // side distance after the turn, this has to consist of the distance setpoint
@@ -252,20 +252,22 @@ void loop() {
             {
               automatic_state = AVOIDING;
               // LED 1 on
-              ledbar.switchLEDon(LED1);
-              ledbar.switchLEDoff(LED2);                        
+              ledbar.switchLEDoff(LED1);
+              ledbar.switchLEDon(LED2);                        
             }
           break;
           case AVOIDING:
             desiredServo = SERVO_MAX_LEFT;
 
-            if (front_sonar_cm > (AVOIDING_DISTANCE_THR_CM + AVOIDING_DISTANCE_HYSTERESIS_CM))
-            {  
+            if (front_sonar_cm > (AVOIDING_DISTANCE_THR_CM + AVOIDING_DISTANCE_HYSTERESIS_CM)
+                && right_front_sonar_cm > (AVOIDING_DISTANCE_THR_CM - 15)) // FIXME magic constant + filtering 
+            {        
               
               automatic_state = FOLLOWING;
               // LED 2 on
-              ledbar.switchLEDoff(LED1);
-              ledbar.switchLEDon(LED2);
+              ledbar.switchLEDon(LED1);
+              ledbar.switchLEDoff(LED2);
+             
             }          
 
           break;
