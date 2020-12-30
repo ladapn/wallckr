@@ -39,9 +39,12 @@ const int SERVO_CENTER = 80;
 const int SERVO_MIN_RIGHT = 20;
 const int SERVO_MAX_LEFT = 160;
 
-const int STATUS_PRINT_INTERVAL_MS = 100;
+const int COMMAND_INTERVAL_MS = 100;
+const int STATUS_PRINT_INTERVAL_MS = 1000;
+const int SNS_BATTERY_VLTG = A8; // or A10
 
-//const int SNS_BATTERY_VLTG = A14;
+// TODO: has to be in ADC units, 1 VDC - voltage drops between batteries and actual measurement point
+//const int BATTERY_CUTTOFF_ADC ...
 
 const float K_GAIN = 5;
 const int RIGHT_DISTANCE_SETPOINT_CM = 30;
@@ -118,7 +121,8 @@ void loop() {
   int oldSPD = 0;
   int desiredServo = SERVO_CENTER;
   int oldServo = SERVO_CENTER;
-  long int lastMillis = 0;
+  long int lastCommandMillis = 0;
+  long int lastStatusMillis = 0;
   long int currentMillis = 0;
   bool automatic_operation_en = true;
   
@@ -201,21 +205,20 @@ void loop() {
     
 
     currentMillis = millis();
-    if(currentMillis - lastMillis > STATUS_PRINT_INTERVAL_MS)
+    if(currentMillis - lastCommandMillis > COMMAND_INTERVAL_MS)
     {
-      lastMillis = currentMillis;
-      //Serial3.println(analogRead(SNS_BATTERY_VLTG)); // * 5.0 / 1023.0);
-
+      lastCommandMillis = currentMillis;
+   
       // Fire front sonar
       unsigned long front_sonar_cm = sonar_front.get_distance_filtered_cm();
 
-      BLE_out.BLE_print_US_data(FRONT_US_ID, currentMillis,  front_sonar_cm);
+      BLE_out.BLE_print_US_data(FRONT_US_ID, currentMillis, front_sonar_cm);
 
       // Fire right front sonar      
       unsigned long right_front_sonar_cm = sonar_right_front.get_distance_raw_cm(); 
       unsigned long right_sonar_cm = right_front_sonar_cm;
 
-      BLE_out.BLE_print_US_data(RIGHT_FRONT_US_ID, currentMillis,  right_front_sonar_cm);
+      BLE_out.BLE_print_US_data(RIGHT_FRONT_US_ID, currentMillis, right_front_sonar_cm);
 
       // Fire right center sonar 
       unsigned long right_center_sonar_cm = sonar_right_center.get_distance_raw_cm();
@@ -274,7 +277,23 @@ void loop() {
         }
       }
 
-      //Serial.println(analogRead(SNS_A));
+      if(currentMillis - lastStatusMillis > STATUS_PRINT_INTERVAL_MS)
+      {
+        lastStatusMillis = currentMillis; 
+        int battery_voltage_adc = analogRead(SNS_BATTERY_VLTG);
+
+        /*if(battery_voltage_adc <= BATTERY_CUTTOFF_ADC)
+        {
+          if cut of reached (~1 V per cell)
+          status to IDLE and LED 5 flashing
+        }*/
+
+        // TODO: check impact on timming of other packets! Could this introduce too much delay to the control loop?        
+
+      //Serial.println(analogRead(SNS_BATTERY_VLTG));
+      //Serial3.println(analogRead(SNS_BATTERY_VLTG)); // * 5.0 / 1023.0);
+        BLE_out.BLE_print_status_data(STATUS_ID, currentMillis, battery_voltage_adc);
+      }
       
     }
   }
