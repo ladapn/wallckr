@@ -41,10 +41,12 @@ const int SERVO_MAX_LEFT = 160;
 
 const int COMMAND_INTERVAL_MS = 100;
 const int STATUS_PRINT_INTERVAL_MS = 1000;
-const int SNS_BATTERY_VLTG = A8; // or A10
+const int SNS_BATTERY_VLTG = A8;
 
 // TODO: has to be in ADC units, 1 VDC - voltage drops between batteries and actual measurement point
-//const int BATTERY_CUTTOFF_ADC ...
+// ALSO take into consideration the voltage divider 1:16
+const int BATTERY_CELLS = 8;
+const int BATTERY_CUTTOFF_ADC = (0.9 / 5 * 1024 * BATTERY_CELLS) / 16;
 
 const float K_GAIN = 5;
 const int RIGHT_DISTANCE_SETPOINT_CM = 30;
@@ -282,11 +284,12 @@ void loop() {
         lastStatusMillis = currentMillis; 
         int battery_voltage_adc = analogRead(SNS_BATTERY_VLTG);
 
-        /*if(battery_voltage_adc <= BATTERY_CUTTOFF_ADC)
+        if(battery_voltage_adc <= BATTERY_CUTTOFF_ADC)
         {
-          if cut of reached (~1 V per cell)
-          status to IDLE and LED 5 flashing
-        }*/
+          //if cut of reached (~1 V per cell)
+          //status to IDLE and LED 5 flashing
+          ledbar.switchLEDon(LED5);
+        }
 
         // TODO: check impact on timming of other packets! Could this introduce too much delay to the control loop?        
 
