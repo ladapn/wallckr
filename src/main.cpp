@@ -270,8 +270,7 @@ void loop() {
           case FOLLOWING:
             desiredServo = servo_cmd; 
             
-            // TODO: add right front to cover situations when front signal gets bounced off
-            if (front_sonar_cm < AVOIDING_DISTANCE_THR_CM) //|| right_front_sonar_cm < 15)
+            if (front_sonar_cm < AVOIDING_DISTANCE_THR_CM || right_front_sonar_cm < 15) // Fixme magic constatn 
             {
               automatic_state = AVOIDING;
               // LED 1 on
@@ -297,6 +296,7 @@ void loop() {
         }
       }
 
+      // TODO: run this at time = 0, for the first time, not at time = 1 s
       if(currentMillis - lastStatusMillis > STATUS_PRINT_INTERVAL_MS)
       {
         lastStatusMillis = currentMillis; 
