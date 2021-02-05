@@ -6,6 +6,7 @@
 #include "CRegulator.h"
 #include "UltraSoundSensor.h"
 #include "LEDBar.h"
+#include "Motion.h"
 
 // TODO: when BLE signal lost for 5 sec, go to idle
 
@@ -38,19 +39,8 @@
 
 typedef enum state {AVOIDING = 0, FOLLOWING} state_t;
 
-const int PWM_A   = 3;
-const int DIR_A   = 12;
 const int BRAKE_A = 9;
 //const int SNS_A   = A0;
-const int SERVO_A = 47;
-
-const int MAX_SPD = 255;  //200; //TBD
-const int SPD_INCREMENT = 50;
-
-const int SERVO_INCREMENT = 10;
-const int SERVO_CENTER = 80;
-const int SERVO_MIN_RIGHT = 20;
-const int SERVO_MAX_LEFT = 160;
 
 const int COMMAND_INTERVAL_MS = 100;
 const int STATUS_PRINT_INTERVAL_MS = 1000;
@@ -75,66 +65,32 @@ const int AVOIDING_DISTANCE_THR_CM = RIGHT_DISTANCE_SETPOINT_CM + TURNING_RADIUS
 
 const int AVOIDING_DISTANCE_HYSTERESIS_CM = 20; 
 
-Servo myservo;  // create servo object to control a servo
-
-// TODO: class to encapsulate motor
-bool motorCMD(int commandSPD)
-{
-  bool retval = false;
-  bool motorDirection = HIGH; // HIGH -> forward
-
-  if((commandSPD <= 255) && (commandSPD >= -255))
-  {
-    if(commandSPD < 0)
-    {
-      motorDirection = LOW;
-      commandSPD = abs(commandSPD);
-    }
-
-    digitalWrite(DIR_A, motorDirection);    // Set motor direction
-    analogWrite(PWM_A, commandSPD);     // Set the speed of the motor, 255 is the maximum value
-    
-    retval = true;
-  }
-
-  return retval;
-}
-
 void setup() {
   // Configure the A output
   pinMode(BRAKE_A, OUTPUT);  // Brake pin on channel A
-  pinMode(DIR_A, OUTPUT);    // Direction pin on channel A
 
   // Open Serial communication
   Serial.begin(115200);
   Serial.println("Toy Car Demo:");
 
-  myservo.attach(SERVO_A);
-
   // set prescaler for Timer 3 (pin 3) to 1 to get 31372.55 Hz
   // TODO: what for?
   TCCR3B = (TCCR3B & 0b11111000) | 0x01;
 
-    // Itialize BLE UART
+  // Itialize BLE UART
   Serial3.begin(115200); // 9600 default 
 
   // Set BLE's name
   Serial3.write("AT NAMERCcar\r\n");
-  //Serial.write("Zadejte prikaz AT: \n\n");
-
-//  analogReference(INTERNAL1V1);
-
-  //digitalWrite(LED2, 1);
-  //digitalWrite(LED1, 0);
 
 }
 
 void loop() {
-  command_t incommingByte;
+  command_t command_input;
   int desiredSPD = 0;
-  int oldSPD = 0;
+
   int desiredServo = SERVO_CENTER;
-  int oldServo = SERVO_CENTER;
+
   long int lastCommandMillis = 0;
   long int lastStatusMillis = 0;  
   long int currentMillis = 0;
@@ -143,7 +99,7 @@ void loop() {
   state_t automatic_state = FOLLOWING;
   //int following_counter = 0;
 
-  CExpFilterFlt right_sonar_filter;
+  CExpFilterFlt right_sonar_filter; //TODO: do I want a float here 
 
   CRegulator K_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
 
@@ -153,71 +109,19 @@ void loop() {
   UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE);
   //UltraSoundSensor sonar_right_back(TRIGGER_PIN_RIGHT_BACK, ECHO_PIN_RIGHT_BACK, MAX_DISTANCE);
 
+  Motion robot_motion; 
+
   LEDBar ledbar;
   ledbar.switchLEDon(LED1);
   ledbar.switchLEDoff(LED2);
 
-  //int following_counter_max = 15;
-
   while(true)
   {
-    incommingByte = command_decoder_fastest(Serial3); //Serial.read();
-    if(incommingByte != NO_COMMAND)
-    {
-      switch(incommingByte)
-      {
-        case UP:
-          if(desiredSPD < MAX_SPD)
-          {
-            desiredSPD += SPD_INCREMENT;
+    command_input = command_decoder_fastest(Serial3);
+    robot_motion.command(command_input, desiredSPD, desiredServo);
 
-          }
-        break;
-        case DOWN:
-          if(desiredSPD > -MAX_SPD)
-          {
-            desiredSPD -= SPD_INCREMENT;
-          }
-        break;
-        case RIGHT:
-          if(desiredServo > SERVO_MIN_RIGHT)
-          {
-            desiredServo -= SERVO_INCREMENT;
-          }
-        break;
-        case LEFT:
-          if(desiredServo < SERVO_MAX_LEFT)
-          {
-            desiredServo += SERVO_INCREMENT;
-          }
-        break;
-        case UP_TRIANGLE:
-          desiredServo = SERVO_CENTER;
-        break;
-        default:
-          desiredSPD = 0; //Stop the engine
-          //desiredServo = SERVO_CENTER;
-          //myservo.write(45);
-        //Serial.println(incommingByte);
-      }
-    }
-
-    // TODO: motor.setSpeed(desiredSPD);
-    // TODO: servo.setAngle(desiredServo);
-
-    if(oldSPD != desiredSPD)
-    {
-      oldSPD = desiredSPD;
-      motorCMD(desiredSPD);
-    }
-
-    if(oldServo != desiredServo)
-    {
-      oldServo = desiredServo;
-      myservo.write(desiredServo);
-    }
+    robot_motion.set_speed_and_angle(desiredSPD, desiredServo);
     
-
     currentMillis = millis();
     if(currentMillis - lastCommandMillis > COMMAND_INTERVAL_MS)
     {
