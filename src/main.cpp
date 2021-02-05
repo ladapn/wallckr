@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <NewPing.h>
-#include <SharpIR.h>
 #include "BLEJoystickDecoder.h"
 #include "BLEPackets.h"
 #include "CRegulator.h"
@@ -77,8 +76,6 @@ const int AVOIDING_DISTANCE_THR_CM = RIGHT_DISTANCE_SETPOINT_CM + TURNING_RADIUS
 const int AVOIDING_DISTANCE_HYSTERESIS_CM = 20; 
 
 Servo myservo;  // create servo object to control a servo
-SharpIR sensor(SharpIR::GP2Y0A21YK0F, A5);
-SharpIR sensor2(SharpIR::GP2Y0A21YK0F, A4);
 
 // TODO: class to encapsulate motor
 bool motorCMD(int commandSPD)
