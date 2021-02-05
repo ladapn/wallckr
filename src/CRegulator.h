@@ -6,20 +6,30 @@ class CRegulator
 {
     private:
         float m_gain;
+        float m_D_gain;
         int m_setpoint;
-        int m_insensitivity; 
-        int m_action_limit;
+        int m_insensitivity;
+        float m_last_e; 
+        bool m_first_run;
+        int m_action_limit_up;
+        int m_action_limit_bottom;
     public:
-        CRegulator(float gain, int setpoint, int insen) : m_gain(gain), m_setpoint(setpoint), m_insensitivity(insen)
+        CRegulator(float gain, int setpoint, int insen) : m_gain(gain), m_setpoint(setpoint), m_insensitivity(insen), m_last_e(0.0), m_first_run(true)
         {
-            m_action_limit = 35;
+            //TODO what is the maximal sensible limit? 
+            m_action_limit_up = 45;
+            m_action_limit_bottom = -30;
+
+            //FIXME
+            m_D_gain = 12.0;
         };
         void set_gain(float gain)
         {
             m_gain = gain;
         }
 
-        float action(float in);
+        float action_P(float in);
+        float action_PD(float in);
 };
 
 class CExpFilter
@@ -70,6 +80,33 @@ class CExpFilter
         }
        
 };
+
+class CExpFilterFlt
+{
+    private:
+        float m_state;
+        bool m_first_step; 
+        //unsigned m_N; 
+    public:
+        CExpFilterFlt() : m_state(0.0), m_first_step(true) {};
+        //CExpFilter(unsigned N) : m_state(0), m_N(N) {};
+        int next_3_4(int input)
+        {
+            if(m_first_step)
+            {
+                m_first_step = false;
+                m_state = input;                  
+            }
+            else
+            {
+                m_state = 0.75 * m_state + 0.25 * input; 
+            }
+                
+            return m_state; 
+        }       
+       
+};
+
 const int atan2_1D_table[] = {0,2,3,5,7,8,10,11,13,14,16,17,19,20,22,23,25,26,27,28,30,31,32,33,34,36,37,38,39,40,41,42,42,43,44,45,46,47,47,48,49,50,50,51,51,52,53,53,54,54,55,56,56,57,57,58,58,58,59,59,60};
 const int atan2_1D_table_max = sizeof(atan2_1D_table) / sizeof(atan2_1D_table[0]);
 

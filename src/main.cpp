@@ -10,17 +10,31 @@
 
 // TODO: when BLE signal lost for 5 sec, go to idle
 
+/*#define TRIGGER_PIN_FRONT  30  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN_FRONT     31  // Arduino pin tied to echo pin on the ultrasonic sensor.
+
 #define TRIGGER_PIN_RIGHT_FRONT 32
 #define ECHO_PIN_RIGHT_FRONT    33 
-
-#define TRIGGER_PIN_RIGHT_BACK  36
-#define ECHO_PIN_RIGHT_BACK     37  
 
 #define TRIGGER_PIN_RIGHT_CENTER  34
 #define ECHO_PIN_RIGHT_CENTER     35 
 
-#define TRIGGER_PIN_FRONT  30  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_PIN_FRONT     31  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define TRIGGER_PIN_RIGHT_BACK  36
+#define ECHO_PIN_RIGHT_BACK     37  */
+
+#define TRIGGER_PIN_FRONT  32  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN_FRONT     33  // Arduino pin tied to echo pin on the ultrasonic sensor.
+
+#define TRIGGER_PIN_RIGHT_FRONT 34
+#define ECHO_PIN_RIGHT_FRONT    35 
+
+#define TRIGGER_PIN_RIGHT_CENTER  36
+#define ECHO_PIN_RIGHT_CENTER     37 
+
+/*#define TRIGGER_PIN_RIGHT_BACK  36
+#define ECHO_PIN_RIGHT_BACK     37  */
+
+
 #define MAX_DISTANCE 200 
 
 typedef enum state {AVOIDING = 0, FOLLOWING} state_t;
@@ -46,13 +60,14 @@ const int SNS_BATTERY_VLTG = A8;
 // TODO: has to be in ADC units, 1 VDC - voltage drops between batteries and actual measurement point
 // ALSO take into consideration the voltage divider 1:16
 const int BATTERY_CELLS = 8;
+// TODO: 1024 or 1023?
 const int BATTERY_CUTTOFF_ADC = (0.9 / 5 * 1024 * BATTERY_CELLS) / 16;
 
 const float K_GAIN = 5;
-const int RIGHT_DISTANCE_SETPOINT_CM = 30;
+const int RIGHT_DISTANCE_SETPOINT_CM = 25;
 const int INSENSITIV_CM = 2;
 
-const int TURNING_RADIUS_CM = 25;
+const int TURNING_RADIUS_CM = 15;
 
 // Distance to front obstacle that triggers turning, to end up with desired
 // side distance after the turn, this has to consist of the distance setpoint
@@ -124,14 +139,14 @@ void loop() {
   int desiredServo = SERVO_CENTER;
   int oldServo = SERVO_CENTER;
   long int lastCommandMillis = 0;
-  long int lastStatusMillis = 0;
+  long int lastStatusMillis = 0;  
   long int currentMillis = 0;
   bool automatic_operation_en = true;
   
   state_t automatic_state = FOLLOWING;
   //int following_counter = 0;
 
-  CExpFilter right_sonar_filter;
+  CExpFilterFlt right_sonar_filter;
 
   CRegulator K_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
 
@@ -139,7 +154,7 @@ void loop() {
   UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
   UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE);
   UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE);
-  UltraSoundSensor sonar_right_back(TRIGGER_PIN_RIGHT_BACK, ECHO_PIN_RIGHT_BACK, MAX_DISTANCE);
+  //UltraSoundSensor sonar_right_back(TRIGGER_PIN_RIGHT_BACK, ECHO_PIN_RIGHT_BACK, MAX_DISTANCE);
 
   LEDBar ledbar;
   ledbar.switchLEDon(LED1);
@@ -233,16 +248,18 @@ void loop() {
       BLE_out.BLE_print_US_data(RIGHT_CENTER_US_ID, currentMillis, right_center_sonar_cm);
 
       // Fire right back sonar 
-      unsigned long right_back_sonar_cm = sonar_right_back.get_distance_raw_cm();
+      /*unsigned long right_back_sonar_cm = sonar_right_back.get_distance_raw_cm();
 
       if(right_back_sonar_cm < right_sonar_cm)
       {
         right_sonar_cm = right_back_sonar_cm;
       }
 
-      BLE_out.BLE_print_US_data(RIGHT_BACK_US_ID, currentMillis, right_back_sonar_cm);
+      BLE_out.BLE_print_US_data(RIGHT_BACK_US_ID, currentMillis, right_back_sonar_cm);*/
 
-      right_sonar_cm = right_sonar_filter.next_3_4(right_sonar_cm);
+      //float right_sonar_cm_flt = right_sonar_filter.next_3_4(right_sonar_cm);
+
+      int servo_cmd = int(right_sonar_filter.next_3_4(K_regulator.action_P(right_sonar_cm))) + SERVO_CENTER; 
 
       // Driving state machine
      
@@ -251,9 +268,10 @@ void loop() {
         switch(automatic_state)
         {
           case FOLLOWING:
-            desiredServo = int(K_regulator.action(right_sonar_cm)) + SERVO_CENTER; 
+            desiredServo = servo_cmd; 
             
-            if (front_sonar_cm < AVOIDING_DISTANCE_THR_CM)
+            // TODO: add right front to cover situations when front signal gets bounced off
+            if (front_sonar_cm < AVOIDING_DISTANCE_THR_CM) //|| right_front_sonar_cm < 15)
             {
               automatic_state = AVOIDING;
               // LED 1 on
@@ -287,7 +305,7 @@ void loop() {
         if(battery_voltage_adc <= BATTERY_CUTTOFF_ADC)
         {
           //if cut of reached (~1 V per cell)
-          //status to IDLE and LED 5 flashing
+          // TODO: status to IDLE and LED 5 flashing
           ledbar.switchLEDon(LED5);
         }
 
