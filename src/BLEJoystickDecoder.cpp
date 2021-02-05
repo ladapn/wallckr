@@ -1,7 +1,7 @@
 #include "BLEJoystickDecoder.h"
 #include "Arduino.h"
 
-command_t select_command(char in)
+command_t input_to_command(char in)
 {
   command_t command = NO_COMMAND;
 
@@ -69,7 +69,7 @@ command_t command_decoder(HardwareSerial &cmdSerial)
       
       if(current == 0)
       {
-        command = select_command(prev);
+        command = input_to_command(prev);
       }
       else
       {
@@ -113,7 +113,7 @@ command_t command_decoder_fast(HardwareSerial &cmdSerial)
     
     if(current - prev == DIFF_LOWER_UPPER) 
     {
-      command = select_command(current);
+      command = input_to_command(current);
     }
 
     prev = current; 
@@ -153,7 +153,7 @@ command_t command_decoder_fastest(HardwareSerial &cmdSerial)
       current += DIFF_LOWER_UPPER;  // make it lower case
     }
     
-    command = select_command(current);
+    command = input_to_command(current);
   
     //prev = current; 
   }
