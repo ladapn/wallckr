@@ -95,6 +95,8 @@ void loop() {
   long int lastStatusMillis = 0;  
   long int currentMillis = 0;
   bool automatic_operation_en = true;
+
+  bool battery_led_on = false; 
   
   state_t automatic_state = FOLLOWING;
   //int following_counter = 0;
@@ -183,7 +185,7 @@ void loop() {
             desiredServo = SERVO_MAX_LEFT;
 
             if (front_sonar_cm > (AVOIDING_DISTANCE_THR_CM + AVOIDING_DISTANCE_HYSTERESIS_CM)
-                && right_front_sonar_cm > (AVOIDING_DISTANCE_THR_CM - 15)) // FIXME magic constant + filtering 
+                && right_front_sonar_cm > (AVOIDING_DISTANCE_THR_CM - 15)) // FIXME magic constant + filtering? 
             {        
               
               automatic_state = FOLLOWING;
@@ -207,7 +209,17 @@ void loop() {
         {
           //if cut of reached (~1 V per cell)
           // TODO: status to IDLE and LED 5 flashing
-          ledbar.switchLEDon(LED5);
+          if(battery_led_on)
+          {
+            ledbar.switchLEDoff(LED5);
+            battery_led_on = false;
+
+          }
+          else
+          {
+            ledbar.switchLEDon(LED5);
+            battery_led_on = true;            
+          }
         }
 
         // TODO: check impact on timming of other packets! Could this introduce too much delay to the control loop?        
