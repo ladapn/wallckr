@@ -117,6 +117,8 @@ void loop() {
   ledbar.switchLEDon(LED1);
   ledbar.switchLEDoff(LED2);
 
+  bool first_pass = true; 
+
   while(true)
   {
     command_input = command_decoder_fastest(Serial3);
@@ -125,6 +127,37 @@ void loop() {
     robot_motion.set_speed_and_angle(desiredSPD, desiredServo);
     
     currentMillis = millis();
+
+// TODO: run this at time = 0, for the first time, not at time = 1 s
+    if((currentMillis - lastStatusMillis > STATUS_PRINT_INTERVAL_MS) || first_pass)
+    {
+      first_pass = false; 
+      lastStatusMillis = currentMillis; 
+      int battery_voltage_adc = analogRead(SNS_BATTERY_VLTG);
+
+      if(battery_voltage_adc <= BATTERY_CUTTOFF_ADC)
+      {
+        // TODO: motion.disable(); sensing.disable()
+        //if cut of reached (~1 V per cell)
+        if(battery_led_on)
+        {
+          ledbar.switchLEDoff(LED5);
+          battery_led_on = false;
+
+        }
+        else
+        {
+          ledbar.switchLEDon(LED5);
+          battery_led_on = true;            
+        }
+      }
+      // TODO: else -> enable stuff after some period of battery being ok 
+
+      // TODO: check impact on timming of other packets! Could this introduce too much delay to the control loop?        
+
+      BLE_out.BLE_print_status_data(STATUS_ID, currentMillis, battery_voltage_adc);
+    }
+
     if(currentMillis - lastCommandMillis > COMMAND_INTERVAL_MS)
     {
       lastCommandMillis = currentMillis;
@@ -199,35 +232,7 @@ void loop() {
         }
       }
 
-      // TODO: run this at time = 0, for the first time, not at time = 1 s
-      if(currentMillis - lastStatusMillis > STATUS_PRINT_INTERVAL_MS)
-      {
-        lastStatusMillis = currentMillis; 
-        int battery_voltage_adc = analogRead(SNS_BATTERY_VLTG);
-
-        if(battery_voltage_adc <= BATTERY_CUTTOFF_ADC)
-        {
-          //if cut of reached (~1 V per cell)
-          // TODO: status to IDLE and LED 5 flashing
-          if(battery_led_on)
-          {
-            ledbar.switchLEDoff(LED5);
-            battery_led_on = false;
-
-          }
-          else
-          {
-            ledbar.switchLEDon(LED5);
-            battery_led_on = true;            
-          }
-        }
-
-        // TODO: check impact on timming of other packets! Could this introduce too much delay to the control loop?        
-
-      //Serial.println(analogRead(SNS_BATTERY_VLTG));
-      //Serial3.println(analogRead(SNS_BATTERY_VLTG)); // * 5.0 / 1023.0);
-        BLE_out.BLE_print_status_data(STATUS_ID, currentMillis, battery_voltage_adc);
-      }
+      
       
     }
   }
