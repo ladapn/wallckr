@@ -4,25 +4,28 @@ bool Motion::setSpeed(int spd)
 {
     bool retval = false;
 
-    if (m_prev_speed != spd)
+    if (!m_disabled)
     {
-        m_prev_speed = spd;
+      if (m_prev_speed != spd)
+      {
+          m_prev_speed = spd;
 
-        bool motorDirection = HIGH; // HIGH -> forward
+          bool motorDirection = HIGH; // HIGH -> forward
 
-        if ((spd <= 255) && (spd >= -255))
-        {
-            if (spd < 0)
-            {
-                motorDirection = LOW;
-                spd = abs(spd);
-            }
+          if ((spd <= 255) && (spd >= -255))
+          {
+              if (spd < 0)
+              {
+                  motorDirection = LOW;
+                  spd = abs(spd);
+              }
 
-            digitalWrite(DIR_A, motorDirection); // Set motor direction
-            analogWrite(PWM_A, spd);             // Set the speed of the motor, 255 is the maximum value
+              digitalWrite(DIR_A, motorDirection); // Set motor direction
+              analogWrite(PWM_A, spd);             // Set the speed of the motor, 255 is the maximum value
 
-            retval = true;
-        }
+              retval = true;
+          }
+      }
     }
 
     return retval;
@@ -32,12 +35,15 @@ bool Motion::setAngle(int angle)
 {
     bool retval = false;
 
-    if (m_oldServo != angle)
+    if (!m_disabled)
     {
-        m_oldServo = angle;
-        m_steering_servo.write(angle);
+      if (m_oldServo != angle)
+      {
+          m_oldServo = angle;
+          m_steering_servo.write(angle);
 
-        retval = true;
+          retval = true;
+      }
     }
 
     return retval; 

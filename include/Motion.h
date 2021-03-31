@@ -26,10 +26,11 @@ class Motion
     int m_prev_speed;
     int m_oldServo;
     Servo m_steering_servo;
+    bool m_disabled;
 
 public:
 
-    Motion() : m_prev_speed(0), m_oldServo(SERVO_CENTER)
+    Motion() : m_prev_speed(0), m_oldServo(SERVO_CENTER), m_disabled(false)
     {
         m_steering_servo.attach(SERVO_A);
 
@@ -41,6 +42,8 @@ public:
     bool setAngle(int angle);
     bool set_speed_and_angle(int spd, int angle);
     bool command(command_t cmd, int &spd, int &angle);
+    void disable() { m_disabled = true; }
+    void enable() { m_disabled = false; }
 };
 
 #endif
