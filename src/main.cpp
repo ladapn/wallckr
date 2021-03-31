@@ -101,7 +101,7 @@ void loop() {
   state_t automatic_state = FOLLOWING;
   //int following_counter = 0;
 
-  CExpFilterFlt right_sonar_filter; //TODO: do I want a float here 
+  CExpFilter right_sonar_filter; //TODO: do I want a float here 
 
   CRegulator K_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
 
@@ -128,16 +128,18 @@ void loop() {
     
     currentMillis = millis();
 
-// TODO: run this at time = 0, for the first time, not at time = 1 s
     if((currentMillis - lastStatusMillis > STATUS_PRINT_INTERVAL_MS) || first_pass)
     {
       first_pass = false; 
       lastStatusMillis = currentMillis; 
+      // TODO: sensing.battery_check() -> if false returned, disable motion and sensing
       int battery_voltage_adc = analogRead(SNS_BATTERY_VLTG);
 
       if(battery_voltage_adc <= BATTERY_CUTTOFF_ADC)
-      {
-        // TODO: motion.disable(); sensing.disable()
+      {        
+        robot_motion.disable();
+        // TODO: sensing.disable()
+
         //if cut of reached (~1 V per cell)
         if(battery_led_on)
         {
