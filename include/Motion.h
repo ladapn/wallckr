@@ -40,9 +40,14 @@ public:
 
     bool setSpeed(int spd);
     bool setAngle(int angle);
+    bool Stop() { return setSpeed(0); }
     bool set_speed_and_angle(int spd, int angle);
     bool command(command_t cmd, int &spd, int &angle);
-    void disable() { m_disabled = true; }
+    void disable() 
+    {
+        Stop();
+        m_disabled = true; 
+    }
     void enable() { m_disabled = false; }
 };
 
