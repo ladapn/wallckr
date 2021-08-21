@@ -6,15 +6,15 @@
 enum us_packet_ids {FRONT_US_ID = 100, RIGHT_FRONT_US_ID = 101, RIGHT_CENTER_US_ID = 102, RIGHT_BACK_US_ID = 103};
 enum util_packet_ids {STATUS_ID = 80, MOTION_CMD_ID = 90};
 
-typedef struct sonar_packet {
+struct sonar_packet_t {
     byte id;
     unsigned long tick;
     unsigned long sonar_data;
     byte crc;
-    } sonar_packet_t;
+    };
 
 // status packet, battery voltage, current, motor current? version ID?
-typedef struct status_packet {
+struct status_packet_t {
     byte id;
     unsigned long tick;
     unsigned long version_ID; // long -> 4 bytes, instead of 8 chars
@@ -24,21 +24,21 @@ typedef struct status_packet {
     byte crc;
 
     // FIXME probably not the best way of doing it
-    status_packet()
+    status_packet_t()
     {
         version_ID = GIT_REV;
     };
-    } status_packet_t;
+    };
 
 // motion command packet - srv and spd command
-typedef struct motion_command_packet {
+struct motion_command_packet_t {
     byte id;
     unsigned long tick;
     unsigned int servo_cmd; // int appropriate here? 
     signed int motor_cmd; // int appropriate here? 
     byte crc;
 
-} motion_command_packet_t;
+};
 
 
 class BLE_printer

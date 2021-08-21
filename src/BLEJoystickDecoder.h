@@ -3,7 +3,7 @@
 
 #include "Arduino.h"
 
-typedef enum cmd {NO_COMMAND = 0, UP, RIGHT, DOWN, LEFT, UP_TRIANGLE, RIGHT_CIRCLE, DOWN_X, LEFT_SQUARE } command_t; 
+enum command_t {NO_COMMAND = 0, UP, RIGHT, DOWN, LEFT, UP_TRIANGLE, RIGHT_CIRCLE, DOWN_X, LEFT_SQUARE }; 
 
 command_t input_to_command(char in);
 command_t command_decoder(HardwareSerial &cmdSerial);

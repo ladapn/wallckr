@@ -37,7 +37,7 @@
 
 #define MAX_DISTANCE 200 
 
-typedef enum state {AVOIDING = 0, FOLLOWING} state_t;
+enum state_t {AVOIDING = 0, FOLLOWING};
 
 const int BRAKE_A = 9;
 //const int SNS_A   = A0;
