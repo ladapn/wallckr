@@ -2,7 +2,7 @@
 #define LED_BAR_H
 
 #include <Arduino.h>
-
+// PA 2, ... PA 6
 enum leds {LED1 = 24, LED2 = 25, LED3 = 26, LED4 = 27, LED5 = 28};
 
 class LEDBar
@@ -14,14 +14,26 @@ public:
     ~LEDBar();
     void switchLEDon(unsigned int LED)
     {
+        if(LED < LED1 || LED > LED5)
+            return; 
+        
         // TODO get rid of these arduino calls 
         digitalWrite(LED, 0);
     }
 
     void switchLEDoff(unsigned int LED)
     {
+        if(LED < LED1 || LED > LED5)
+            return; 
+        
         digitalWrite(LED, 1);
     }
+    
+    /*void toggleLED(unsigned int LED)
+    {
+        // ... PINA = 1 << bit; 
+    }*/
+
 };
 
 LEDBar::LEDBar(/* args */)
