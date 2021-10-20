@@ -3,8 +3,6 @@
 
 #include <Arduino.h>
 #include <Servo.h>
-#include "BLEJoystickDecoder.h"
-
 
 // Pin definitions 
 const int PWM_A   = 3;
@@ -42,7 +40,6 @@ public:
     bool setAngle(int angle);
     bool Stop() { return setSpeed(0); }
     bool set_speed_and_angle(int spd, int angle);
-    bool command(command_t cmd, int &spd, int &angle);
     void disable() 
     {
         Stop();

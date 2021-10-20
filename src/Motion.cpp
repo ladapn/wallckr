@@ -12,7 +12,7 @@ bool Motion::setSpeed(int spd)
 
           bool motorDirection = HIGH; // HIGH -> forward
 
-          if ((spd <= 255) && (spd >= -255))
+          if ((spd <= MAX_SPD) && (spd >= -MAX_SPD))
           {
               if (spd < 0)
               {
@@ -55,46 +55,4 @@ bool Motion::set_speed_and_angle(int spd, int angle)
     bool retval2 = setAngle(angle);
 
     return retval && retval2; 
-}
-
-bool Motion::command(command_t incommingByte, int &desiredSPD, int &desiredServo)
-{   
-    if(incommingByte != NO_COMMAND)
-    {
-      switch(incommingByte)
-      {
-        case UP:
-          if(desiredSPD < MAX_SPD)
-          {
-            desiredSPD += SPD_INCREMENT;
-
-          }
-        break;
-        case DOWN:
-          if(desiredSPD > -MAX_SPD)
-          {
-            desiredSPD -= SPD_INCREMENT;
-          }
-        break;
-        case RIGHT:
-          if(desiredServo > SERVO_MIN_RIGHT)
-          {
-            desiredServo -= SERVO_INCREMENT;
-          }
-        break;
-        case LEFT:
-          if(desiredServo < SERVO_MAX_LEFT)
-          {
-            desiredServo += SERVO_INCREMENT;
-          }
-        break;
-        case UP_TRIANGLE:
-          desiredServo = SERVO_CENTER;
-        break;
-        default:
-          desiredSPD = 0; 
-      }
-    }
-
-    return true; //FIXME
 }

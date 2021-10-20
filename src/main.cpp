@@ -86,7 +86,6 @@ void setup() {
 }
 
 void loop() {
-  command_t command_input;
   int desiredSPD = 0;
 
   int desiredServo = SERVO_CENTER;
@@ -105,6 +104,7 @@ void loop() {
 
   CRegulator K_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
 
+// robot_io? -> also contain ledbar
   BLE_printer BLE_out(Serial3); 
   UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
   UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE);
@@ -119,10 +119,11 @@ void loop() {
 
   bool first_pass = true; 
 
+  BLEJoystickDecoder external_command_decoder(Serial3); 
+
   while(true)
   {
-    command_input = command_decoder_fastest(Serial3);
-    robot_motion.command(command_input, desiredSPD, desiredServo);
+    external_command_decoder.check_motion_cmd(desiredSPD, desiredServo);
 
     robot_motion.set_speed_and_angle(desiredSPD, desiredServo);
     
@@ -145,7 +146,6 @@ void loop() {
         {
           ledbar.switchLEDoff(LED5);
           battery_led_on = false;
-
         }
         else
         {
@@ -162,6 +162,8 @@ void loop() {
 
     if(currentMillis - lastCommandMillis > COMMAND_INTERVAL_MS)
     {
+      //automatic_control.get_command()
+      // -> sensing.get_side_measurement()
       lastCommandMillis = currentMillis;
    
       // Fire front sonar
@@ -232,9 +234,7 @@ void loop() {
 
           break;
         }
-      }
-
-      
+      }  
       
     }
   }
