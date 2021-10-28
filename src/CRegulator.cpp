@@ -22,6 +22,28 @@ float CRegulator::action_P(float in)
     return out; 
 }
 
+int CRegulator::action_P(int in)
+{
+    int e = m_setpoint - in;
+    int out = 0;
+
+    if (e > m_insensitivity || e < -m_insensitivity)
+    {
+        out = m_gain * e;  
+    }
+    
+    if (out > m_action_limit_up)
+    {
+        out = m_action_limit_up;
+    }
+    else if (out < m_action_limit_bottom)
+    {
+        out = m_action_limit_bottom;
+    }
+
+    return out; 
+}
+
 float CRegulator::action_PD(float in)
 {
     float e = m_setpoint - in;

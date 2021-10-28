@@ -163,7 +163,7 @@ void loop() {
     if(currentMillis - lastCommandMillis > COMMAND_INTERVAL_MS)
     {
       //automatic_control.get_command()
-      // -> sensing.get_side_measurement()
+      // -> side_distance = sensing.get_side_measurement()
       lastCommandMillis = currentMillis;
    
       // Fire front sonar
@@ -199,7 +199,7 @@ void loop() {
 
       //float right_sonar_cm_flt = right_sonar_filter.next_3_4(right_sonar_cm);
 
-      int servo_cmd = int(right_sonar_filter.next_3_4(K_regulator.action_P(right_sonar_cm))) + SERVO_CENTER; 
+      int servo_cmd = int(right_sonar_filter.next_3_4(K_regulator.action_P(float(right_sonar_cm)))) + SERVO_CENTER; 
 
       // Driving state machine
      

@@ -2,6 +2,8 @@
 #ifndef CREGULATOR_H
 #define CREGULATOR_H
 
+// TODO: class should do only one thing -> class for P reg, PD reg... + interface
+// template would be also usefull -> float/int... 
 class CRegulator
 {
     private:
@@ -29,9 +31,12 @@ class CRegulator
         }
 
         float action_P(float in);
+        int action_P(int in);
         float action_PD(float in);
 };
 
+// TODO: template? How to handle different computation for float and for int?
+// also -> maybe a derived class for each filter type? 3/4, 1/2... -> or input parameter? 
 class CExpFilter
 {
     private:
