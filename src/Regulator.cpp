@@ -1,4 +1,4 @@
-#include "CRegulator.h"
+#include "Regulator.h"
 
 
 template<> int ExpFilter<int>::core(int input)
