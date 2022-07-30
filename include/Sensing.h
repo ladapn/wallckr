@@ -1,7 +1,6 @@
 #ifndef SENSING_H
 #define SENSING_H
 
-#include <Arduino.h>
 #include "UltraSoundSensor.h"
 
 class Sensing

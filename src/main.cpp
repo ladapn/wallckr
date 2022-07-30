@@ -1,6 +1,4 @@
 #include <Arduino.h>
-#include <Servo.h>
-#include <NewPing.h>
 #include "BLEJoystickDecoder.h"
 #include "BLEPackets.h"
 #include "Regulator.h"
