@@ -3,7 +3,7 @@
 #include <NewPing.h>
 #include "BLEJoystickDecoder.h"
 #include "BLEPackets.h"
-#include "CRegulator.h"
+#include "Regulator.h"
 #include "UltraSoundSensor.h"
 #include "LEDBar.h"
 #include "Motion.h"

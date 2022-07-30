@@ -2,7 +2,7 @@
 #define ULTRASOUNT_SENSOR_H
 
 #include <NewPing.h>
-#include "CRegulator.h"
+#include "Regulator.h"
 
 class UltraSoundSensor
 {
