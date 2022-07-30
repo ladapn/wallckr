@@ -52,7 +52,7 @@ const int BATTERY_CELLS = 8;
 // TODO: 1024 or 1023?
 const int BATTERY_CUTTOFF_ADC = (0.9 / 5 * 1024 * BATTERY_CELLS) / 16;
 
-const float K_GAIN = 5;
+const int K_GAIN = 5;
 const int RIGHT_DISTANCE_SETPOINT_CM = 25;
 const int INSENSITIV_CM = 2;
 
@@ -99,10 +99,10 @@ void loop() {
   
   state_t automatic_state = FOLLOWING;
   //int following_counter = 0;
-
-  CExpFilter right_sonar_filter; //TODO: do I want a float here 
-
-  CRegulator K_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
+  
+  const int FILTER_N = 4; 
+  ExpFilter<int> right_sonar_filter(FILTER_N);
+  Regulator_P<int> side_distance_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
 
 // robot_io? -> also contain ledbar
   BLE_printer BLE_out(Serial3); 
@@ -199,7 +199,7 @@ void loop() {
 
       //float right_sonar_cm_flt = right_sonar_filter.next_3_4(right_sonar_cm);
 
-      int servo_cmd = int(right_sonar_filter.next_3_4(K_regulator.action_P(float(right_sonar_cm)))) + SERVO_CENTER; 
+      int servo_cmd = right_sonar_filter.next(side_distance_regulator.action(right_sonar_cm)) + SERVO_CENTER;
 
       // Driving state machine
      

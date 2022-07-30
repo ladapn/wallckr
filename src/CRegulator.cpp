@@ -1,75 +1,32 @@
 #include "CRegulator.h"
 
-float CRegulator::action_P(float in)
+
+template<> int ExpFilter<int>::core(int input)
 {
-    float e = m_setpoint - in;
-    float out = 0;
-
-    if (e > m_insensitivity || e < -m_insensitivity)
+    if (m_N == 4)
     {
-        out = m_gain * e;  
+        //=BITRSHIFT(BITLSHIFT(F3, 2) - F3 + C5 + 2, 2)
+        // 3/4 * state + 1/4 * input
+        // (4*state - state + input + rounding_constatnt) / 4
+        // WARNING: This never converges to zero! It gets stuck at 2
+        return ((m_state << 2) - m_state + input + 2) >> 2; 
     }
-    
-    if (out > m_action_limit_up)
+    else
     {
-        out = m_action_limit_up;
+        // TODO: Testing needed 
+        return (((m_N - 1) * 100 / m_N) * m_state + 100/m_N * input) / 100; 
     }
-    else if (out < m_action_limit_bottom)
-    {
-        out = m_action_limit_bottom;
-    }
-
-    return out; 
 }
 
-int CRegulator::action_P(int in)
+template<> float ExpFilter<float>::core(float input)
 {
-    int e = m_setpoint - in;
-    int out = 0;
-
-    if (e > m_insensitivity || e < -m_insensitivity)
+    // 0.75 * m_state + 0.25 * input;
+    if (m_N == 4)
     {
-        out = m_gain * e;  
+        return 0.75 * m_state + 0.25 * input;
     }
-    
-    if (out > m_action_limit_up)
+    else
     {
-        out = m_action_limit_up;
+        return ((m_N - 1.0) / m_N) * m_state + 1.0/m_N * input;  
     }
-    else if (out < m_action_limit_bottom)
-    {
-        out = m_action_limit_bottom;
-    }
-
-    return out; 
-}
-
-float CRegulator::action_PD(float in)
-{
-    float e = m_setpoint - in;
-    float out = 0;
-
-    if(m_first_run)
-    {
-        m_last_e = e; 
-        m_first_run = false; 
-    }
-    
-    if (e > m_insensitivity || e < -m_insensitivity)
-    {
-        out = m_gain * e + (e - m_last_e) * m_D_gain;
-    }
-    
-    if (out > m_action_limit_up)
-    {
-        out = m_action_limit_up;
-    }
-    else if (out < m_action_limit_bottom)
-    {
-        out = m_action_limit_bottom;
-    }
-
-    m_last_e = e;
-
-    return out; 
 }

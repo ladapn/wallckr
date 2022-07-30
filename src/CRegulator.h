@@ -2,115 +2,112 @@
 #ifndef CREGULATOR_H
 #define CREGULATOR_H
 
-// TODO: class should do only one thing -> class for P reg, PD reg... + interface
-// template would be also usefull -> float/int... 
-class CRegulator
-{
-    private:
-        float m_gain;
-        float m_D_gain;
-        int m_setpoint;
-        int m_insensitivity;
-        float m_last_e; 
-        bool m_first_run;
-        int m_action_limit_up;
-        int m_action_limit_bottom;
-    public:
-        CRegulator(float gain, int setpoint, int insen) : m_gain(gain), m_setpoint(setpoint), m_insensitivity(insen), m_last_e(0.0), m_first_run(true)
-        {
-            //TODO what is the maximal sensible limit? 
-            m_action_limit_up = 45;
-            m_action_limit_bottom = -30;
 
-            //FIXME
-            m_D_gain = 12.0;
-        };
-        void set_gain(float gain)
+// Regulator interface 
+template <typename T>
+class Regulator
+{
+protected:
+    T m_gain;
+
+    T m_setpoint;
+    T m_insensitivity;
+    
+    // FIXME this should be also an input
+    const T m_action_limit_up = 45;  
+    const T m_action_limit_bottom = -30; 
+
+    virtual T regulator_equation(T e) = 0;
+
+public:
+    Regulator(T gain, T setpoint, T insen) : m_gain(gain), m_setpoint(setpoint), m_insensitivity(insen) {}; 
+    virtual T action(T in)
+    {        
+        T e = this->m_setpoint - in;
+        T out = 0;
+
+        if (e > this->m_insensitivity || e < -this->m_insensitivity)
         {
-            m_gain = gain;
+            out = regulator_equation(e);  
+        }
+        
+        if (out > this->m_action_limit_up)
+        {
+            out = this->m_action_limit_up;
+        }
+        else if (out < this->m_action_limit_bottom)
+        {
+            out = this->m_action_limit_bottom;
         }
 
-        float action_P(float in);
-        int action_P(int in);
-        float action_PD(float in);
+        return out;    
+    }
 };
 
-// TODO: template? How to handle different computation for float and for int?
-// also -> maybe a derived class for each filter type? 3/4, 1/2... -> or input parameter? 
-class CExpFilter
+template <typename T>
+class Regulator_P : public Regulator<T>
 {
-    private:
-        int m_state; //FIXME int ok?
-        bool m_first_step; 
-        //unsigned m_N; 
+    protected:
+    T regulator_equation(T e) override
+    {
+        return this->m_gain * e;
+    }
+
     public:
-        CExpFilter() : m_state(0), m_first_step(true) {};
-        //CExpFilter(unsigned N) : m_state(0), m_N(N) {};
-        int next_3_4(int input)
-        {
-            if(m_first_step)
-            {
-                m_first_step = false;
-                m_state = input;                  
-            }
-            else
-            {                               
-                //=BITRSHIFT(BITLSHIFT(F3, 2) - F3 + C5 + 2, 2)
-                // 3/4 * state + 1/4 * input
-                // (4*state - state + input + rounding_constatnt) / 4
-                // WARNING: This never converges to zero! It gets stuck at 2
-                m_state = ((m_state << 2) - m_state + input + 2) >> 2; 
-            }
-                
-            return m_state;
-            //return input;
+    Regulator_P(T gain, T setpoint, T insen) : Regulator<T>(gain, setpoint, insen) {}; 
+    
+}; 
 
-        }
-       
-        // TODO virtual class and inheritance?
-        int next_1_2(int input)
-        {
-            if(m_first_step)
-            {
-                m_first_step = false;
-                m_state = input;                  
-            }
-            else
-            {                               
-                // This is na fact average
-                m_state = (m_state  + input) >> 2; 
-            }
-                
-            return m_state;
-        }
-       
-};
-
-class CExpFilterFlt
+template <typename T>
+class Regulator_PD : public Regulator<T>
 {
-    private:
-        float m_state;
-        bool m_first_step; 
-        //unsigned m_N; 
-    public:
-        CExpFilterFlt() : m_state(0.0), m_first_step(true) {};
-        //CExpFilter(unsigned N) : m_state(0), m_N(N) {};
-        int next_3_4(int input)
+    protected:
+    T m_D_gain;
+    bool m_first_run; 
+    T m_last_e;
+
+    T regulator_equation(T e) override
+    {
+        if(m_first_run)
         {
-            if(m_first_step)
-            {
-                m_first_step = false;
-                m_state = input;                  
-            }
-            else
-            {
-                m_state = 0.75 * m_state + 0.25 * input; 
-            }
-                
-            return m_state; 
-        }       
-       
+            m_first_run = false;
+            m_last_e = e; 
+        }
+
+        return this->m_gain * e + (e - m_last_e) * m_D_gain;
+    }
+
+    public:
+    Regulator_PD(T gain, T D_gain, T setpoint, T insen) : Regulator<T>(gain, setpoint, insen), m_D_gain(D_gain), m_first_run(true), m_last_e(0) {}; 
+   
+}; 
+
+
+template <typename T> class ExpFilter
+{
+private:
+    T m_state;
+    bool m_first_step;
+    const int m_N; 
+    T core(T input);
+public:
+    ExpFilter(int N) : m_state(0), m_first_step(true), m_N(N) {};
+    T next(T input)
+    {
+        if(m_first_step)
+        {
+            m_first_step = false;
+            m_state = input;                  
+        }
+        else
+        {
+            m_state = core(input); 
+        }
+            
+        return m_state;  
+    }
 };
+
 
 const int atan2_1D_table[] = {0,2,3,5,7,8,10,11,13,14,16,17,19,20,22,23,25,26,27,28,30,31,32,33,34,36,37,38,39,40,41,42,42,43,44,45,46,47,47,48,49,50,50,51,51,52,53,53,54,54,55,56,56,57,57,58,58,58,59,59,60};
 const int atan2_1D_table_max = sizeof(atan2_1D_table) / sizeof(atan2_1D_table[0]);

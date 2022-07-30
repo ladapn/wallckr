@@ -11,7 +11,8 @@ class UltraSoundSensor
     unsigned int m_max_cm_distance;
 
     NewPing m_sonar;
-    CExpFilter m_sonar_filter;
+    const int FILTER_N = 4; 
+    ExpFilter<int> m_sonar_filter = ExpFilter<int>(FILTER_N);
 
     public:
 
@@ -43,7 +44,7 @@ class UltraSoundSensor
     {
         trigger_measuremen();
 
-        m_measurement_filtered_cm = m_sonar_filter.next_3_4(m_measurement_raw_cm);
+        m_measurement_filtered_cm = m_sonar_filter.next(m_measurement_raw_cm);
 
         return m_measurement_filtered_cm;
     }
