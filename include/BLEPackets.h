@@ -6,6 +6,28 @@
 enum us_packet_ids {FRONT_US_ID = 100, RIGHT_FRONT_US_ID = 101, RIGHT_CENTER_US_ID = 102, RIGHT_BACK_US_ID = 103};
 enum util_packet_ids {STATUS_ID = 80, MOTION_CMD_ID = 90};
 
+// TODO: base class that provides virtual print, each packet will know how to print itself
+/*
+
+class robot_packet {
+    public:
+    virtual size_t print() = 0;
+}
+
+class sonar_packet {
+    public:
+    sonar_packet(byte id, unsigned long tick, unsigned long sonar_data)
+    size_t print() override
+    {
+        // can this be common for all packets? ... this, sizeof(*this)???
+        // but wait a minute, sizeof is evaluated at compile time so I cannot call it from the base class (it would always return the size of the base class)
+        return m_BLE_serial.write((uint8_t*)&us_data, sizeof(us_data));
+    }
+}
+
+*/
+
+
 struct sonar_packet_t {
     byte id;
     unsigned long tick;
