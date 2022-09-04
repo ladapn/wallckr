@@ -1,5 +1,6 @@
 #include "BLEJoystickDecoder.h"
-#include "Motion.h"
+#include "MotionConstants.h"
+#include <Arduino.h>
 
 command_t BLEJoystickDecoder::input_to_command(char in)
 {

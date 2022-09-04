@@ -1,6 +1,7 @@
 #ifndef MOTION_H
 #define MOTION_H
 
+#include "MotionConstants.h"
 #include <Arduino.h>
 #include <Servo.h>
 
@@ -8,16 +9,6 @@
 const int PWM_A   = 3;
 const int DIR_A   = 12;
 const int SERVO_A = 47;
-
-// Servo motion definitions 
-const int SERVO_INCREMENT = 10;
-const int SERVO_CENTER = 80;
-const int SERVO_MIN_RIGHT = 20;
-const int SERVO_MAX_LEFT = 160;
-
-// Motor definitions 
-const int MAX_SPD = 255;
-const int SPD_INCREMENT = 50;
 
 class Motion
 {
