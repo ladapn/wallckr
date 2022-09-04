@@ -3,6 +3,8 @@
 
 #include "UltraSoundSensor.h"
 
+class BLE_printer;
+
 class Sensing
 {
     // battery related constants 
@@ -14,31 +16,23 @@ class Sensing
     static const int BATTERY_PACK_CUTTOFF_ADC = (BATTERY_CELL_CUTTOFF_V / ADC_REFERENCE_V * ADC_MAX * BATTERY_CELL_COUNT) / VOLTAGE_DIVIDER_FACTOR;
     static const int SNS_BATTERY_VLTG = A8;
 
-    // sonar related constants
-    static const int TRIGGER_PIN_FRONT = 32;  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-    static const int ECHO_PIN_FRONT = 33;  // Arduino pin tied to echo pin on the ultrasonic sensor.
+    IDistanceSensor &sensor_front; 
+    IDistanceSensor &sensor_right_front; 
+    IDistanceSensor &sensor_right_center;
 
-    static const int TRIGGER_PIN_RIGHT_FRONT = 34;
-    static const int ECHO_PIN_RIGHT_FRONT = 35;
-
-    static const int TRIGGER_PIN_RIGHT_CENTER = 36;
-    static const int ECHO_PIN_RIGHT_CENTER = 37;
-
-    static const int MAX_DISTANCE = 200; // TODO: rename to MAX_DISTANCE_CM
-
-    UltraSoundSensor sonar_front; //(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
-    UltraSoundSensor sonar_right_front; //(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE);
-    UltraSoundSensor sonar_right_center; //(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE);
+    BLE_printer &sensor_printer; 
 
 public:
     // TODO reference to printer? 
-    Sensing() : sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE),
-                sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE),
-                sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE) {};
+    Sensing(IDistanceSensor &front, IDistanceSensor &right_front, IDistanceSensor &right_center, BLE_printer &printer) : 
+                sensor_front(front),
+                sensor_right_front(right_front),
+                sensor_right_center(right_center),
+                sensor_printer(printer) {};
     
-    bool battery_voltage_ok(); 
-    unsigned int get_side_distance_cm();
-    unsigned int get_front_distance_cm();
+    bool battery_voltage_ok(long currentMillis);
+    unsigned int get_side_distance_cm(long currentMillis, unsigned long &right_front_distance_cm, unsigned long &right_center_distance_cm);
+    unsigned int get_front_distance_cm(long currentMillis);
 
 };
 
