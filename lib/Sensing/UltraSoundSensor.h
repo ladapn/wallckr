@@ -2,15 +2,17 @@
 #define ULTRASOUNT_SENSOR_H
 
 #include <NewPing.h>
+#include "IDistanceSensor.h"
 #include "Regulator.h"
 
-class UltraSoundSensor
+class UltraSoundSensor : public IDistanceSensor
 {
     unsigned long m_measurement_raw_cm;
     unsigned long m_measurement_filtered_cm;
     unsigned int m_max_cm_distance;
 
     NewPing m_sonar;
+    // TODO Would be better to accept reference to base class of filter as constructor input
     const int FILTER_N = 4; 
     ExpFilter<int> m_sonar_filter = ExpFilter<int>(FILTER_N);
 
@@ -20,7 +22,7 @@ class UltraSoundSensor
     m_sonar(trigger_pin, echo_pin, max_cm_distance)
     {};
 
-    bool trigger_measuremen()
+    bool trigger_measuremen() override
     {
         m_measurement_raw_cm = m_sonar.ping_cm();
         
@@ -33,14 +35,14 @@ class UltraSoundSensor
         return true;
     }
     
-    unsigned long get_distance_raw_cm()
+    unsigned long get_distance_raw_cm() override
     {
         trigger_measuremen();
 
         return m_measurement_raw_cm;
     }
     
-    unsigned long get_distance_filtered_cm()
+    unsigned long get_distance_filtered_cm() override
     {
         trigger_measuremen();
 
