@@ -112,7 +112,7 @@ void loop() {
       if(!robot_sensing.battery_voltage_ok(currentMillis))
       {        
         robot_motion.disable();
-        // TODO: sensing.disable()
+        robot_sensing.disable();
         
         if(battery_led_on)
         {

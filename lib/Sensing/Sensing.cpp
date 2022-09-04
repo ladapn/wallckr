@@ -17,7 +17,12 @@ bool Sensing::battery_voltage_ok(long currentMillis)
 
 unsigned int Sensing::get_front_distance_cm(long currentMillis)
 {
-    // Fire front sonar
+    if(disabled)
+    {
+        return 0; 
+    }
+
+    // Fire front sensor
     auto front_sonar_cm = sensor_front.get_distance_filtered_cm();
 
     sensor_printer.BLE_print_US_data(FRONT_US_ID, currentMillis, front_sonar_cm);
@@ -27,6 +32,10 @@ unsigned int Sensing::get_front_distance_cm(long currentMillis)
 
 unsigned int Sensing::get_side_distance_cm(long currentMillis, unsigned long &right_front_distance_cm, unsigned long &right_center_distance_cm)
 {   
+    if(disabled)
+    {
+        return 0; 
+    }
 
     // Fire right front sensor      
     right_front_distance_cm = sensor_right_front.get_distance_raw_cm(); 

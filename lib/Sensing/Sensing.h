@@ -22,17 +22,28 @@ class Sensing
 
     BLE_printer &sensor_printer; 
 
+    bool disabled;
+
 public:
     // TODO reference to printer? 
     Sensing(IDistanceSensor &front, IDistanceSensor &right_front, IDistanceSensor &right_center, BLE_printer &printer) : 
                 sensor_front(front),
                 sensor_right_front(right_front),
                 sensor_right_center(right_center),
-                sensor_printer(printer) {};
+                sensor_printer(printer),
+                disabled(false) {};
     
     bool battery_voltage_ok(long currentMillis);
     unsigned int get_side_distance_cm(long currentMillis, unsigned long &right_front_distance_cm, unsigned long &right_center_distance_cm);
     unsigned int get_front_distance_cm(long currentMillis);
+    void disable()
+    {
+        disabled = true; 
+    };
+    void enable()
+    {
+        disabled = false;
+    };
 
 };
 
