@@ -1,6 +1,7 @@
 #include "BLEPackets.h"
+#include "Arduino.h"
 
-size_t BLE_printer::BLE_print_US_data(byte id, unsigned long tick, unsigned long sonar_data)
+size_t BLE_printer::BLE_print_US_data(uint8_t id, unsigned long tick, unsigned long sonar_data)
 {
     sonar_packet_t us_data;
 
@@ -14,7 +15,7 @@ size_t BLE_printer::BLE_print_US_data(byte id, unsigned long tick, unsigned long
     return m_BLE_serial.write((uint8_t*)&us_data, sizeof(us_data));
 }
 
-size_t BLE_printer::BLE_print_status_data(byte id, unsigned long tick, unsigned int battery_adc)
+size_t BLE_printer::BLE_print_status_data(uint8_t id, unsigned long tick, unsigned int battery_adc)
 {
     status_packet_t status_data;
 
@@ -32,9 +33,9 @@ size_t BLE_printer::BLE_print_status_data(byte id, unsigned long tick, unsigned 
 }
 
 // TODO: verify this does not introduce too much delay to control loop
-byte BLE_printer::compute_xor_CRC(const uint8_t *buffer, size_t size)
+uint8_t BLE_printer::compute_xor_CRC(const uint8_t *buffer, size_t size)
 {     
-    byte CRC = 0;
+    uint8_t CRC = 0;
 
     if(size)
     {
