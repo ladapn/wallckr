@@ -4,7 +4,7 @@ bool Sensing::battery_voltage_ok()
 {
     auto battery_voltage_adc = analogRead(SNS_BATTERY_VLTG);
 
-    if(battery_voltage_adc <= BATTERY_CUTTOFF_ADC)
+    if(battery_voltage_adc <= BATTERY_PACK_CUTTOFF_ADC)
     {
         return false;        
     } 

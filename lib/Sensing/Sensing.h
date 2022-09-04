@@ -6,8 +6,12 @@
 class Sensing
 {
     // battery related constants 
-    static const int BATTERY_CELLS = 8;
-    static const int BATTERY_CUTTOFF_ADC = (0.9 / 5 * 1024 * BATTERY_CELLS) / 16;
+    static const int BATTERY_CELL_COUNT = 8;
+    static const int ADC_REFERENCE_V = 5;
+    static const int ADC_MAX = 1023; 
+    static const int VOLTAGE_DIVIDER_FACTOR = 16;
+    static constexpr float BATTERY_CELL_CUTTOFF_V = 0.9f;
+    static const int BATTERY_PACK_CUTTOFF_ADC = (BATTERY_CELL_CUTTOFF_V / ADC_REFERENCE_V * ADC_MAX * BATTERY_CELL_COUNT) / VOLTAGE_DIVIDER_FACTOR;
     static const int SNS_BATTERY_VLTG = A8;
 
     // sonar related constants
