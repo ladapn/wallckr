@@ -69,8 +69,6 @@ void loop() {
   long int lastCommandMillis = 0;
   long int lastStatusMillis = 0;  
   bool automatic_operation_en = true;
-
-  bool battery_led_on = false; 
   
   state_t automatic_state = FOLLOWING;
   
@@ -112,17 +110,8 @@ void loop() {
       {        
         robot_motion.disable();
         robot_sensing.disable();
-       
-        if(battery_led_on)
-        {
-          ledbar.switchLEDoff(LED5);
-          battery_led_on = false;
-        }
-        else
-        {
-          ledbar.switchLEDon(LED5);
-          battery_led_on = true;            
-        }
+                
+        ledbar.toggleBatteryLED();        
       }
       // TODO: else -> enable stuff after some period of battery being ok 
 

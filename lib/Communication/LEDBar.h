@@ -8,7 +8,8 @@ enum leds {LED1 = 24, LED2 = 25, LED3 = 26, LED4 = 27, LED5 = 28};
 class LEDBar
 {
 private:
-    /* data */
+    bool batteryLEDon = false;
+    static const int BATTERY_LED = LED5;
 public:
     LEDBar(/* args */);
     ~LEDBar();
@@ -33,6 +34,21 @@ public:
     {
         // ... PINA = 1 << bit; 
     }*/
+
+    void toggleBatteryLED()
+    {
+        if (batteryLEDon)
+        {
+            batteryLEDon = false;
+            switchLEDoff(BATTERY_LED);
+        }
+        else 
+        {
+            batteryLEDon = true;
+            switchLEDon(BATTERY_LED);
+        }
+
+    }
 
 };
 
