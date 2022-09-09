@@ -68,7 +68,6 @@ void loop() {
 
   long int lastCommandMillis = 0;
   long int lastStatusMillis = 0;  
-  long int currentMillis = 0;
   bool automatic_operation_en = true;
 
   bool battery_led_on = false; 
@@ -102,7 +101,7 @@ void loop() {
 
     robot_motion.set_speed_and_angle(desiredSPD, desiredServo);
     
-    currentMillis = millis();
+    auto currentMillis = millis();
 
     if((currentMillis - lastStatusMillis > STATUS_PRINT_INTERVAL_MS) || first_pass)
     {
@@ -113,7 +112,7 @@ void loop() {
       {        
         robot_motion.disable();
         robot_sensing.disable();
-        
+       
         if(battery_led_on)
         {
           ledbar.switchLEDoff(LED5);
