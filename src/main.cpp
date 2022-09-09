@@ -6,6 +6,7 @@
 #include "LEDBar.h"
 #include "Motion.h"
 #include "Sensing.h"
+#include "TimeManager.h"
 
 // TODO: when BLE signal lost for 5 sec, go to idle
 
@@ -65,9 +66,7 @@ void loop() {
   int desiredSPD = 0;
 
   int desiredServo = SERVO_CENTER;
-
-  long int lastCommandMillis = 0;
-  long int lastStatusMillis = 0;  
+ 
   bool automatic_operation_en = true;
   
   state_t automatic_state = FOLLOWING;
@@ -89,9 +88,9 @@ void loop() {
   ledbar.switchLEDon(LED1);
   ledbar.switchLEDoff(LED2);
 
-  bool first_pass = true; 
-
   BLEJoystickDecoder external_command_decoder(Serial3); 
+
+  TimeManager time_manager; 
 
   while(true)
   {
@@ -101,11 +100,8 @@ void loop() {
     
     auto currentMillis = millis();
 
-    if((currentMillis - lastStatusMillis > STATUS_PRINT_INTERVAL_MS) || first_pass)
-    {
-      first_pass = false; 
-      lastStatusMillis = currentMillis; 
-      
+    if(time_manager.isTimeForStatusCheck(currentMillis))
+    {     
       if(!robot_sensing.battery_voltage_ok(currentMillis))
       {        
         robot_motion.disable();
@@ -118,11 +114,10 @@ void loop() {
       // TODO: check impact on timming of other packets! Could this introduce too much delay to the control loop?      
     }
 
-    if(currentMillis - lastCommandMillis > COMMAND_INTERVAL_MS)
+    if(time_manager.isTimeForAutomaticCommand(currentMillis))
     {
       //automatic_control.get_command()
-      lastCommandMillis = currentMillis;
-               
+                     
       unsigned long front_sonar_cm = robot_sensing.get_front_distance_cm(currentMillis); 
       unsigned long right_front_distance_cm, right_center_distance_cm;
       unsigned long right_sonar_cm = robot_sensing.get_side_distance_cm(currentMillis, right_front_distance_cm, right_center_distance_cm);
