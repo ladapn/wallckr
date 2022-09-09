@@ -19,7 +19,7 @@ class UltraSoundSensor : public IDistanceSensor
     public:
 
     UltraSoundSensor(uint8_t trigger_pin, uint8_t echo_pin, unsigned int max_cm_distance) :  m_max_cm_distance(max_cm_distance) ,
-    m_sonar(trigger_pin, echo_pin, max_cm_distance)
+    m_sonar(trigger_pin, echo_pin, max_cm_distance), m_measurement_raw_cm(0), m_measurement_filtered_cm(0)
     {};
 
     bool trigger_measuremen() override
