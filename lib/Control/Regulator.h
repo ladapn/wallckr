@@ -91,7 +91,7 @@ private:
     const int m_N; 
     T core(T input);
 public:
-    ExpFilter(int N) : m_state(0), m_first_step(true), m_N(N) {};
+    explicit ExpFilter(int N) : m_state(0), m_first_step(true), m_N(N) {};
     T next(T input)
     {
         if(m_first_step)

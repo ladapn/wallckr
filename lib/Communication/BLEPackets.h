@@ -64,7 +64,7 @@ class BLE_printer
 {
     Stream &m_BLE_serial;
 public:
-    BLE_printer(Stream &serial) : m_BLE_serial(serial) {};
+    explicit BLE_printer(Stream &serial) : m_BLE_serial(serial) {};
     size_t BLE_print_US_data(uint8_t id, unsigned long tick, unsigned long sonar_data);
     size_t BLE_print_status_data(uint8_t id, unsigned long tick, unsigned int battery_adc);
     uint8_t compute_xor_CRC(const uint8_t *buffer, size_t size);

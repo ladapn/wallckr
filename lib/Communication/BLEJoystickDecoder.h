@@ -15,7 +15,7 @@ class BLEJoystickDecoder
 
 public: 
 
-    BLEJoystickDecoder(Stream &cmdSerial) : m_cmdSerial(cmdSerial) {};
+    explicit BLEJoystickDecoder(Stream &cmdSerial) : m_cmdSerial(cmdSerial) {};
     bool check_motion_cmd(int &desired_speed, int &desired_servo_angle);
 };
 #endif // BLEJOYSTICKDECODER_H
