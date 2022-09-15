@@ -25,10 +25,6 @@ enum state_t {AVOIDING = 0, FOLLOWING};
 
 const int BRAKE_A = 9;
 
-const int COMMAND_INTERVAL_MS = 100;
-const int STATUS_PRINT_INTERVAL_MS = 1000;
-const int SNS_BATTERY_VLTG = A8;
-
 const int K_GAIN = 5;
 const int RIGHT_DISTANCE_SETPOINT_CM = 25;
 const int INSENSITIV_CM = 2;
@@ -116,7 +112,7 @@ void loop() {
 
     if(time_manager.isTimeForAutomaticCommand(currentMillis))
     {
-      //automatic_control.get_command()
+      //desiredServo = automatic_steering_control.get_command()
                      
       unsigned long front_sonar_cm = robot_sensing.get_front_distance_cm(currentMillis); 
       unsigned long right_front_distance_cm, right_center_distance_cm;
@@ -128,6 +124,7 @@ void loop() {
      
       if(automatic_operation_en)
       {
+        // desiredServo = steering_state_machine.get_command() -> nebo to cely dat do ty zakomentovany metody vyse? 
         switch(automatic_state)
         {
           case FOLLOWING:
