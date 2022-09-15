@@ -42,7 +42,7 @@ On real HW:
 
 
 ## Controlling your Robot
-
+[ovladacka](https://github.com/ladapn/ovladacka) - the official tool to communicate with wallckr
 
 ## Contributing
 In case you would like to fix or improve anything, feel free to create a pull request. 
