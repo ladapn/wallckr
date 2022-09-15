@@ -44,7 +44,7 @@ void setup() {
 
   // Open Serial communication
   Serial.begin(115200);
-  Serial.println("Toy Car Demo:");
+  Serial.println("wallckr");
 
   // set prescaler for Timer 3 (pin 3) to 1 to get 31372.55 Hz
   // TODO: what for?
@@ -54,7 +54,7 @@ void setup() {
   Serial3.begin(115200); // 9600 default 
 
   // Set BLE's name
-  Serial3.write("AT NAMERCcar\r\n");
+  Serial3.write("AT NAMEwallckr\r\n");
 
 }
 
