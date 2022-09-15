@@ -17,6 +17,7 @@ The main purpose of this project is to have fun building such a robot and develo
 - PlatformIO
   - Is used as a build management tool 
   - [Install platformio](https://platformio.org/install) either as a standalone tool or as an extension for your favorite IDE
+    - In case you want to use it as a standalone tool consider adding it to your $PATH: `export PATH=$PATH:$HOME/.platformio/penv/bin`
 - Arduino libraries
   - NOTE: These libraries are defined in `platformio.ini` and platformio downloads them automagically during first build, there is no need to download them manually 
   - [NewPing](https://bitbucket.org/teckel12/arduino-new-ping/wiki/Home)
@@ -42,6 +43,9 @@ On real HW:
 
 ## Controlling your Robot
 
+
 ## Contributing
+In case you would like to fix or improve anything, feel free to create a pull request. 
 
 ## License
+This project is licensed under the MIT license.
