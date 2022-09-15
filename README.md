@@ -6,6 +6,9 @@ The main purpose of this project is to have fun building such a robot and develo
 
 ## Getting Started
 ### Hardware Prerequisities
+Well, this is the tricky part, because you need to have your own wallckr robot and as far as I know there happens to be only one - the one in my possession :) 
+
+Here is at least a list of the main HW components: 
 - Arduino Mega2560 (or compatible)
 - Motor Shield L298P for Arduino 
 - Hitec HS-422 servo
