@@ -1,5 +1,7 @@
 # wallckr
 wallckr stands for **wall** following mobile robot with A**ckr**man steering. In other words, wallckr is a small indoor autonomous vehicle with "car like" steering that goes around your walls.
+ ![wallckr, the robot](./img/wallckr_posing.jpeg)
+
 
 ## Why?
 The main purpose of this project is to have fun building such a robot and developing its code. If anyone got inspired by this to build a similar project, it would be a very nice side effect. 
