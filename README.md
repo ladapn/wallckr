@@ -1,6 +1,9 @@
 # wallckr
 wallckr stands for **wall** following mobile robot with A**ckr**man steering. In other words, wallckr is a small indoor autonomous vehicle with "car like" steering that goes around your walls.
- ![wallckr, the robot](./img/wallckr_posing.jpeg)
+
+<p align="center">
+  <img src="./img/wallckr_posing.jpeg" alt="wallckr, the robot" width="400"/>
+</p>
 
 
 ## Why?
