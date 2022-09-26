@@ -9,6 +9,7 @@
 const int PWM_A   = 3;
 const int DIR_A   = 12;
 const int SERVO_A = 47;
+const int BRAKE_A = 9; 
 
 class Motion
 {
@@ -24,7 +25,14 @@ public:
         m_steering_servo.attach(SERVO_A);
 
         // Direction pin on channel A
-        pinMode(DIR_A, OUTPUT);  
+        pinMode(DIR_A, OUTPUT);
+        
+        // Brake pin on channel A
+        pinMode(BRAKE_A, OUTPUT);  
+
+        // set prescaler for Timer 3 (pin 3) to 1 to get 31372.55 Hz
+        // to get motor PWM from audible range 
+        TCCR3B = (TCCR3B & 0b11111000) | 0x01;  
     }
 
     bool setSpeed(int spd);

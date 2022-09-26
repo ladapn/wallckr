@@ -20,19 +20,10 @@ const int ECHO_PIN_RIGHT_CENTER = 37;
 
 const int MAX_DISTANCE_CM = 200;
 
-const int BRAKE_A = 9; 
-
 void setup() {
-  // Configure the A output
-  pinMode(BRAKE_A, OUTPUT);  // Brake pin on channel A
-
   // Open Serial communication
   Serial.begin(115200);
   Serial.println("wallckr");
-
-  // set prescaler for Timer 3 (pin 3) to 1 to get 31372.55 Hz
-  // TODO: what for?
-  TCCR3B = (TCCR3B & 0b11111000) | 0x01;
 
   // Itialize BLE UART
   Serial3.begin(115200); // 9600 default 
