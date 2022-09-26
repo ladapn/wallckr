@@ -10,16 +10,16 @@
 
 // TODO: when BLE signal lost for 5 sec, go to idle
 
-#define TRIGGER_PIN_FRONT  32  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_PIN_FRONT     33  // Arduino pin tied to echo pin on the ultrasonic sensor.
+const int TRIGGER_PIN_FRONT = 32;  
+const int ECHO_PIN_FRONT = 33; 
 
-#define TRIGGER_PIN_RIGHT_FRONT 34
-#define ECHO_PIN_RIGHT_FRONT    35 
+const int TRIGGER_PIN_RIGHT_FRONT = 34;
+const int ECHO_PIN_RIGHT_FRONT = 35;
 
-#define TRIGGER_PIN_RIGHT_CENTER  36
-#define ECHO_PIN_RIGHT_CENTER     37 
+const int TRIGGER_PIN_RIGHT_CENTER = 36;
+const int ECHO_PIN_RIGHT_CENTER = 37; 
 
-#define MAX_DISTANCE 200 
+const int MAX_DISTANCE_CM = 200;
 
 enum state_t {AVOIDING = 0, FOLLOWING};
 
@@ -73,9 +73,9 @@ void loop() {
 
 // robot_io? -> also contain ledbar
   BLE_printer BLE_out(Serial3); 
-  UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE);
-  UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE);
-  UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE);
+  UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE_CM);
+  UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE_CM);
+  UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE_CM);
 
   Motion robot_motion; 
   Sensing robot_sensing(sonar_front, sonar_right_front, sonar_right_center, BLE_out);
