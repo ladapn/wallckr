@@ -7,8 +7,7 @@
 #include "Motion.h"
 #include "Sensing.h"
 #include "TimeManager.h"
-
-// TODO: when BLE signal lost for 5 sec, go to idle
+#include "AutoSteering.h"
 
 const int TRIGGER_PIN_FRONT = 32;  
 const int ECHO_PIN_FRONT = 33; 
@@ -21,22 +20,7 @@ const int ECHO_PIN_RIGHT_CENTER = 37;
 
 const int MAX_DISTANCE_CM = 200;
 
-enum state_t {AVOIDING = 0, FOLLOWING};
-
-const int BRAKE_A = 9;
-
-const int K_GAIN = 5;
-const int RIGHT_DISTANCE_SETPOINT_CM = 25;
-const int INSENSITIV_CM = 2;
-
-const int TURNING_RADIUS_CM = 15;
-
-// Distance to front obstacle that triggers turning, to end up with desired
-// side distance after the turn, this has to consist of the distance setpoint
-// and turning radius 
-const int AVOIDING_DISTANCE_THR_CM = RIGHT_DISTANCE_SETPOINT_CM + TURNING_RADIUS_CM;
-
-const int AVOIDING_DISTANCE_HYSTERESIS_CM = 20; 
+const int BRAKE_A = 9; 
 
 void setup() {
   // Configure the A output
@@ -63,15 +47,14 @@ void loop() {
 
   int desiredServo = SERVO_CENTER;
  
-  bool automatic_operation_en = true;
-  
-  state_t automatic_state = FOLLOWING;
-  
   const int FILTER_N = 4; 
-  ExpFilter<int> right_sonar_filter(FILTER_N);
+  ExpFilter<int> servo_cmd_filter(FILTER_N);
+  
+  const int K_GAIN = 5;
+  const int RIGHT_DISTANCE_SETPOINT_CM = 25;
+  const int INSENSITIV_CM = 2;
   Regulator_P<int> side_distance_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
 
-// robot_io? -> also contain ledbar
   BLE_printer BLE_out(Serial3); 
   UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE_CM);
   UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE_CM);
@@ -87,6 +70,7 @@ void loop() {
   BLEJoystickDecoder external_command_decoder(Serial3); 
 
   TimeManager time_manager; 
+  AutoSteering wall_following_steering(RIGHT_DISTANCE_SETPOINT_CM, ledbar); 
 
   while(true)
   {
@@ -105,57 +89,19 @@ void loop() {
                 
         ledbar.toggleBatteryLED();        
       }
-      // TODO: else -> enable stuff after some period of battery being ok 
-
-      // TODO: check impact on timming of other packets! Could this introduce too much delay to the control loop?      
+      // TODO: else -> enable stuff after some period of battery being ok      
     }
 
     if(time_manager.isTimeForAutomaticCommand(currentMillis))
-    {
-      //desiredServo = automatic_steering_control.get_command()
-                     
+    {                     
       unsigned long front_sonar_cm = robot_sensing.get_front_distance_cm(currentMillis); 
       unsigned long right_front_distance_cm, right_center_distance_cm;
       unsigned long right_sonar_cm = robot_sensing.get_side_distance_cm(currentMillis, right_front_distance_cm, right_center_distance_cm);
   
-      int servo_cmd = right_sonar_filter.next(side_distance_regulator.action(right_sonar_cm)) + SERVO_CENTER;
+      int servo_cmd = servo_cmd_filter.next(side_distance_regulator.action(right_sonar_cm)) + SERVO_CENTER;
 
-      // Driving state machine
-     
-      if(automatic_operation_en)
-      {
-        // desiredServo = steering_state_machine.get_command() -> nebo to cely dat do ty zakomentovany metody vyse? 
-        switch(automatic_state)
-        {
-          case FOLLOWING:
-            desiredServo = servo_cmd; 
-            
-            if (front_sonar_cm < AVOIDING_DISTANCE_THR_CM || right_front_distance_cm < 15) // Fixme magic constatn 
-            {
-              automatic_state = AVOIDING;
-              // LED 1 on
-              ledbar.switchLEDoff(LED1);
-              ledbar.switchLEDon(LED2);                        
-            }
-          break;
-          case AVOIDING:
-            desiredServo = SERVO_MAX_LEFT;
-
-            if (front_sonar_cm > (AVOIDING_DISTANCE_THR_CM + AVOIDING_DISTANCE_HYSTERESIS_CM)
-                && right_front_distance_cm > (AVOIDING_DISTANCE_THR_CM - 15)) // FIXME magic constant + filtering? 
-            {        
-              
-              automatic_state = FOLLOWING;
-              // LED 2 on
-              ledbar.switchLEDon(LED1);
-              ledbar.switchLEDoff(LED2);
-             
-            }          
-
-          break;
-        }
-      }  
-      
+      // Driving state machine   
+      desiredServo = wall_following_steering.get_steering_command(front_sonar_cm, right_front_distance_cm, servo_cmd);        
     }
   }
 }
