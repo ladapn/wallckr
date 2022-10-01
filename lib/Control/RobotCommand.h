@@ -7,7 +7,7 @@ struct RobotCommand
 {
     int desired_speed = 0;
     int desired_servo_angle = SERVO_CENTER;
-    unsigned enable_automatic_operation = true; 
+    bool enable_automatic_operation = true; 
 
 };
 
