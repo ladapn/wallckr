@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "BLEJoystickDecoder.h"
+#include "ExternalCommandDecoder.h"
 #include "BLEPackets.h"
 #include "Regulator.h"
 #include "UltraSoundSensor.h"
