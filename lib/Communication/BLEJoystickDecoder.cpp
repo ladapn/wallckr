@@ -148,9 +148,9 @@ bool BLEJoystickDecoder::check_external_command(RobotCommand &robot_command)
         case JoystickCommand::UP_TRIANGLE:
           robot_command.desired_servo_angle = SERVO_CENTER;
         break;
-        /*case RIGHT_CIRCLE:
-          //
-        break;*/
+        case JoystickCommand::RIGHT_CIRCLE:
+          robot_command.enable_automatic_operation = !robot_command.enable_automatic_operation;
+        break;
         default:
           robot_command.desired_speed = 0; 
       }

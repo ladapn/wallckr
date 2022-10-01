@@ -26,7 +26,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("wallckr");
 
-  // Itialize BLE UART
+  // Initialize BLE UART
   Serial3.begin(115200); // 9600 default 
 
   // Set BLE's name
@@ -91,8 +91,10 @@ void loop() {
   
       int servo_cmd = servo_cmd_filter.next(side_distance_regulator.action(right_sonar_cm)) + SERVO_CENTER;
 
-      // Driving state machine   
-      robot_command.desired_servo_angle = wall_following_steering.get_steering_command(front_sonar_cm, right_front_distance_cm, servo_cmd);        
+      if(robot_command.enable_automatic_operation)
+      {   
+        robot_command.desired_servo_angle = wall_following_steering.get_steering_command(front_sonar_cm, right_front_distance_cm, servo_cmd);        
+      }
     }
   }
 }
