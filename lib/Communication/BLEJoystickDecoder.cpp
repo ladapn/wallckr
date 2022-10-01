@@ -2,35 +2,35 @@
 #include "MotionConstants.h"
 #include <Arduino.h>
 
-command_t BLEJoystickDecoder::input_to_command(char in)
+RobotCommand BLEJoystickDecoder::input_to_command(char in)
 {
-  command_t command = NO_COMMAND;
+  RobotCommand command = RobotCommand::NO_COMMAND;
 
   switch(in)
   {
     case 'a':
-      command = UP;
+      command = RobotCommand::UP;
     break;
     case 'b':
-      command = RIGHT;
+      command = RobotCommand::RIGHT;
     break;
     case 'c':
-      command = DOWN;
+      command = RobotCommand::DOWN;
     break;
     case 'd':
-      command = LEFT;
+      command = RobotCommand::LEFT;
     break;
     case 'e':
-      command = UP_TRIANGLE;
+      command = RobotCommand::UP_TRIANGLE;
     break;
     case 'f':
-      command = RIGHT_CIRCLE;
+      command = RobotCommand::RIGHT_CIRCLE;
     break;
     case 'g':
-      command = DOWN_X;
+      command = RobotCommand::DOWN_X;
     break;
     case 'h':
-      command = LEFT_SQUARE;
+      command = RobotCommand::LEFT_SQUARE;
     break;
 
   }
@@ -40,10 +40,10 @@ command_t BLEJoystickDecoder::input_to_command(char in)
 
 // decoding commands from BLE joystick Iphone app which sends commands in
 // format "Aa\0" -> Upper case, lower case, zero for each button press ->
-// buttons are labled from A to H
-command_t BLEJoystickDecoder::command_decoder()
+// buttons are labeled from A to H
+RobotCommand BLEJoystickDecoder::BLE_joystick_decoder()
 {
-  command_t command = NO_COMMAND; 
+  RobotCommand command = RobotCommand::NO_COMMAND; 
   char current, prev;
   bool waiting4zero = false;
   const int DIFF_LOWER_UPPER = 'a' - 'A';
@@ -55,7 +55,7 @@ command_t BLEJoystickDecoder::command_decoder()
 
   prev = m_cmdSerial.read();
 
-  while(command == NO_COMMAND) 
+  while(command == RobotCommand::NO_COMMAND) 
   {
     while(!m_cmdSerial.available())
     {
@@ -90,43 +90,9 @@ command_t BLEJoystickDecoder::command_decoder()
   
 }
 
-command_t BLEJoystickDecoder::command_decoder_fast()
+RobotCommand BLEJoystickDecoder::ovladacka_decoder()
 {
-  command_t command = NO_COMMAND; 
-  char current, prev;
-  const int DIFF_LOWER_UPPER = 'a' - 'A';
-
-  while(!m_cmdSerial.available())
-  {
-    ;
-  }
-
-  prev = m_cmdSerial.read();
-
-  while(command == NO_COMMAND) 
-  {
-    while(!m_cmdSerial.available())
-    {
-      ;
-    }
-    
-    current = m_cmdSerial.read();
-    
-    if(current - prev == DIFF_LOWER_UPPER) 
-    {
-      command = input_to_command(current);
-    }
-
-    prev = current; 
-  }
-
-  return command; 
-  
-}
-
-command_t BLEJoystickDecoder::command_decoder_fastest()
-{
-  command_t command = NO_COMMAND; 
+  RobotCommand command = RobotCommand::NO_COMMAND; 
   char current;
   const int DIFF_LOWER_UPPER = 'a' - 'A';
 
@@ -134,7 +100,7 @@ command_t BLEJoystickDecoder::command_decoder_fastest()
   {  
     current = m_cmdSerial.read();
 
-    if(current < 'a') // if upperacase
+    if(current < 'a') // if uppercase
     {
       current += DIFF_LOWER_UPPER;  // make it lower case
     }
@@ -148,37 +114,37 @@ command_t BLEJoystickDecoder::command_decoder_fastest()
 
 bool BLEJoystickDecoder::check_external_command(int &desired_speed, int &desired_servo_angle)
 {
-    auto incomming_cmd = command_decoder_fastest();
+    auto incoming_cmd = ovladacka_decoder();
 
-    if(incomming_cmd != NO_COMMAND)
+    if(incoming_cmd != RobotCommand::NO_COMMAND)
     {
-      switch(incomming_cmd)
+      switch(incoming_cmd)
       {
-        case UP:
+        case RobotCommand::UP:
           if(desired_speed < MAX_SPD)
           {
             desired_speed += SPD_INCREMENT;
           }
         break;
-        case DOWN:
+        case RobotCommand::DOWN:
           if(desired_speed > -MAX_SPD)
           {
             desired_speed -= SPD_INCREMENT;
           }
         break;
-        case RIGHT:
+        case RobotCommand::RIGHT:
           if(desired_servo_angle > SERVO_MIN_RIGHT)
           {
             desired_servo_angle -= SERVO_INCREMENT;
           }
         break;
-        case LEFT:
+        case RobotCommand::LEFT:
           if(desired_servo_angle < SERVO_MAX_LEFT)
           {
             desired_servo_angle += SERVO_INCREMENT;
           }
         break;
-        case UP_TRIANGLE:
+        case RobotCommand::UP_TRIANGLE:
           desired_servo_angle = SERVO_CENTER;
         break;
         /*case RIGHT_CIRCLE:
