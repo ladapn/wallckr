@@ -22,6 +22,7 @@ public:
 
     Motion() : m_prev_speed(0), m_oldServo(SERVO_CENTER), m_disabled(false)
     {
+        Stop();
         m_steering_servo.attach(SERVO_A);
 
         // Direction pin on channel A
