@@ -52,6 +52,8 @@ On real HW:
 ## Controlling your Robot
 [ovladacka](https://github.com/ladapn/ovladacka) - the official tool to communicate with wallckr
 
+NOTE: currently only auto steering (i.e. ability to automatically control angle of front wheels) and enabled by default. Robot speed is zero by default and has to be controlled by ovladacka, auto speed is not implemented. 
+
 ## Contributing
 In case you would like to fix or improve anything, feel free to create a pull request. 
 
