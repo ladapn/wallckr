@@ -1,27 +1,27 @@
 #include "Motion.h"
 
-bool Motion::setSpeed(int spd)
+bool Motion::setSpeed(int speed)
 {
     bool retval = false;
 
-    if (!m_disabled)
+    if (!disabled)
     {
-      if (m_prev_speed != spd)
+      if (prev_speed != speed)
       {
-          m_prev_speed = spd;
+          prev_speed = speed;
 
-          bool motorDirection = HIGH; // HIGH -> forward
+          auto motorDirection = MotorDirection::FORWARD; // HIGH -> forward
 
-          if ((spd <= MAX_SPD) && (spd >= -MAX_SPD))
+          if ((speed <= MAX_SPD) && (speed >= -MAX_SPD))
           {
-              if (spd < 0)
+              if (speed < 0)
               {
-                  motorDirection = LOW;
-                  spd = abs(spd);
+                  motorDirection = MotorDirection::BACKWARD;
+                  speed = abs(speed);
               }
 
-              digitalWrite(DIR_A, motorDirection); // Set motor direction
-              analogWrite(PWM_A, spd);             // Set the speed of the motor, 255 is the maximum value
+              digitalWrite(DIR_A, static_cast<uint8_t>(motorDirection)); // Set motor direction
+              analogWrite(PWM_A, speed);             // Set the speed of the motor, 255 is the maximum value
 
               retval = true;
           }
@@ -35,12 +35,12 @@ bool Motion::setAngle(int angle)
 {
     bool retval = false;
 
-    if (!m_disabled)
+    if (!disabled)
     {
-      if (m_oldServo != angle)
+      if (oldServo != angle)
       {
-          m_oldServo = angle;
-          m_steering_servo.write(angle);
+          oldServo = angle;
+          steering_servo.write(angle);
 
           retval = true;
       }
@@ -49,9 +49,9 @@ bool Motion::setAngle(int angle)
     return retval; 
 }
 
-bool Motion::set_speed_and_angle(int spd, int angle)
+bool Motion::set_speed_and_angle(int speed, int angle)
 {
-    bool retval = setSpeed(spd);
+    bool retval = setSpeed(speed);
     bool retval2 = setAngle(angle);
 
     return retval && retval2; 
