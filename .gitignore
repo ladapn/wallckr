@@ -1,4 +1,6 @@
 .pio/
 .vscode/
+html/
+latex/
 compile_commands.json
 
