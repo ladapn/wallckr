@@ -1,16 +1,17 @@
 #ifndef BLEJOYSTICKDECODER_H
 #define BLEJOYSTICKDECODER_H
 
-class Stream; 
+class Stream;
+struct RobotCommand; 
 
-enum class RobotCommand {NO_COMMAND = 0, UP, RIGHT, DOWN, LEFT, UP_TRIANGLE, RIGHT_CIRCLE, DOWN_X, LEFT_SQUARE }; 
+enum class JoystickCommand { NO_COMMAND = 0, UP, RIGHT, DOWN, LEFT, UP_TRIANGLE, RIGHT_CIRCLE, DOWN_X, LEFT_SQUARE }; 
 
 class BLEJoystickDecoder
 {
     Stream &m_cmdSerial;
-    RobotCommand input_to_command(char in);
-    RobotCommand BLE_joystick_decoder();
-    RobotCommand ovladacka_decoder();
+    JoystickCommand input_to_command(char in);
+    JoystickCommand BLE_joystick_decoder();
+    JoystickCommand ovladacka_decoder();
 
 public: 
 
@@ -21,6 +22,6 @@ public:
      * @param[out] desired_servo_angle desired servo angle (i.e. steering angle) extracted from external command 
      * @return true if there was a command and thus if any of the parameters was updated, false otherwise
      */
-    bool check_external_command(int &desired_speed, int &desired_servo_angle);
+    bool check_external_command(RobotCommand &robot_command);
 };
 #endif // BLEJOYSTICKDECODER_H

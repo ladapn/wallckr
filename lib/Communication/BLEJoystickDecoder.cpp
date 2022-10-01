@@ -1,36 +1,37 @@
 #include "BLEJoystickDecoder.h"
 #include "MotionConstants.h"
+#include "RobotCommand.h"
 #include <Arduino.h>
 
-RobotCommand BLEJoystickDecoder::input_to_command(char in)
+JoystickCommand BLEJoystickDecoder::input_to_command(char in)
 {
-  RobotCommand command = RobotCommand::NO_COMMAND;
+  JoystickCommand command = JoystickCommand::NO_COMMAND;
 
   switch(in)
   {
     case 'a':
-      command = RobotCommand::UP;
+      command = JoystickCommand::UP;
     break;
     case 'b':
-      command = RobotCommand::RIGHT;
+      command = JoystickCommand::RIGHT;
     break;
     case 'c':
-      command = RobotCommand::DOWN;
+      command = JoystickCommand::DOWN;
     break;
     case 'd':
-      command = RobotCommand::LEFT;
+      command = JoystickCommand::LEFT;
     break;
     case 'e':
-      command = RobotCommand::UP_TRIANGLE;
+      command = JoystickCommand::UP_TRIANGLE;
     break;
     case 'f':
-      command = RobotCommand::RIGHT_CIRCLE;
+      command = JoystickCommand::RIGHT_CIRCLE;
     break;
     case 'g':
-      command = RobotCommand::DOWN_X;
+      command = JoystickCommand::DOWN_X;
     break;
     case 'h':
-      command = RobotCommand::LEFT_SQUARE;
+      command = JoystickCommand::LEFT_SQUARE;
     break;
 
   }
@@ -41,9 +42,9 @@ RobotCommand BLEJoystickDecoder::input_to_command(char in)
 // decoding commands from BLE joystick Iphone app which sends commands in
 // format "Aa\0" -> Upper case, lower case, zero for each button press ->
 // buttons are labeled from A to H
-RobotCommand BLEJoystickDecoder::BLE_joystick_decoder()
+JoystickCommand BLEJoystickDecoder::BLE_joystick_decoder()
 {
-  RobotCommand command = RobotCommand::NO_COMMAND; 
+  JoystickCommand command = JoystickCommand::NO_COMMAND; 
   char current, prev;
   bool waiting4zero = false;
   const int DIFF_LOWER_UPPER = 'a' - 'A';
@@ -55,7 +56,7 @@ RobotCommand BLEJoystickDecoder::BLE_joystick_decoder()
 
   prev = m_cmdSerial.read();
 
-  while(command == RobotCommand::NO_COMMAND) 
+  while(command == JoystickCommand::NO_COMMAND) 
   {
     while(!m_cmdSerial.available())
     {
@@ -90,9 +91,9 @@ RobotCommand BLEJoystickDecoder::BLE_joystick_decoder()
   
 }
 
-RobotCommand BLEJoystickDecoder::ovladacka_decoder()
+JoystickCommand BLEJoystickDecoder::ovladacka_decoder()
 {
-  RobotCommand command = RobotCommand::NO_COMMAND; 
+  JoystickCommand command = JoystickCommand::NO_COMMAND; 
   char current;
   const int DIFF_LOWER_UPPER = 'a' - 'A';
 
@@ -112,46 +113,46 @@ RobotCommand BLEJoystickDecoder::ovladacka_decoder()
   
 }
 
-bool BLEJoystickDecoder::check_external_command(int &desired_speed, int &desired_servo_angle)
+bool BLEJoystickDecoder::check_external_command(RobotCommand &robot_command)
 {
     auto incoming_cmd = ovladacka_decoder();
 
-    if(incoming_cmd != RobotCommand::NO_COMMAND)
+    if(incoming_cmd != JoystickCommand::NO_COMMAND)
     {
       switch(incoming_cmd)
       {
-        case RobotCommand::UP:
-          if(desired_speed < MAX_SPD)
+        case JoystickCommand::UP:
+          if(robot_command.desired_speed < MAX_SPD)
           {
-            desired_speed += SPD_INCREMENT;
+            robot_command.desired_speed += SPD_INCREMENT;
           }
         break;
-        case RobotCommand::DOWN:
-          if(desired_speed > -MAX_SPD)
+        case JoystickCommand::DOWN:
+          if(robot_command.desired_speed > -MAX_SPD)
           {
-            desired_speed -= SPD_INCREMENT;
+            robot_command.desired_speed -= SPD_INCREMENT;
           }
         break;
-        case RobotCommand::RIGHT:
-          if(desired_servo_angle > SERVO_MIN_RIGHT)
+        case JoystickCommand::RIGHT:
+          if(robot_command.desired_servo_angle > SERVO_MIN_RIGHT)
           {
-            desired_servo_angle -= SERVO_INCREMENT;
+            robot_command.desired_servo_angle -= SERVO_INCREMENT;
           }
         break;
-        case RobotCommand::LEFT:
-          if(desired_servo_angle < SERVO_MAX_LEFT)
+        case JoystickCommand::LEFT:
+          if(robot_command.desired_servo_angle < SERVO_MAX_LEFT)
           {
-            desired_servo_angle += SERVO_INCREMENT;
+            robot_command.desired_servo_angle += SERVO_INCREMENT;
           }
         break;
-        case RobotCommand::UP_TRIANGLE:
-          desired_servo_angle = SERVO_CENTER;
+        case JoystickCommand::UP_TRIANGLE:
+          robot_command.desired_servo_angle = SERVO_CENTER;
         break;
         /*case RIGHT_CIRCLE:
           //
         break;*/
         default:
-          desired_speed = 0; 
+          robot_command.desired_speed = 0; 
       }
     }
     else

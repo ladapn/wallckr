@@ -8,6 +8,7 @@
 #include "Sensing.h"
 #include "TimeManager.h"
 #include "AutoSteering.h"
+#include "RobotCommand.h"
 
 const int TRIGGER_PIN_FRONT = 32;  
 const int ECHO_PIN_FRONT = 33; 
@@ -34,9 +35,6 @@ void setup() {
 }
 
 void loop() {
-  int desiredSPD = 0;
-
-  int desiredServo = SERVO_CENTER;
  
   const int FILTER_N = 4; 
   ExpFilter<int> servo_cmd_filter(FILTER_N);
@@ -63,11 +61,13 @@ void loop() {
   TimeManager time_manager; 
   AutoSteering wall_following_steering(RIGHT_DISTANCE_SETPOINT_CM, ledbar); 
 
+  RobotCommand robot_command; 
+
   while(true)
   {
-    external_command_decoder.check_external_command(desiredSPD, desiredServo);
+    external_command_decoder.check_external_command(robot_command);
 
-    robot_motion.set_speed_and_angle(desiredSPD, desiredServo);
+    robot_motion.set_speed_and_angle(robot_command.desired_speed, robot_command.desired_servo_angle);
     
     auto currentMillis = millis();
 
@@ -92,7 +92,7 @@ void loop() {
       int servo_cmd = servo_cmd_filter.next(side_distance_regulator.action(right_sonar_cm)) + SERVO_CENTER;
 
       // Driving state machine   
-      desiredServo = wall_following_steering.get_steering_command(front_sonar_cm, right_front_distance_cm, servo_cmd);        
+      robot_command.desired_servo_angle = wall_following_steering.get_steering_command(front_sonar_cm, right_front_distance_cm, servo_cmd);        
     }
   }
 }
