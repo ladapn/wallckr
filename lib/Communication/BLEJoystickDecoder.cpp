@@ -3,7 +3,7 @@
 #include "RobotCommand.h"
 #include <Arduino.h>
 
-JoystickCommand BLEJoystickDecoder::input_to_command(char in)
+JoystickCommand ExternalCommandDecoder::input_to_joystick_command(char in)
 {
   JoystickCommand command = JoystickCommand::NO_COMMAND;
 
@@ -42,7 +42,7 @@ JoystickCommand BLEJoystickDecoder::input_to_command(char in)
 // decoding commands from BLE joystick Iphone app which sends commands in
 // format "Aa\0" -> Upper case, lower case, zero for each button press ->
 // buttons are labeled from A to H
-JoystickCommand BLEJoystickDecoder::BLE_joystick_decoder()
+JoystickCommand ExternalCommandDecoder::BLE_joystick_decoder()
 {
   JoystickCommand command = JoystickCommand::NO_COMMAND; 
   char current, prev;
@@ -66,18 +66,15 @@ JoystickCommand BLEJoystickDecoder::BLE_joystick_decoder()
     current = m_cmdSerial.read();
 
     if(waiting4zero)
-    {
-
-      
+    {      
       if(current == 0)
       {
-        command = input_to_command(prev);
+        command = input_to_joystick_command(prev);
       }
       else
       {
         waiting4zero = false;
-      }
-      
+      }      
     }
     else if(current - prev == DIFF_LOWER_UPPER) 
     {
@@ -91,7 +88,7 @@ JoystickCommand BLEJoystickDecoder::BLE_joystick_decoder()
   
 }
 
-JoystickCommand BLEJoystickDecoder::ovladacka_decoder()
+JoystickCommand ExternalCommandDecoder::ovladacka_decoder()
 {
   JoystickCommand command = JoystickCommand::NO_COMMAND; 
   char current;
@@ -106,14 +103,14 @@ JoystickCommand BLEJoystickDecoder::ovladacka_decoder()
       current += DIFF_LOWER_UPPER;  // make it lower case
     }
     
-    command = input_to_command(current);
+    command = input_to_joystick_command(current);
   }
 
   return command; 
   
 }
 
-bool BLEJoystickDecoder::check_external_command(RobotCommand &robot_command)
+bool ExternalCommandDecoder::check_external_command(RobotCommand &robot_command)
 {
     auto incoming_cmd = ovladacka_decoder();
 

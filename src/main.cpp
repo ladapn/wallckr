@@ -10,90 +10,91 @@
 #include "AutoSteering.h"
 #include "RobotCommand.h"
 
-const int TRIGGER_PIN_FRONT = 32;  
-const int ECHO_PIN_FRONT = 33; 
+const int TRIGGER_PIN_FRONT = 32;
+const int ECHO_PIN_FRONT = 33;
 
 const int TRIGGER_PIN_RIGHT_FRONT = 34;
 const int ECHO_PIN_RIGHT_FRONT = 35;
 
 const int TRIGGER_PIN_RIGHT_CENTER = 36;
-const int ECHO_PIN_RIGHT_CENTER = 37; 
+const int ECHO_PIN_RIGHT_CENTER = 37;
 
 const int MAX_DISTANCE_CM = 200;
 
-void setup() {
+void setup()
+{
   // Open Serial communication
   Serial.begin(115200);
   Serial.println("wallckr");
 
   // Initialize BLE UART
-  Serial3.begin(115200); // 9600 default 
+  Serial3.begin(115200); // 9600 default
 
   // Set BLE's name
   Serial3.write("AT NAMEwallckr\r\n");
-
 }
 
-void loop() {
- 
-  const int FILTER_N = 4; 
+void loop()
+{
+
+  const int FILTER_N = 4;
   ExpFilter<int> servo_cmd_filter(FILTER_N);
-  
+
   const int K_GAIN = 5;
   const int RIGHT_DISTANCE_SETPOINT_CM = 25;
   const int INSENSITIV_CM = 2;
   Regulator_P<int> side_distance_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
 
-  BLE_printer BLE_out(Serial3); 
+  BLE_printer BLE_out(Serial3);
   UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE_CM);
   UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE_CM);
   UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE_CM);
 
-  Motion robot_motion; 
+  Motion robot_motion;
   Sensing robot_sensing(sonar_front, sonar_right_front, sonar_right_center, BLE_out);
 
   LEDBar ledbar;
   ledbar.switchLEDon(LED1);
   ledbar.switchLEDoff(LED2);
 
-  BLEJoystickDecoder external_command_decoder(Serial3); 
+  ExternalCommandDecoder external_command_decoder(Serial3);
 
-  TimeManager time_manager; 
-  AutoSteering wall_following_steering(RIGHT_DISTANCE_SETPOINT_CM, ledbar); 
+  TimeManager time_manager;
+  AutoSteering wall_following_steering(RIGHT_DISTANCE_SETPOINT_CM, ledbar);
 
-  RobotCommand robot_command; 
+  RobotCommand robot_command;
 
-  while(true)
+  while (true)
   {
     external_command_decoder.check_external_command(robot_command);
 
     robot_motion.set_speed_and_angle(robot_command.desired_speed, robot_command.desired_servo_angle);
-    
+
     auto currentMillis = millis();
 
-    if(time_manager.isTimeForStatusCheck(currentMillis))
-    {     
-      if(!robot_sensing.battery_voltage_ok(currentMillis))
-      {        
+    if (time_manager.isTimeForStatusCheck(currentMillis))
+    {
+      if (!robot_sensing.battery_voltage_ok(currentMillis))
+      {
         robot_motion.disable();
         robot_sensing.disable();
-                
-        ledbar.toggleBatteryLED();        
+
+        ledbar.toggleBatteryLED();
       }
-      // TODO: else -> enable stuff after some period of battery being ok      
+      // TODO: else -> enable stuff after some period of battery being ok
     }
 
-    if(time_manager.isTimeForAutomaticCommand(currentMillis))
-    {                     
-      unsigned long front_sonar_cm = robot_sensing.get_front_distance_cm(currentMillis); 
+    if (time_manager.isTimeForAutomaticCommand(currentMillis))
+    {
+      unsigned long front_sonar_cm = robot_sensing.get_front_distance_cm(currentMillis);
       unsigned long right_front_distance_cm, right_center_distance_cm;
       unsigned long right_sonar_cm = robot_sensing.get_side_distance_cm(currentMillis, right_front_distance_cm, right_center_distance_cm);
-  
+
       int servo_cmd = servo_cmd_filter.next(side_distance_regulator.action(right_sonar_cm)) + SERVO_CENTER;
 
-      if(robot_command.enable_automatic_operation)
-      {   
-        robot_command.desired_servo_angle = wall_following_steering.get_steering_command(front_sonar_cm, right_front_distance_cm, servo_cmd);        
+      if (robot_command.enable_automatic_operation)
+      {
+        robot_command.desired_servo_angle = wall_following_steering.get_steering_command(front_sonar_cm, right_front_distance_cm, servo_cmd);
       }
     }
   }

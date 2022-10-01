@@ -1,21 +1,27 @@
-#ifndef BLEJOYSTICKDECODER_H
-#define BLEJOYSTICKDECODER_H
+#ifndef EXTERNAL_COMMAND_DECODER_H
+#define EXTERNAL_COMMAND_DECODER_H
 
 class Stream;
 struct RobotCommand; 
 
 enum class JoystickCommand { NO_COMMAND = 0, UP, RIGHT, DOWN, LEFT, UP_TRIANGLE, RIGHT_CIRCLE, DOWN_X, LEFT_SQUARE }; 
 
-class BLEJoystickDecoder
+class ExternalCommandDecoder // ExternalCommandDecoder
 {
     Stream &m_cmdSerial;
-    JoystickCommand input_to_command(char in);
+    // InputStreamParser &input_decoder
+    JoystickCommand input_to_joystick_command(char in);
     JoystickCommand BLE_joystick_decoder();
     JoystickCommand ovladacka_decoder();
+    
 
 public: 
 
-    explicit BLEJoystickDecoder(Stream &cmdSerial) : m_cmdSerial(cmdSerial) {};
+    /**
+     * Constructor method
+     * @param[in] cmdSerial stream used as a source for incoming commands
+     */
+    explicit ExternalCommandDecoder(Stream &cmdSerial) : m_cmdSerial(cmdSerial) {};
     /**
      * Check if external command is present, if so, parse it and update impacted field of robot_command structure
      * @param[out] robot_command structure to hold extracted robot command (desired speed, steering angle etc)
@@ -23,4 +29,4 @@ public:
      */
     bool check_external_command(RobotCommand &robot_command);
 };
-#endif // BLEJOYSTICKDECODER_H
+#endif // EXTERNAL_COMMAND_DECODER_H
