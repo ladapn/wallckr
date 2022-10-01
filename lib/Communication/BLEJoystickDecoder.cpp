@@ -146,9 +146,9 @@ command_t BLEJoystickDecoder::command_decoder_fastest()
   
 }
 
-bool BLEJoystickDecoder::check_motion_cmd(int &desired_speed, int &desired_servo_angle)
+bool BLEJoystickDecoder::check_external_command(int &desired_speed, int &desired_servo_angle)
 {
-    command_t incomming_cmd = command_decoder_fastest();
+    auto incomming_cmd = command_decoder_fastest();
 
     if(incomming_cmd != NO_COMMAND)
     {
@@ -181,9 +181,16 @@ bool BLEJoystickDecoder::check_motion_cmd(int &desired_speed, int &desired_servo
         case UP_TRIANGLE:
           desired_servo_angle = SERVO_CENTER;
         break;
+        /*case RIGHT_CIRCLE:
+          //
+        break;*/
         default:
           desired_speed = 0; 
       }
+    }
+    else
+    {
+      return false; 
     }
 
     return true; 

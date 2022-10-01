@@ -65,7 +65,7 @@ void loop() {
 
   while(true)
   {
-    external_command_decoder.check_motion_cmd(desiredSPD, desiredServo);
+    external_command_decoder.check_external_command(desiredSPD, desiredServo);
 
     robot_motion.set_speed_and_angle(desiredSPD, desiredServo);
     
