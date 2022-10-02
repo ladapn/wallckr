@@ -9,6 +9,7 @@
 #include "TimeManager.h"
 #include "AutoSteering.h"
 #include "RobotCommand.h"
+#include "OvladackaParser.h"
 
 const int TRIGGER_PIN_FRONT = 32;
 const int ECHO_PIN_FRONT = 33;
@@ -57,7 +58,8 @@ void loop()
   ledbar.switchLEDon(LED1);
   ledbar.switchLEDoff(LED2);
 
-  ExternalCommandDecoder external_command_decoder(Serial3);
+  OvladackaParser ovladacka_parser;
+  ExternalCommandDecoder external_command_decoder(Serial3, ovladacka_parser);
 
   TimeManager time_manager;
   AutoSteering wall_following_steering(RIGHT_DISTANCE_SETPOINT_CM, ledbar);
