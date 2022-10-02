@@ -5,20 +5,20 @@ class Stream;
 class InputStreamParser;
 struct RobotCommand; 
 
-
+/**
+ * Class to decode input binary stream into command in RobotCommand struct format
+ */
 class ExternalCommandDecoder
 {
-
-    Stream &m_cmdSerial;
+    Stream &cmd_stream;
     InputStreamParser &input_decoder;
-    
 
 public: 
     /**
      * Constructor method
      * @param[in] cmdSerial stream used as a source for incoming commands
      */
-    explicit ExternalCommandDecoder(Stream &cmdSerial, InputStreamParser &in_parser) : m_cmdSerial(cmdSerial), input_decoder(in_parser) {};
+    explicit ExternalCommandDecoder(Stream &in_stream, InputStreamParser &in_parser) : cmd_stream(in_stream), input_decoder(in_parser) {};
     /**
      * Check if external command is present, if so, parse it and update impacted field of robot_command structure
      * @param[out] robot_command structure to hold extracted robot command (desired speed, steering angle etc)

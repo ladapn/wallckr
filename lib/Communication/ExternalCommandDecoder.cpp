@@ -7,7 +7,7 @@
 
 bool ExternalCommandDecoder::check_external_command(RobotCommand &robot_command)
 {
-    auto incoming_cmd = input_decoder.decode(m_cmdSerial);
+    auto incoming_cmd = input_decoder.decode(cmd_stream);
 
     if(incoming_cmd != JoystickCommand::NO_COMMAND)
     {
