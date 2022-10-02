@@ -2,7 +2,6 @@
 #include "MotionConstants.h"
 #include "RobotCommand.h"
 #include "InputStreamParser.h"
-#include <Arduino.h>
 
 
 bool ExternalCommandDecoder::check_external_command(RobotCommand &robot_command)
