@@ -38,7 +38,7 @@ public:
      */ 
     virtual int read(void) override
     {
-        if (buffer_index < buffer_len_max)
+        if (buffer_index < data_len)
         {
             return buffer[buffer_index++];
         }
