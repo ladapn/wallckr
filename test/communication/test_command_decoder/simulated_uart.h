@@ -34,7 +34,7 @@ public:
     }
 
     /**
-     * Read next character from internal buffer, if end of buffer is reached, return 0
+     * Read next character from internal buffer, if end of data in buffer is reached, return 0
      */ 
     virtual int read(void) override
     {
