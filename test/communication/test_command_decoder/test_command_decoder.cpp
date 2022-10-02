@@ -71,7 +71,7 @@ void test_check_external_command_angle_ovladacka(void)
 void test_check_external_command_speed_BLE_joy(void)
 {
     BLEJoystickDecoder in_parser;
-    char in_data[] = "Aa0"; // Command to increase speed in BLE Joystick format
+    char in_data[] = "Aa\0"; // Command to increase speed in BLE Joystick format
     SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
     ExternalCommandDecoder ext_comm_dec(sim_uart, in_parser);
 
@@ -88,7 +88,7 @@ void test_check_external_command_speed_BLE_joy(void)
 void test_check_external_command_angle_BLE_joy(void)
 {
     OvladackaParser in_parser;
-    char in_data[] = "Bb0"; // Command to decrease servo angle in BLE Joystick format
+    char in_data[] = "Bb\0"; // Command to decrease servo angle in BLE Joystick format
     SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
     ExternalCommandDecoder ext_comm_dec(sim_uart, in_parser);
 
@@ -108,10 +108,10 @@ int main( int argc, char **argv) {
    
     RUN_TEST(test_simulated_uart);
     RUN_TEST(test_check_external_command_speed_ovladacka);
-    //RUN_TEST(test_check_external_command_angle_ovladacka);
+    RUN_TEST(test_check_external_command_angle_ovladacka);
 
-    //RUN_TEST(test_check_external_command_speed_BLE_joy);
-    //RUN_TEST(test_check_external_command_angle_BLE_joy);
+    RUN_TEST(test_check_external_command_speed_BLE_joy);
+    RUN_TEST(test_check_external_command_angle_BLE_joy);
     
     UNITY_END();
 
