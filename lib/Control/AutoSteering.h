@@ -3,7 +3,9 @@
 #include "LEDBar.h"
 #include "MotionConstants.h"
 #include "Regulator.h"
+#include "IFilter.h"
 
+template <typename T>
 class AutoSteering
 {     
     const int TURNING_RADIUS_CM = 15;   
@@ -14,11 +16,11 @@ class AutoSteering
     enum class SteeringState {AVOIDING = 0, FOLLOWING};
     SteeringState automatic_state = SteeringState::FOLLOWING;
     LEDBar &ledbar;
-    Regulator<int> &side_distance_regulator;
-    ExpFilter<int> &servo_cmd_filter;
+    Regulator<T> &side_distance_regulator;
+    IFilter<T> &servo_cmd_filter;
 
 public:
-    AutoSteering(int side_distance_setpoint_cm, LEDBar &ldbar, Regulator<int> &side_regulator, ExpFilter<int> &servo_flt) : ledbar(ldbar), 
+    AutoSteering(int side_distance_setpoint_cm, LEDBar &ldbar, Regulator<T> &side_regulator, IFilter<T> &servo_flt) : ledbar(ldbar), 
     side_distance_regulator(side_regulator),
     servo_cmd_filter(servo_flt)
     {

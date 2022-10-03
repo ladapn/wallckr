@@ -3,7 +3,7 @@
 
 #include <NewPing.h>
 #include "IDistanceSensor.h"
-#include "Regulator.h"
+#include "ExpFilter.h"
 
 class UltraSoundSensor : public IDistanceSensor
 {
@@ -22,7 +22,7 @@ class UltraSoundSensor : public IDistanceSensor
     m_sonar(trigger_pin, echo_pin, max_cm_distance)
     {};
 
-    bool trigger_measuremen() override
+    bool trigger_measurement() override
     {
         m_measurement_raw_cm = m_sonar.ping_cm();
         
@@ -37,14 +37,14 @@ class UltraSoundSensor : public IDistanceSensor
     
     unsigned long get_distance_raw_cm() override
     {
-        trigger_measuremen();
+        trigger_measurement();
 
         return m_measurement_raw_cm;
     }
     
     unsigned long get_distance_filtered_cm() override
     {
-        trigger_measuremen();
+        trigger_measurement();
 
         m_measurement_filtered_cm = m_sonar_filter.next(m_measurement_raw_cm);
 

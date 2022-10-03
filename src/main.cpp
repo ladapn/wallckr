@@ -59,7 +59,7 @@ void loop()
   ExternalCommandDecoder external_command_decoder(Serial3, ovladacka_parser);
 
   TimeManager time_manager;
-  AutoSteering wall_following_steering(RIGHT_DISTANCE_SETPOINT_CM, ledbar, side_distance_regulator, servo_cmd_filter);
+  AutoSteering<int> wall_following_steering(RIGHT_DISTANCE_SETPOINT_CM, ledbar, side_distance_regulator, servo_cmd_filter);
 
   RobotCommand robot_command;
 

@@ -1,7 +1,7 @@
 #include <unity.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
-#include "Regulator.h"
+#include "ExpFilter.h"
 
 void setUp(void) {
     // set stuff up here
