@@ -10,6 +10,7 @@ class AutoSteering
 {     
     const int TURNING_RADIUS_CM = 15;   
     unsigned int AVOIDING_DISTANCE_THR_CM;
+    const unsigned int AVOIDING_DISTANCE_RIGHT_FRONT_THR_CM = 15;
 
     const int AVOIDING_DISTANCE_HYSTERESIS_CM = 20;
 
@@ -43,7 +44,8 @@ public:
         {
             case SteeringState::FOLLOWING:
             
-            if (distance_measurements.front_distance_cm < AVOIDING_DISTANCE_THR_CM || distance_measurements.right_front_distance_cm < 15) // Fixme magic constatn 
+            if (distance_measurements.front_distance_cm < AVOIDING_DISTANCE_THR_CM || 
+            distance_measurements.right_front_distance_cm < AVOIDING_DISTANCE_RIGHT_FRONT_THR_CM) 
             {
                 automatic_state = SteeringState::AVOIDING;
                 // LED 1 on
@@ -55,7 +57,7 @@ public:
             desired_servo = SERVO_MAX_LEFT;
 
             if (distance_measurements.front_distance_cm > (AVOIDING_DISTANCE_THR_CM + AVOIDING_DISTANCE_HYSTERESIS_CM)
-                && distance_measurements.right_front_distance_cm > (AVOIDING_DISTANCE_THR_CM - 15)) // FIXME magic constant + filtering? 
+                && distance_measurements.right_front_distance_cm > (AVOIDING_DISTANCE_THR_CM - AVOIDING_DISTANCE_RIGHT_FRONT_THR_CM)) 
             {        
                 
                 automatic_state = SteeringState::FOLLOWING;
