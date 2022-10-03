@@ -3,7 +3,7 @@
 
 #include "UltraSoundSensor.h"
 
-class BLE_printer;
+class RobotPrinter;
 
 /**
  * Structure grouping all possible types of distance measurements, namely 
@@ -39,7 +39,7 @@ class Sensing
     IDistanceSensor &sensor_right_front; 
     IDistanceSensor &sensor_right_center;
 
-    BLE_printer &sensor_printer; 
+    RobotPrinter &sensor_printer; 
 
     bool disabled;
 
@@ -51,7 +51,7 @@ public:
      * @param[in] right_center reference to right center sensor (90 deg from front direction)
      * @param[in] printer reference to serial interface which is used to send out measured data 
      */
-    Sensing(IDistanceSensor &front, IDistanceSensor &right_front, IDistanceSensor &right_center, BLE_printer &printer) : 
+    Sensing(IDistanceSensor &front, IDistanceSensor &right_front, IDistanceSensor &right_center, RobotPrinter &printer) : 
                 sensor_front(front),
                 sensor_right_front(right_front),
                 sensor_right_center(right_center),

@@ -1,7 +1,7 @@
 #include "BLEPackets.h"
 #include "Arduino.h"
 
-size_t BLE_printer::BLE_print_US_data(uint8_t id, unsigned long tick, unsigned long sonar_data)
+size_t RobotPrinter::BLE_print_US_data(uint8_t id, unsigned long tick, unsigned long sonar_data)
 {
     SonarPacket us_data;
 
@@ -12,10 +12,10 @@ size_t BLE_printer::BLE_print_US_data(uint8_t id, unsigned long tick, unsigned l
     // TODO add CRC_and_send function
     us_data.crc = compute_xor_CRC((uint8_t*)&us_data, sizeof(us_data));
     
-    return m_BLE_serial.write((uint8_t*)&us_data, sizeof(us_data));
+    return robot_serial.write((uint8_t*)&us_data, sizeof(us_data));
 }
 
-size_t BLE_printer::BLE_print_status_data(uint8_t id, unsigned long tick, unsigned int battery_adc)
+size_t RobotPrinter::BLE_print_status_data(uint8_t id, unsigned long tick, unsigned int battery_adc)
 {
     StatusPacket status_data;
 
@@ -29,11 +29,11 @@ size_t BLE_printer::BLE_print_status_data(uint8_t id, unsigned long tick, unsign
     // TODO add CRC computation
     status_data.crc = compute_xor_CRC((uint8_t*)&status_data, sizeof(status_data));
     
-    return m_BLE_serial.write((uint8_t*)&status_data, sizeof(status_data));
+    return robot_serial.write((uint8_t*)&status_data, sizeof(status_data));
 }
 
 // TODO: verify this does not introduce too much delay to control loop
-uint8_t BLE_printer::compute_xor_CRC(const uint8_t *buffer, size_t size)
+uint8_t RobotPrinter::compute_xor_CRC(const uint8_t *buffer, size_t size)
 {     
     uint8_t CRC = 0;
 
