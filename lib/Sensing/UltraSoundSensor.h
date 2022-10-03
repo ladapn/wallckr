@@ -5,6 +5,9 @@
 #include "IDistanceSensor.h"
 #include "ExpFilter.h"
 
+/**
+ * Class representing ultrasound distance sensor, implements IDistanceSensor
+ */
 class UltraSoundSensor : public IDistanceSensor
 {
     unsigned long m_measurement_raw_cm = 0;
@@ -22,6 +25,10 @@ class UltraSoundSensor : public IDistanceSensor
     m_sonar(trigger_pin, echo_pin, max_cm_distance)
     {};
 
+    /**
+     * Command sensor to measure distance
+     * @return always true, reserved for future use
+     */
     bool trigger_measurement() override
     {
         m_measurement_raw_cm = m_sonar.ping_cm();
@@ -35,6 +42,10 @@ class UltraSoundSensor : public IDistanceSensor
         return true;
     }
     
+    /**
+     * Command sensor to measure distance and return unfiltered measurement
+     * @return unfiltered distance measurement in cm
+     */
     unsigned long get_distance_raw_cm() override
     {
         trigger_measurement();
@@ -42,6 +53,10 @@ class UltraSoundSensor : public IDistanceSensor
         return m_measurement_raw_cm;
     }
     
+    /**
+     * Command sensor to measure distance and return filtered measurement
+     * @return filtered distance measurement in cm
+     */
     unsigned long get_distance_filtered_cm() override
     {
         trigger_measurement();

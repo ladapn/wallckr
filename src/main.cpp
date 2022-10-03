@@ -14,14 +14,15 @@
 
 void setup()
 {
-  // Open Serial communication
+  // Initialize serial communication representing wired UART over USB connection
   Serial.begin(115200);
   Serial.println("wallckr");
 
-  // Initialize BLE UART
+  // Initialize serial communication representing wireless Bluetooth Low Energy (BLE) connection
+  // BLE module is connected to Serial3
   Serial3.begin(115200); // 9600 default
 
-  // Set BLE's name
+  // Issue AT command to set BLE module name to "wallckr"
   Serial3.write("AT NAMEwallckr\r\n");
 }
 

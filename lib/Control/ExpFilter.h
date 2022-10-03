@@ -3,6 +3,9 @@
 
 #include "IFilter.h"
 
+/**
+ * Class implementing exponential filter template
+ */
 template <typename T> class ExpFilter : public IFilter<T>
 {
 private:
@@ -12,6 +15,11 @@ private:
     T core(T input);
 public:
     explicit ExpFilter(int N) : m_state(0), m_first_step(true), m_N(N) {};
+    /**
+     * Get next filter output value
+     * @param[in] input filters input for current step
+     * @return filter output value for next step
+     */
     T next(T input)
     {
         if(m_first_step)
