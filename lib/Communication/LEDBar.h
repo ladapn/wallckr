@@ -61,7 +61,8 @@ LEDBar::LEDBar(/* args */)
     pinMode(LED4, OUTPUT);
     pinMode(LED5, OUTPUT);
 
-    digitalWrite(LED1, 1);
+    // Default state - first LED on, others off
+    digitalWrite(LED1, 0);
     digitalWrite(LED2, 1);
     digitalWrite(LED3, 1);
     digitalWrite(LED4, 1);

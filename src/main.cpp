@@ -55,8 +55,6 @@ void loop()
   Sensing robot_sensing(sonar_front, sonar_right_front, sonar_right_center, BLE_out);
 
   LEDBar ledbar;
-  ledbar.switchLEDon(LED1);
-  ledbar.switchLEDoff(LED2);
 
   OvladackaParser ovladacka_parser;
   ExternalCommandDecoder external_command_decoder(Serial3, ovladacka_parser);
