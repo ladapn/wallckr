@@ -13,15 +13,15 @@ bool ExternalCommandDecoder::check_external_command(RobotCommand &robot_command)
       switch(incoming_cmd)
       {
         case JoystickCommand::UP:
-          if(robot_command.desired_speed < MAX_SPD)
+          if(robot_command.desired_speed < MAX_SPEED)
           {
-            robot_command.desired_speed += SPD_INCREMENT;
+            robot_command.desired_speed += SPEED_INCREMENT;
           }
         break;
         case JoystickCommand::DOWN:
-          if(robot_command.desired_speed > -MAX_SPD)
+          if(robot_command.desired_speed > -MAX_SPEED)
           {
-            robot_command.desired_speed -= SPD_INCREMENT;
+            robot_command.desired_speed -= SPEED_INCREMENT;
           }
         break;
         case JoystickCommand::RIGHT:

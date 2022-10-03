@@ -12,7 +12,7 @@ bool Motion::setSpeed(int speed)
 
           auto motorDirection = MotorDirection::FORWARD; // HIGH -> forward
 
-          if ((speed <= MAX_SPD) && (speed >= -MAX_SPD))
+          if ((speed <= MAX_SPEED) && (speed >= -MAX_SPEED))
           {
               if (speed < 0)
               {
