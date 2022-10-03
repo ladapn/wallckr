@@ -1,0 +1,15 @@
+#ifndef ULTRASOUND_PINS_H
+#define ULTRASOUND_PINS_H
+
+const int TRIGGER_PIN_FRONT = 32;
+const int ECHO_PIN_FRONT = 33;
+
+const int TRIGGER_PIN_RIGHT_FRONT = 34;
+const int ECHO_PIN_RIGHT_FRONT = 35;
+
+const int TRIGGER_PIN_RIGHT_CENTER = 36;
+const int ECHO_PIN_RIGHT_CENTER = 37;
+
+const int MAX_DISTANCE_CM = 200;
+
+#endif
