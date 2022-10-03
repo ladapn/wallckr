@@ -59,7 +59,7 @@ void loop()
   ExternalCommandDecoder external_command_decoder(Serial3, ovladacka_parser);
 
   TimeManager time_manager;
-  AutoSteering wall_following_steering(RIGHT_DISTANCE_SETPOINT_CM, ledbar);
+  AutoSteering wall_following_steering(RIGHT_DISTANCE_SETPOINT_CM, ledbar, side_distance_regulator, servo_cmd_filter);
 
   RobotCommand robot_command;
 
@@ -86,13 +86,7 @@ void loop()
     {
       DistanceMeasurements distance_measurements;
       robot_sensing.get_distance_measurements(currentMillis, distance_measurements);   
-
-      int servo_cmd = servo_cmd_filter.next(side_distance_regulator.action(distance_measurements.right_distance_cm)) + SERVO_CENTER;
-
-      if (robot_command.enable_automatic_operation)
-      {
-        robot_command.desired_servo_angle = wall_following_steering.get_steering_command(distance_measurements.front_distance_cm, distance_measurements.right_front_distance_cm, servo_cmd);
-      }
+      robot_command.desired_servo_angle = wall_following_steering.get_steering_command(distance_measurements, robot_command.enable_automatic_operation);
     }
   }
 }

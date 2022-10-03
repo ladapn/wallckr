@@ -14,25 +14,34 @@ class AutoSteering
     enum class SteeringState {AVOIDING = 0, FOLLOWING};
     SteeringState automatic_state = SteeringState::FOLLOWING;
     LEDBar &ledbar;
+    Regulator<int> &side_distance_regulator;
+    ExpFilter<int> &servo_cmd_filter;
 
 public:
-    AutoSteering(int right_distance_setpoint_cm, LEDBar &ldbar) : ledbar(ldbar)
+    AutoSteering(int side_distance_setpoint_cm, LEDBar &ldbar, Regulator<int> &side_regulator, ExpFilter<int> &servo_flt) : ledbar(ldbar), 
+    side_distance_regulator(side_regulator),
+    servo_cmd_filter(servo_flt)
     {
         // Distance to front obstacle that triggers turning, to end up with desired
         // side distance after the turn, this has to consist of the distance setpoint
         // and turning radius
-        AVOIDING_DISTANCE_THR_CM = right_distance_setpoint_cm + TURNING_RADIUS_CM; 
+        AVOIDING_DISTANCE_THR_CM = side_distance_setpoint_cm + TURNING_RADIUS_CM; 
     };
 
-    int get_steering_command(unsigned long front_distance_cm, unsigned long right_front_distance_cm, int servo_action)
+    int get_steering_command(const DistanceMeasurements &distance_measurements, bool enable_automatic_operation)
     {
-        int desired_servo = servo_action;
+        auto desired_servo = servo_cmd_filter.next(side_distance_regulator.action(distance_measurements.right_distance_cm)) + SERVO_CENTER;
+        
+        if (!enable_automatic_operation)
+        {
+            return desired_servo;
+        }        
 
         switch(automatic_state)
         {
             case SteeringState::FOLLOWING:
             
-            if (front_distance_cm < AVOIDING_DISTANCE_THR_CM || right_front_distance_cm < 15) // Fixme magic constatn 
+            if (distance_measurements.front_distance_cm < AVOIDING_DISTANCE_THR_CM || distance_measurements.right_front_distance_cm < 15) // Fixme magic constatn 
             {
                 automatic_state = SteeringState::AVOIDING;
                 // LED 1 on
@@ -43,8 +52,8 @@ public:
             case SteeringState::AVOIDING:
             desired_servo = SERVO_MAX_LEFT;
 
-            if (front_distance_cm > (AVOIDING_DISTANCE_THR_CM + AVOIDING_DISTANCE_HYSTERESIS_CM)
-                && right_front_distance_cm > (AVOIDING_DISTANCE_THR_CM - 15)) // FIXME magic constant + filtering? 
+            if (distance_measurements.front_distance_cm > (AVOIDING_DISTANCE_THR_CM + AVOIDING_DISTANCE_HYSTERESIS_CM)
+                && distance_measurements.right_front_distance_cm > (AVOIDING_DISTANCE_THR_CM - 15)) // FIXME magic constant + filtering? 
             {        
                 
                 automatic_state = SteeringState::FOLLOWING;
