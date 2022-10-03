@@ -5,6 +5,15 @@
 
 class BLE_printer;
 
+struct DistanceMeasurements
+{
+    unsigned long right_distance_cm = 0;
+    unsigned long right_front_distance_cm = 0;
+    unsigned long right_center_distance_cm = 0;
+    unsigned long front_distance_cm = 0;
+
+};
+
 class Sensing
 {
     // battery related constants 
@@ -36,6 +45,7 @@ public:
     bool battery_voltage_ok(long currentMillis);
     unsigned int get_side_distance_cm(long currentMillis, unsigned long &right_front_distance_cm, unsigned long &right_center_distance_cm);
     unsigned int get_front_distance_cm(long currentMillis);
+    void get_distance_measurements(long current_millis, DistanceMeasurements &distance_measurements); 
     void disable()
     {
         disabled = true; 

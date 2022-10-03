@@ -56,3 +56,12 @@ unsigned int Sensing::get_side_distance_cm(long currentMillis, unsigned long &ri
     return right_sonar_cm; 
 }
 
+void Sensing::get_distance_measurements(long current_millis, DistanceMeasurements &distance_measurements)
+{  
+
+    distance_measurements.front_distance_cm = get_front_distance_cm(current_millis);
+    distance_measurements.right_distance_cm = get_side_distance_cm(current_millis, 
+                         distance_measurements.right_front_distance_cm,
+                         distance_measurements.right_center_distance_cm);
+}
+

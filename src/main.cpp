@@ -37,7 +37,6 @@ void setup()
 
 void loop()
 {
-
   const int FILTER_N = 4;
   ExpFilter<int> servo_cmd_filter(FILTER_N);
 
@@ -81,20 +80,18 @@ void loop()
 
         ledbar.toggleBatteryLED();
       }
-      // TODO: else -> enable stuff after some period of battery being ok
     }
 
     if (time_manager.isTimeForAutomaticCommand(currentMillis))
     {
-      unsigned long front_sonar_cm = robot_sensing.get_front_distance_cm(currentMillis);
-      unsigned long right_front_distance_cm, right_center_distance_cm;
-      unsigned long right_sonar_cm = robot_sensing.get_side_distance_cm(currentMillis, right_front_distance_cm, right_center_distance_cm);
+      DistanceMeasurements distance_measurements;
+      robot_sensing.get_distance_measurements(currentMillis, distance_measurements);   
 
-      int servo_cmd = servo_cmd_filter.next(side_distance_regulator.action(right_sonar_cm)) + SERVO_CENTER;
+      int servo_cmd = servo_cmd_filter.next(side_distance_regulator.action(distance_measurements.right_distance_cm)) + SERVO_CENTER;
 
       if (robot_command.enable_automatic_operation)
       {
-        robot_command.desired_servo_angle = wall_following_steering.get_steering_command(front_sonar_cm, right_front_distance_cm, servo_cmd);
+        robot_command.desired_servo_angle = wall_following_steering.get_steering_command(distance_measurements.front_distance_cm, distance_measurements.right_front_distance_cm, servo_cmd);
       }
     }
   }
