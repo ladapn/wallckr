@@ -3,7 +3,7 @@
 
 size_t BLE_printer::BLE_print_US_data(uint8_t id, unsigned long tick, unsigned long sonar_data)
 {
-    sonar_packet_t us_data;
+    SonarPacket us_data;
 
     us_data.id = id;
     us_data.sonar_data = sonar_data;
@@ -17,7 +17,7 @@ size_t BLE_printer::BLE_print_US_data(uint8_t id, unsigned long tick, unsigned l
 
 size_t BLE_printer::BLE_print_status_data(uint8_t id, unsigned long tick, unsigned int battery_adc)
 {
-    status_packet_t status_data;
+    StatusPacket status_data;
 
     status_data.id = id;
     status_data.tick = tick;
