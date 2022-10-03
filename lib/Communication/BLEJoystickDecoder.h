@@ -4,11 +4,19 @@
 #include "InputStreamParser.h"
 #include <Stream.h>
 
-// decoding commands from BLE joystick Iphone app which sends commands in
-// format "Aa\0" -> Upper case, lower case, zero for each button press ->
-// buttons are labeled from A to H
+/**
+ * Implementation of communication protocol used by BLEJoystick application,
+ * which sends commands in format "Aa\0" -> Upper case, lower case, 
+ * zero for each button press -> buttons are labeled from A to H
+ */ 
 class BLEJoystickDecoder : public InputStreamParser
 {
+    /**
+     * Decode input format into JoysticCommand format
+     * @param input_stream stream to receive input data from
+     * @return decoded command in JoysticCommand format, or JoystickCommand::NO_COMMAND 
+     * if no command was present
+     */
     JoystickCommand decode(Stream &input_stream) override
     {
         JoystickCommand command = JoystickCommand::NO_COMMAND; 
@@ -16,6 +24,7 @@ class BLEJoystickDecoder : public InputStreamParser
         bool waiting4zero = false;
         const int DIFF_LOWER_UPPER = 'a' - 'A';
 
+        // TODO: remove this active waiting, just check it and go
         while(!input_stream.available())
         {
             ;

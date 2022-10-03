@@ -4,10 +4,18 @@
 #include "InputStreamParser.h"
 #include <Stream.h>
 
-
+/**
+ * Implementation of communication protocol used by ovladacka tool
+ */
 class OvladackaParser : public InputStreamParser
 {
 public:
+    /**
+     * Decode input format into JoysticCommand format
+     * @param input_stream stream to receive input data from
+     * @return decoded command in JoysticCommand format, or JoystickCommand::NO_COMMAND 
+     * if no command was present
+     */
     JoystickCommand decode(Stream &input_stream) override
     {
         JoystickCommand command = JoystickCommand::NO_COMMAND; 
