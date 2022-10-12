@@ -5,13 +5,22 @@ class Stream;
 
 enum class JoystickCommand { NO_COMMAND = 0, UP, RIGHT, DOWN, LEFT, UP_TRIANGLE, RIGHT_CIRCLE, DOWN_X, LEFT_SQUARE }; 
 
+/**
+ * Interface for decoding information coming from user to robot 
+ */
 class InputStreamParser
 {
 
 public:
+    /**
+     * Decode data coming from user to robot 
+     */
     virtual JoystickCommand decode(Stream &input_stream) = 0;
 
 protected: 
+    /**
+     * Translate incoming data from character representation to JoystickCommand universal representation
+     */
     JoystickCommand input_to_joystick_command(char in)
     {
         JoystickCommand command = JoystickCommand::NO_COMMAND;
@@ -47,15 +56,6 @@ protected:
 
         return command; 
     };
-};
-
-
-
-class BLEJoystickParser : public InputStreamParser
-{
-public:
-    JoystickCommand decode(Stream &input_stream) override;
-
 };
 
 #endif  //INPUT_STREAM_PARSER_H
