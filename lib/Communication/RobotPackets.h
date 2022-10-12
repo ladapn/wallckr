@@ -1,5 +1,5 @@
-#ifndef BLEPACKETS_H
-#define BLEPACKETS_H
+#ifndef ROBOT_PACKETS_H
+#define ROBOT_PACKETS_H
 
 #include <stdlib.h>
 #include <stdint.h>
