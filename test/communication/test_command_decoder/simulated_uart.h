@@ -6,7 +6,7 @@
  */
 class SimulatedUART : public Stream
 {
-    static const int buffer_len_max = 10;
+    static const int buffer_len_max = 100;
     char buffer[buffer_len_max];
     int buffer_index = 0;
     int data_len;
@@ -18,11 +18,7 @@ public:
      */
     SimulatedUART(char *in, int len)
     {
-        data_len = (buffer_len_max < len) ? buffer_len_max : len;
-        for (int i = 0; i < data_len; i++)
-        {
-            buffer[i] = in[i];
-        }                
+        write(reinterpret_cast<uint8_t*>(in), len);             
     }
 
     /**
@@ -59,9 +55,25 @@ public:
     /**
      * Dummy implementation of write, does nothing
      */ 
-    virtual size_t write(uint8_t)
+    virtual size_t write(uint8_t) override
     {
         return 0; 
+    }
+
+    /**
+     * Write into internal buffer
+     * @param buffer_in data to be written
+     * @param size size of the data in bytes 
+     */
+    virtual size_t write(const uint8_t *buffer_in, size_t size) override
+    {
+        data_len = (buffer_len_max < size) ? buffer_len_max : size;
+        for (int i = 0; i < data_len; i++)
+        {
+            buffer[i] = buffer_in[i];
+        }  
+
+        return data_len;
     }
 };
 
