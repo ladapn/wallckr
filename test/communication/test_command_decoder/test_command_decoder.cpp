@@ -44,7 +44,7 @@ void test_check_external_command_speed_ovladacka(void)
     RobotCommand rob_cmd_actual;
     RobotCommand rob_cmd_expected;  
 
-    rob_cmd_expected.desired_speed = SPD_INCREMENT;
+    rob_cmd_expected.desired_speed = SPEED_INCREMENT;
 
     ext_comm_dec.check_external_command(rob_cmd_actual);
 
