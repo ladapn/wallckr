@@ -20,7 +20,7 @@ public:
      * @param[in] input filters input for current step
      * @return filter output value for next step
      */
-    T next(T input)
+    T next(T input) override
     {
         if(m_first_step)
         {
