@@ -11,6 +11,10 @@ class SimulatedUART : public Stream
     int buffer_index = 0;
     int data_len;
 public:
+    SimulatedUART()
+    {
+        
+    }
     /**
      * Constructor method
      * @param[in] in c-style string to feed internal buffer
