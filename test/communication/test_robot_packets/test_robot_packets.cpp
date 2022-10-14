@@ -19,7 +19,10 @@ void tearDown(void) {
 void test_status_packet(void)
 {
     const int CURRENT_TICK = 1000; 
-    StatusPacket status_packet(CURRENT_TICK, 100, 0, 0);
+    const int BATTERY_VOLTAGE = 100;
+    const int TOTAL_CURRENT = 0;
+    const int MOTOR_CURRENT = 0; 
+    StatusPacket status_packet(CURRENT_TICK, BATTERY_VOLTAGE, TOTAL_CURRENT, MOTOR_CURRENT);
     status_packet.version_ID = 0xAB;
     // NOTE: AVR is little endian, i.e. LSB goes first
     uint8_t expected[] = {0x50,                     // id 
