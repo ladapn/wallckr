@@ -3,4 +3,5 @@
 html/
 latex/
 compile_commands.json
+*.code-workspace
 
