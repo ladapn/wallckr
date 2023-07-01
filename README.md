@@ -47,6 +47,8 @@ On simulated target:
 
 On real HW:
 - `pio test`
+### Run static code analysis
+- `pio check --skip-packages`
 
 
 ## Controlling your Robot
