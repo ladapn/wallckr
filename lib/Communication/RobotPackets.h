@@ -18,8 +18,8 @@ enum util_packet_ids {STATUS_ID = 80, MOTION_CMD_ID = 90};
  */
 struct SonarPacket {
     uint8_t id;
-    unsigned long tick;
-    unsigned long sonar_data;
+    uint32_t tick;
+    uint32_t sonar_data;
     uint8_t crc = 0;
     /**
      * Constructor method
@@ -27,7 +27,7 @@ struct SonarPacket {
      * @param[in] tick_ms current system time in ms
      * @param[in] measurement ultrasound measurement 
      */
-    SonarPacket(uint8_t packet_id, unsigned long tick_ms, unsigned long measurement) :
+    SonarPacket(uint8_t packet_id, uint32_t tick_ms, uint32_t measurement) :
     id(packet_id),
     tick(tick_ms),
     sonar_data(measurement)
@@ -40,11 +40,11 @@ struct SonarPacket {
  */
 struct StatusPacket {
     uint8_t id = STATUS_ID;
-    unsigned long tick;
-    unsigned long version_ID = GIT_REV; // long -> 4 bytes, instead of 8 chars
-    unsigned int battery_voltage_adc; // analogRead() returns int; int is 2 bytes long on ATmega
-    unsigned int total_current_adc;
-    unsigned int motor_current_adc;
+    uint32_t tick;
+    uint32_t version_ID = GIT_REV; // long -> 4 bytes, instead of 8 chars
+    uint16_t battery_voltage_adc; // analogRead() returns int; int is 2 bytes long on ATmega
+    uint16_t total_current_adc;
+    uint16_t motor_current_adc;
     uint8_t crc = 0;
 
     /**
@@ -54,7 +54,7 @@ struct StatusPacket {
      * @param[in] total_current total current drawn from battery in mA
      * @param[in] motor_current total current drawn by motor in mA 
      */
-    StatusPacket(unsigned long tick_ms, unsigned int battery_voltage, unsigned int total_current, unsigned int motor_current) :
+    StatusPacket(uint32_t tick_ms, uint16_t battery_voltage, uint16_t total_current, uint16_t motor_current) :
     tick(tick_ms),
     battery_voltage_adc(battery_voltage),
     total_current_adc(total_current),
@@ -69,9 +69,9 @@ struct StatusPacket {
  */
 struct MotionCommandPacket {
     uint8_t id = MOTION_CMD_ID;
-    unsigned long tick;
-    unsigned int servo_cmd;
-    signed int motor_cmd; 
+    uint32_t tick;
+    uint16_t servo_cmd;
+    int16_t motor_cmd; 
     uint8_t crc = 0;
     /**
      * Constructor method
@@ -80,7 +80,7 @@ struct MotionCommandPacket {
      * @param[in] motor_command desired motor speed on scale from -255 to 255, where 255 is full speed
      * and negative numbers mean going backward 
     */
-    MotionCommandPacket(unsigned long tick_ms, unsigned int servo_command, signed int motor_command) :
+    MotionCommandPacket(uint32_t tick_ms, uint16_t servo_command, int16_t motor_command) :
     tick(tick_ms),
     servo_cmd(servo_command),
     motor_cmd(motor_command)
@@ -96,7 +96,7 @@ class RobotPrinter
 {
     Stream &robot_serial;
     /**
-     * Compute CRC by xoring all bytes together 
+     * Compute CRC by doing xor of all bytes together 
      * @param[in] buffer chunk of data containing packet
      * @param[in] size size of packet in bytes
      * @return computed CRC 
