@@ -1,5 +1,5 @@
 # wallckr
-wallckr stands for **wall** following mobile robot with A**ckr**man steering. In other words, wallckr is a small indoor autonomous vehicle with "car like" steering that goes around your walls.
+wallckr stands for **wall** following mobile robot with A**ckr**man steering. In other words, wallckr is a small indoor autonomous vehicle with "car like" steering that goes around your walls and avoids obstacles. 
 
 <p align="center">
   <img src="./img/wallckr_posing.jpeg" alt="wallckr, the robot" width="400"/>
@@ -47,14 +47,14 @@ On simulated target:
 
 On real HW:
 - `pio test`
-### Run static code analysis
+#### Run static code analysis
 - `pio check --skip-packages`
 
 
 ## Controlling your Robot
-[ovladacka](https://github.com/ladapn/ovladacka) - the official tool to communicate with wallckr
+When you power your robot on, it won't move and it will be waiting for a "up arrow" command to start. This command can be sent via [ovladacka](https://github.com/ladapn/ovladacka) - the official tool to communicate with wallckr. Once this command is received, the robot starts going forward and following right-hand side wall. If no wall is present, it will keep turning right until a wall is found. When following a wall, the robot does its best to maintain a constant distance from the wall - distance of 25 cm. In this mode of operation, the angle of the front wheels is controlled automatically, while the speed is user controlled. 
 
-NOTE: currently only auto steering (i.e. ability to automatically control angle of front wheels) and enabled by default. Robot speed is zero by default and has to be controlled by ovladacka, auto speed is not implemented. 
+You can also disable this automatic operation via ovladacka (press left shift) and control the robot manually. In this mode of operation, both the angle of front wheels and the speed are user controlled.
 
 ## Contributing
 In case you would like to fix or improve anything, feel free to create a pull request. 
