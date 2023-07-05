@@ -19,6 +19,9 @@ jobs:
 
       - name: Install simavr
         run: sudo apt-get install -y simavr
-        
+
+      - name: Build firmware
+        run: pio run
+
       - name: Run tests on the native platform
-        run: platformio test -e native
+        run: pio test --without-uploading
