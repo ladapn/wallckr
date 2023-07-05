@@ -1,3 +1,4 @@
+![Build and tests](https://github.com/ladapn/wallckr/actions/workflows/build.yml/badge.svg)
 # wallckr
 wallckr stands for **wall** following mobile robot with A**ckr**man steering. In other words, wallckr is a small indoor autonomous vehicle with "car like" steering that goes around your walls and avoids obstacles. 
 
