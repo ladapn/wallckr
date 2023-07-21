@@ -5,7 +5,7 @@
 </div>
 
 # wallckr
-wallckr stands for **wall** following mobile robot with A**ck**e**r**mann steering. In other words, wallckr is a small indoor autonomous vehicle with "car like" steering that goes around your walls and avoids obstacles. 
+wallckr is a small indoor autonomous vehicle with "car like" steering that goes around your walls and avoids obstacles. wallckr stands for **wall** following mobile robot with A**ck**e**r**mann steering. 
 
 <div align="center">
   <img src="./img/wallckr_posing.jpeg" alt="wallckr, the robot" width="400"/>
@@ -13,15 +13,15 @@ wallckr stands for **wall** following mobile robot with A**ck**e**r**mann steeri
 
 
 ## Motivation
-The main purpose of this project is to have fun building such a robot and developing its code. Also, I wanted to verify what is the minimum number of sensors that allows to perform wall following operation. Last but not least I wanted to have a platform for testing of control algorithms for Ackermann steering. Why Ackermann - i.e. car like - steering? Because it is more difficult to control than the usual differential steering and thus more fun.   
+The main purpose of this project is to have fun building such a robot and to enjoy developing its code. Also, I wanted to verify what is the minimum number of sensors that allows to perform wall following operation. Last but not least I wanted to have a platform for testing of control algorithms for Ackermann steering. Why Ackermann - i.e. car like - steering? Because it is more difficult to control than the usual differential steering and thus more fun.   
 
 If anyone gets inspired by this to build a similar project, it would be a very nice side effect. 
 
 ## Features
 - Wall following 
     - Controls distance from right-hand side wall maintain target distance of 25 cm
-    - This is achieved by a controller commanding a servo to change steering angle of the front wheels. The servo command is based on measurements from right front and right distance sensors. 
-    - Currently only Proportional (P) and Proportional Derivative (PD) controllers are implemented and P one is used by default
+    - This is achieved by a controller commanding a servo to change steering angle of the front wheels. The servo command is based on measurements from right front and right distance sensors 
+    - Currently only Proportional (P) and Proportional Derivative (PD) controllers are implemented and P is used by default
 - Obstacle avoidance
     - If front sensor measurement is lower than 40 cm, or if right front sensor measurement is lower than 15 cm, obstacle avoidance mode is entered. In this mode, side distance is no longer maintained. Instead, the robot simply turns front wheels left to the maximal allowed angle. When the front measurement is less than 60 cm and the front right measurement is less than 25 cm, wall following mode is entered again. 
 - Motor control
@@ -43,7 +43,7 @@ If anyone gets inspired by this to build a similar project, it would be a very n
 Well, this is the tricky part, because you need to have your own wallckr robot and as far as I know there happens to be only one - the one in my possession :) Anyway, it should take only minor changes to make the software running on a similar car-like robot you can build or buy. 
 
 Main HW components: 
-- Arduino Mega2560 (or compatible)
+- Arduino Mega2560
 - Motor Shield L298P for Arduino 
 - GM37 300 RPM DC motor
 - Hitec HS-422 servo
