@@ -3,7 +3,7 @@
 
 #include "MotionConstants.h"
 #include <Arduino.h>
-#include <Servo.h>
+#include "SteeringServo.h"
 
 // Pin definitions 
 const int PWM_A   = 3;
@@ -23,7 +23,7 @@ class Motion
 {
     int prev_speed = 0;
     int oldServo = SERVO_CENTER;
-    Servo steering_servo;
+    SteeringServo steering_servo;
     bool disabled = false;
 
 public:
@@ -35,7 +35,7 @@ public:
     Motion()
     {
         Stop();
-        steering_servo.attach(SERVO_A);
+        steering_servo.init(SERVO_A);
 
         // Direction pin on channel A
         pinMode(DIR_A, OUTPUT);
@@ -66,8 +66,8 @@ public:
     /**
      * Stops motor
      */
-    void Stop() { analogWrite(PWM_A, 0); }
-    /**
+    void Stop() { analogWrite(PWM_A, 0); };
+    /** 
      * Set motor speed and steering servo angle to desired values. This is equivalent to calling setSpeed and SetAngle
      * in sequence.
      * @param[in] speed desired speed, positive value means forward motion, negative value backward motion, in both
