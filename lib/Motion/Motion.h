@@ -29,10 +29,9 @@ public:
      * Constructor method, configures pins attached to servo and motor controls, stops
      * motor as a safety measure
      */
-    Motion() : motor(MOTOR_DIRECTION_PIN, MOTOR_PWM_PIN, MOTOR_BRAKE_PIN)
+    Motion() : motor(MOTOR_DIRECTION_PIN, MOTOR_PWM_PIN, MOTOR_BRAKE_PIN), steering_servo(SERVO_PWM_PIN)
     {
         stop();
-        steering_servo.init(SERVO_PWM_PIN);
     }
 
     /**

@@ -1,6 +1,6 @@
 #include "SteeringServo.h"
 
-void SteeringServo::init(int pin)
+SteeringServo::SteeringServo(int pin)
 {
     steering_servo.attach(pin);
 }
