@@ -2,7 +2,7 @@
 #define BLEJOYSTICK_DECODER_H
 
 #include "InputStreamParser.h"
-#include <Stream.h>
+#include "IRobotIOStream.h"
 
 /**
  * Implementation of communication protocol used by BLEJoystick application,
@@ -17,7 +17,7 @@ class BLEJoystickDecoder : public InputStreamParser
      * @return decoded command in JoysticCommand format, or JoystickCommand::NO_COMMAND 
      * if no command was present
      */
-    JoystickCommand decode(Stream &input_stream) override
+    JoystickCommand decode(IRobotIOStream &input_stream) override
     {
         JoystickCommand command = JoystickCommand::NO_COMMAND; 
         char current, prev;

@@ -2,7 +2,7 @@
 #define OVLADACKA_PARSER_H
 
 #include "InputStreamParser.h"
-#include <Stream.h>
+#include "IRobotIOStream.h"
 
 /**
  * Implementation of communication protocol used by ovladacka tool
@@ -16,7 +16,7 @@ public:
      * @return decoded command in JoysticCommand format, or JoystickCommand::NO_COMMAND 
      * if no command was present
      */
-    JoystickCommand decode(Stream &input_stream) override
+    JoystickCommand decode(IRobotIOStream &input_stream) override
     {
         JoystickCommand command = JoystickCommand::NO_COMMAND; 
         const int DIFF_LOWER_UPPER = 'a' - 'A';

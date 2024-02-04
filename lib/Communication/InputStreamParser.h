@@ -1,7 +1,7 @@
 #ifndef INPUT_STREAM_PARSER_H
 #define INPUT_STREAM_PARSER_H
 
-class Stream;
+class IRobotIOStream;
 
 enum class JoystickCommand { NO_COMMAND = 0, UP, RIGHT, DOWN, LEFT, UP_TRIANGLE, RIGHT_CIRCLE, DOWN_X, LEFT_SQUARE }; 
 
@@ -15,7 +15,7 @@ public:
     /**
      * Decode data coming from user to robot 
      */
-    virtual JoystickCommand decode(Stream &input_stream) = 0;
+    virtual JoystickCommand decode(IRobotIOStream &input_stream) = 0;
 
 protected: 
     /**

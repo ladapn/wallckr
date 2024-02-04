@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "Robot.h"
+#include "ArduinoSerialStream.h"
 
 void setup()
 {
@@ -18,7 +19,8 @@ void setup()
 void loop()
 {
 
-  RobotPrinter BLE_out(Serial3);
+  ArduinoSerialStream arduino_serial_stream(Serial3);
+  RobotPrinter BLE_out(arduino_serial_stream);
   UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE_CM);
   UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE_CM);
   UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE_CM);
@@ -27,7 +29,7 @@ void loop()
   Motion robot_motion;
 
   OvladackaParser ovladacka_parser;
-  ExternalCommandDecoder external_command_decoder(Serial3, ovladacka_parser);
+  ExternalCommandDecoder external_command_decoder(arduino_serial_stream, ovladacka_parser);
 
   const int FILTER_N = 4;
   ExpFilter<int> servo_cmd_filter = ExpFilter<int>(FILTER_N);

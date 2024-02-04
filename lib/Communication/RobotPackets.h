@@ -87,14 +87,14 @@ struct MotionCommandPacket {
     {}
 };
 
-class Stream;
+class IRobotIOStream;
 
 /**
  * Class to send out robot packets 
  */
 class RobotPrinter
 {
-    Stream &robot_serial;
+    IRobotIOStream &robot_serial;
     /**
      * Compute CRC by doing xor of all bytes together 
      * @param[in] buffer chunk of data containing packet
@@ -107,7 +107,7 @@ public:
      * Constructor method
      * @param[in] serial serial interface packets are sent to
      */
-    explicit RobotPrinter(Stream &serial) : robot_serial(serial) {};
+    explicit RobotPrinter(IRobotIOStream &serial) : robot_serial(serial) {};
     /**
      * Compute packet's CRC and send it out
      * @param[in] buffer chunk of data containing packet 

@@ -1,5 +1,5 @@
 #include "RobotPackets.h"
-#include "Arduino.h"
+#include "IRobotIOStream.h"
 
 uint8_t RobotPrinter::compute_xor_CRC(const uint8_t *buffer, size_t size)
 {     

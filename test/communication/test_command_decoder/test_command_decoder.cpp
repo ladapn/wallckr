@@ -8,6 +8,7 @@
 #include "../../common/simulated_uart.h"
 #include "MotionConstants.h"
 #include "../../common/stop_simavr.h"
+#include "ArduinoSerialStream.h"
 
 
 void setUp(void) {
@@ -39,7 +40,8 @@ void test_check_external_command_speed_ovladacka(void)
     OvladackaParser in_parser;
     char in_data[] = "a";
     SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
-    ExternalCommandDecoder ext_comm_dec(sim_uart, in_parser);
+    ArduinoSerialStream ard_stream(sim_uart); 
+    ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
 
     RobotCommand rob_cmd_actual;
     RobotCommand rob_cmd_expected;  
@@ -56,7 +58,8 @@ void test_check_external_command_angle_ovladacka(void)
     OvladackaParser in_parser;
     char in_data[] = "b";
     SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
-    ExternalCommandDecoder ext_comm_dec(sim_uart, in_parser);
+    ArduinoSerialStream ard_stream(sim_uart); 
+    ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
 
     RobotCommand rob_cmd_actual;
     RobotCommand rob_cmd_expected;  
@@ -73,7 +76,8 @@ void test_check_external_command_speed_BLE_joy(void)
     BLEJoystickDecoder in_parser;
     char in_data[] = "Aa\0"; // Command to increase speed in BLE Joystick format
     SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
-    ExternalCommandDecoder ext_comm_dec(sim_uart, in_parser);
+    ArduinoSerialStream ard_stream(sim_uart);
+    ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
 
     RobotCommand rob_cmd_actual;
     RobotCommand rob_cmd_expected;  
@@ -89,8 +93,9 @@ void test_check_external_command_angle_BLE_joy(void)
 {
     OvladackaParser in_parser;
     char in_data[] = "Bb\0"; // Command to decrease servo angle in BLE Joystick format
-    SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
-    ExternalCommandDecoder ext_comm_dec(sim_uart, in_parser);
+    SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char));
+    ArduinoSerialStream ard_stream(sim_uart); 
+    ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
 
     RobotCommand rob_cmd_actual;
     RobotCommand rob_cmd_expected;  

@@ -6,6 +6,7 @@
 #include "RobotPackets.h"
 #include "RobotCommand.h"
 #include "MotionConstants.h"
+#include "ArduinoSerialStream.h"
 
 
 void setUp(void) {
@@ -34,7 +35,8 @@ void test_status_packet(void)
                           0x74};                    // CRC    
 
     SimulatedUART sim_uart;
-    RobotPrinter printer(sim_uart);
+    ArduinoSerialStream ard_stream(sim_uart); 
+    RobotPrinter printer(ard_stream);
 
     printer.add_CRC_and_print(reinterpret_cast<uint8_t*>(&status_packet), sizeof(status_packet));
 
@@ -61,7 +63,8 @@ void test_sonar_packet(void)
                           0xAC};                    // CRC    
 
     SimulatedUART sim_uart;
-    RobotPrinter printer(sim_uart);
+    ArduinoSerialStream ard_stream(sim_uart); 
+    RobotPrinter printer(ard_stream);
 
     printer.add_CRC_and_print(reinterpret_cast<uint8_t*>(&sonar_packet), sizeof(sonar_packet));
 
