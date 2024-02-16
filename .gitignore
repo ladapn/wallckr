@@ -2,6 +2,7 @@
 .vscode/
 html/
 latex/
+build*/
 compile_commands.json
 *.code-workspace
 
