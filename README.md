@@ -1,7 +1,7 @@
 <div align="center">
  
   ![Build and tests](https://github.com/ladapn/wallckr/actions/workflows/build.yml/badge.svg)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 </div>
 
 # wallckr
