@@ -7,7 +7,7 @@ class SteeringServo
 {
     Servo steering_servo;
 public:
-    SteeringServo(int pin);
+    explicit SteeringServo(int pin);
     void set_angle(int angle);
 
 };

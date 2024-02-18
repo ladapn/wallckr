@@ -19,8 +19,8 @@ class Motion
 {
     int prev_speed = 0;
     int oldServo = SERVO_CENTER;
-    SteeringServo steering_servo;
     Motor motor;
+    SteeringServo steering_servo;
     bool disabled = false;
 
 public:
