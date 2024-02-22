@@ -38,7 +38,7 @@ void test_simulated_uart(void)
 void test_check_external_command_speed_ovladacka(void)
 {
     OvladackaParser in_parser;
-    char in_data[] = "a";
+    char in_data[] = ":a!";
     SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
     ArduinoSerialStream ard_stream(sim_uart); 
     ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
@@ -56,7 +56,7 @@ void test_check_external_command_speed_ovladacka(void)
 void test_check_external_command_angle_ovladacka(void)
 {
     OvladackaParser in_parser;
-    char in_data[] = "b";
+    char in_data[] = ":b!";
     SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
     ArduinoSerialStream ard_stream(sim_uart); 
     ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
@@ -91,7 +91,7 @@ void test_check_external_command_speed_BLE_joy(void)
 
 void test_check_external_command_angle_BLE_joy(void)
 {
-    OvladackaParser in_parser;
+    BLEJoystickDecoder in_parser;
     char in_data[] = "Bb\0"; // Command to decrease servo angle in BLE Joystick format
     SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char));
     ArduinoSerialStream ard_stream(sim_uart); 

@@ -9,7 +9,9 @@ enum class JoystickCommand { NO_COMMAND = 0, UP, RIGHT, DOWN, LEFT, UP_TRIANGLE,
  * Interface for decoding information coming from user to robot 
  */
 class InputStreamParser
-{
+{    
+    const int MIN_ALLOWED_CHAR = 'a';
+    const int MAX_ALLOWED_CHAR = 'h';
 
 public:
     /**
@@ -18,6 +20,16 @@ public:
     virtual JoystickCommand decode(IRobotIOStream &input_stream) = 0;
 
 protected: 
+    bool is_allowed_cmd_char(char in)
+    {        
+        if((in >= MIN_ALLOWED_CHAR) && (in <= MAX_ALLOWED_CHAR))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Translate incoming data from character representation to JoystickCommand universal representation
      */
