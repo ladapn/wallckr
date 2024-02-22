@@ -9,7 +9,7 @@ class SimulatedUART : public Stream
     static const int buffer_len_max = 100;
     char buffer[buffer_len_max];
     int buffer_index = 0;
-    int data_len;
+    int data_len = 0;
 public:
     SimulatedUART()
     {
