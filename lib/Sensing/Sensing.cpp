@@ -3,12 +3,12 @@
 
 bool Sensing::battery_voltage_ok(long currentMillis)
 {
-    auto battery_voltage_adc = analogRead(SNS_BATTERY_VLTG);
+    auto battery_voltage_adc = 0; //analogRead(SNS_BATTERY_VLTG);
 
     StatusPacket status_data(currentMillis, battery_voltage_adc, 0, 0);
 
     //sensor_printer.BLE_print_status_data(STATUS_ID, currentMillis, battery_voltage_adc);
-    sensor_printer.add_CRC_and_print(reinterpret_cast<uint8_t*>(&status_data), sizeof(status_data));
+    //sensor_printer.add_CRC_and_print(reinterpret_cast<uint8_t*>(&status_data), sizeof(status_data));
 
     if(battery_voltage_adc <= BATTERY_PACK_CUTTOFF_ADC)
     {

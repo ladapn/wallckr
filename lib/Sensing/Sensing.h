@@ -33,7 +33,8 @@ class Sensing
     static const int VOLTAGE_DIVIDER_FACTOR = 16;
     static constexpr float BATTERY_CELL_CUTTOFF_V = 0.9f;
     static const int BATTERY_PACK_CUTTOFF_ADC = (BATTERY_CELL_CUTTOFF_V / ADC_REFERENCE_V * ADC_MAX * BATTERY_CELL_COUNT) / VOLTAGE_DIVIDER_FACTOR;
-    static const int SNS_BATTERY_VLTG = A8;
+    //static const int SNS_BATTERY_VLTG = A8;
+    static const int SNS_BATTERY_VLTG = 0;
 
     IDistanceSensor &sensor_front; 
     IDistanceSensor &sensor_right_front; 

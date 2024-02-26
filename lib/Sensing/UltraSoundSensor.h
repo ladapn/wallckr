@@ -1,9 +1,10 @@
 #ifndef ULTRASOUNT_SENSOR_H
 #define ULTRASOUNT_SENSOR_H
 
-#include <NewPing.h>
+//#include <NewPing.h>
 #include "IDistanceSensor.h"
 #include "ExpFilter.h"
+#include <stdint.h>
 
 /**
  * Class representing ultrasound distance sensor, implements IDistanceSensor
@@ -14,15 +15,14 @@ class UltraSoundSensor : public IDistanceSensor
     unsigned long m_measurement_filtered_cm = 0;
     unsigned int m_max_cm_distance;
 
-    NewPing m_sonar;
+    //NewPing m_sonar;
     // TODO Would be better to accept reference to base class of filter as constructor input
     const int FILTER_N = 4; 
     ExpFilter<int> m_sonar_filter = ExpFilter<int>(FILTER_N);
 
-    public:
+public:
 
-    UltraSoundSensor(uint8_t trigger_pin, uint8_t echo_pin, unsigned int max_cm_distance) :  m_max_cm_distance(max_cm_distance) ,
-    m_sonar(trigger_pin, echo_pin, max_cm_distance)
+    UltraSoundSensor(uint8_t trigger_pin, uint8_t echo_pin, unsigned int max_cm_distance) :  m_max_cm_distance(max_cm_distance) 
     {};
 
     /**
@@ -31,7 +31,7 @@ class UltraSoundSensor : public IDistanceSensor
      */
     bool trigger_measurement() override
     {
-        m_measurement_raw_cm = m_sonar.ping_cm();
+        //m_measurement_raw_cm = m_sonar.ping_cm();
         
         // Zero means out of range -> change the library, so I can distinguish actual zero and out of range?
         if(m_measurement_raw_cm == 0)  

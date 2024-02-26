@@ -1,26 +1,34 @@
-#include <Arduino.h>
+//#include <Arduino.h>
 #include "Robot.h"
-#include "ArduinoSerialStream.h"
+#include "DummySerialStream.h"
 
-void setup()
-{
+#include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
+#include <zephyr/sys/printk.h>
+
+//void setup()
+//{
   // Initialize serial communication representing wired UART over USB connection
-  Serial.begin(115200);
-  Serial.println("wallckr");
+  //Serial.begin(115200);
+  //Serial.println("wallckr");
 
   // Initialize serial communication representing wireless Bluetooth Low Energy (BLE) connection
   // BLE module is connected to Serial3
-  Serial3.begin(115200); // 9600 default
+  //Serial3.begin(115200); // 9600 default
 
   // Issue AT command to set BLE module name to "wallckr"
-  Serial3.write("AT NAMEwallckr\r\n");
-}
+  //Serial3.write("AT NAMEwallckr\r\n");
+//}
 
-void loop()
+LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
+
+
+int main(void)
 {
+  LOG_INF("Entering main...");
 
-  ArduinoSerialStream arduino_serial_stream(Serial3);
-  RobotPrinter BLE_out(arduino_serial_stream);
+  DummySerialStream dummy_serial_stream;
+  RobotPrinter BLE_out(dummy_serial_stream);
   UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT, MAX_DISTANCE_CM);
   UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE_CM);
   UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE_CM);
@@ -29,7 +37,7 @@ void loop()
   Motion robot_motion;
 
   OvladackaParser ovladacka_parser;
-  ExternalCommandDecoder external_command_decoder(arduino_serial_stream, ovladacka_parser);
+  ExternalCommandDecoder external_command_decoder(dummy_serial_stream, ovladacka_parser);
 
   const int FILTER_N = 4;
   ExpFilter<int> servo_cmd_filter = ExpFilter<int>(FILTER_N);
@@ -44,8 +52,14 @@ void loop()
   Robot robot(robot_sensing, robot_motion, wall_following_steering, external_command_decoder, ledbar);
 
 
-  while (true)
-  {
-    robot.main_loop(millis());
-  }
+  // Active waiting not allowed in native posix builds
+  //while (true)
+  //{
+    //robot.main_loop(millis());
+    robot.main_loop(0);
+  //}
+
+  LOG_INF("main ends here...");
+
+  return 0;
 }

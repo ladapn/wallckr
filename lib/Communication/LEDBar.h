@@ -1,7 +1,7 @@
 #ifndef LED_BAR_H
 #define LED_BAR_H
 
-#include <Arduino.h>
+//#include <Arduino.h>
 /**
  * Definition of physical pin numbers connected to the LEDs
  * Pin groups PA2 to PA 6
@@ -20,18 +20,18 @@ public:
     LEDBar()
     {
         // TODO get rid of Arduino calls, since they are slow as hell
-        pinMode(LED1, OUTPUT);
+        /*pinMode(LED1, OUTPUT);
         pinMode(LED2, OUTPUT);
         pinMode(LED3, OUTPUT);
         pinMode(LED4, OUTPUT);
-        pinMode(LED5, OUTPUT);
+        pinMode(LED5, OUTPUT);*/
 
         // Default state - first LED on, others off
-        digitalWrite(LED1, 0);
+        /*digitalWrite(LED1, 0);
         digitalWrite(LED2, 1);
         digitalWrite(LED3, 1);
         digitalWrite(LED4, 1);
-        digitalWrite(LED5, 1);
+        digitalWrite(LED5, 1);*/
     }
     /**
      * Switch selected LED on
@@ -43,7 +43,7 @@ public:
             return; 
         
         // TODO get rid of these arduino calls 
-        digitalWrite(LED, 0);
+        //digitalWrite(LED, 0);
     }
 
     /**
@@ -55,7 +55,7 @@ public:
         if(LED < LED1 || LED > LED5)
             return; 
         
-        digitalWrite(LED, 1);
+        //digitalWrite(LED, 1);
     }
 
     /**

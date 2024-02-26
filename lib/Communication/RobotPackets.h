@@ -41,7 +41,8 @@ struct SonarPacket {
 struct StatusPacket {
     uint8_t id = STATUS_ID;
     uint32_t tick;
-    uint32_t version_ID = GIT_REV; // long -> 4 bytes, instead of 8 chars
+    //uint32_t version_ID = GIT_REV; // long -> 4 bytes, instead of 8 chars TODO
+    uint32_t version_ID = 0;
     uint16_t battery_voltage_adc; // analogRead() returns int; int is 2 bytes long on ATmega
     uint16_t total_current_adc;
     uint16_t motor_current_adc;
