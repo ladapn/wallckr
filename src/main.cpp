@@ -6,6 +6,8 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/printk.h>
 
+#include "BLE/BLESetup.h"
+
 //void setup()
 //{
   // Initialize serial communication representing wired UART over USB connection
@@ -26,6 +28,8 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 int main(void)
 {
   LOG_INF("Entering main...");
+
+  ble_setup();
 
   DummySerialStream dummy_serial_stream;
   RobotPrinter BLE_out(dummy_serial_stream);
