@@ -22,10 +22,10 @@ template<> float ExpFilter<float>::core(float input)
     // 0.75 * m_state + 0.25 * input;
     if (m_N == 4)
     {
-        return 0.75 * m_state + 0.25 * input;
+        return 0.75f * m_state + 0.25f * input;
     }
     else
     {
-        return ((m_N - 1.0) / m_N) * m_state + 1.0/m_N * input;  
+        return ((m_N - 1) / m_N) * m_state + 1/m_N * input;  
     }
 }
