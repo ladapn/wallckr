@@ -2,8 +2,8 @@
     servo: servo {
         compatible = "pwm-servo";
         pwms = <&pwm2 1 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
-        min-pulse = <PWM_USEC(1100)>;
-        max-pulse = <PWM_USEC(1900)>;
+        min-pulse = <PWM_USEC(900)>;
+        max-pulse = <PWM_USEC(2100)>;
     };
 };
 
