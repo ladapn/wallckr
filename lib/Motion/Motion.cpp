@@ -5,7 +5,7 @@ LOG_MODULE_REGISTER(Motion, LOG_LEVEL_INF);
 
 bool Motion::is_ready()
 {
-	return steering_servo.is_ready(); // TODO: && motor.is_ready();
+	return steering_servo.is_ready() && motor.is_ready();
 }
 
 int Motion::set_speed(int speed)
