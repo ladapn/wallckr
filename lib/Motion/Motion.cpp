@@ -8,34 +8,36 @@ bool Motion::is_ready()
 	return steering_servo.is_ready(); // TODO: && motor.is_ready();
 }
 
-bool Motion::set_speed(int speed)
+int Motion::set_speed(int speed)
 {
 	if (disabled) {
-		return false;
+		LOG_INF("Unable to adjust speed, Motion module deactivated");
+		return -EBUSY;
 	}
 
 	if (prev_speed == speed) {
-		return false;
+		LOG_DBG("Tried to adjust speed to a value that is already set, no change made");
+		return 0;
 	}
 
 	prev_speed = speed;
 	return motor.set_speed(speed);
 }
 
-bool Motion::set_steering_angle(int angle)
+int Motion::set_steering_angle(int angle)
 {
 	if (disabled) {
-		return false;
+        LOG_INF("Unable to adjust steering angle, Motion module deactivated");
+		return -EBUSY;
 	}
 
-	if (oldServo != angle) {
-		oldServo = angle;
-		steering_servo.set_angle(angle);
-	} else {
-		return false;
-	}
+    if (oldServo == angle) {
+        LOG_DBG("Tried to adjust steering angle to a value that is already set, no change made");
+        return 0;
+    }
 
-	return true;
+	oldServo = angle;
+	return steering_servo.set_angle(angle);
 }
 
 bool Motion::set_speed_and_angle(int speed, int angle)

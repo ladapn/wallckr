@@ -35,7 +35,7 @@ class Motion
 	 * @return true if speed command is different to previous one and Motion is not disabled,
 	 * false otherwise
 	 */
-	bool set_speed(int speed);
+	int set_speed(int speed);
 	/**
 	 * Set steering servo to desired value. If the desired value is the same as in previous call
 	 * of this method, or if Motion module is disabled, nothing happens
@@ -43,7 +43,7 @@ class Motion
 	 * @return true if servo command is different to previous one and Motion is not disabled,
 	 * false otherwise
 	 */
-	bool set_steering_angle(int angle);
+	int set_steering_angle(int angle);
 	/**
 	 * Stops motor
 	 */
