@@ -101,6 +101,16 @@ public:
         perform_status_check(current_millis);
         perform_automatic_action(current_millis);
     }
+
+    /**
+     * Check if all robot components are ready
+     * @return true if all components are ready, false otherwise
+     */
+    bool is_ready()
+    {
+        //TODO
+        return true;
+    }
 };
 
 #endif
