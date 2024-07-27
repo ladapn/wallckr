@@ -1,0 +1,9 @@
+sample:
+  description: Firmware for wallckr robot
+  name: wallckr 
+common:
+  build_only: true
+  integration_platforms:
+    - nucleo_f401re
+tests:
+  app.default: {}

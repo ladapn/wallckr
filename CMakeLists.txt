@@ -1,0 +1,10 @@
+zephyr_include_directories(lib/Robot)
+zephyr_include_directories(lib/Communication)
+zephyr_include_directories(lib/Control)
+zephyr_include_directories(lib/Motion)
+zephyr_include_directories(lib/Sensing)
+
+add_subdirectory(lib/Communication)
+add_subdirectory(lib/Motion)
+add_subdirectory(lib/Control)
+add_subdirectory(lib/Sensing)
