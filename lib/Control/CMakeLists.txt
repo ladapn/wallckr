@@ -1,3 +1,2 @@
-target_sources(app PRIVATE
-	       ${CMAKE_CURRENT_SOURCE_DIR}/ExpFilter.cpp
-)
+zephyr_library()
+zephyr_library_sources(ExpFilter.cpp)

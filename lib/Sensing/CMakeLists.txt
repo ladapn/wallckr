@@ -1,4 +1,3 @@
-target_sources(app PRIVATE
-	       ${CMAKE_CURRENT_SOURCE_DIR}/Sensing.cpp
-	       ${CMAKE_CURRENT_SOURCE_DIR}/UltraSoundSensor.cpp
-		   )
+zephyr_library()
+zephyr_library_sources(Sensing.cpp
+					   UltraSoundSensor.cpp)

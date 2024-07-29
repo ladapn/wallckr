@@ -1,4 +1,4 @@
-target_sources(app PRIVATE
-	       ${CMAKE_CURRENT_SOURCE_DIR}/Motion.cpp
-	       ${CMAKE_CURRENT_SOURCE_DIR}/Motor.cpp
-	       ${CMAKE_CURRENT_SOURCE_DIR}/SteeringServo.cpp)
+zephyr_library()
+zephyr_library_sources(Motion.cpp
+					   Motor.cpp
+					   SteeringServo.cpp)
