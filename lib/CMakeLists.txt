@@ -1,0 +1,4 @@
+add_subdirectory(Communication)
+add_subdirectory_ifdef(CONFIG_WALLCKR_MOTION Motion)
+add_subdirectory(Control)
+add_subdirectory(Sensing)
