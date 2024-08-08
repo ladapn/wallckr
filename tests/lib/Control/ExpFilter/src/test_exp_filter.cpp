@@ -1,27 +1,24 @@
-#include <unity.h>
-#include <avr/sleep.h>
-#include <avr/interrupt.h>
+#include <zephyr/ztest.h>
 #include "ExpFilter.h"
 
-void setUp(void) {
-    // set stuff up here
-}
+ZTEST_SUITE(exp_fileter_tests, NULL, NULL, NULL, NULL, NULL);
 
-void tearDown(void) {
-    // clean stuff up here
-}
 
 // Encapsulate ASSERT_EQUAL macros to function with different argument types so
 // that overloading can be used to select the macros  
 void test_assert_equal(int expected, int actual)
 {
-    TEST_ASSERT_EQUAL(expected, actual); 
+    zassert_equal(expected, actual); 
 }
 
 void test_assert_equal(float expected, float actual)
 {
-    // TEST_ASSERT_EQUAL_FLOAT computes delta (epsilon) on the fly: expected * 0.00001
-    TEST_ASSERT_EQUAL_FLOAT(expected, actual);
+    // Apparently ZTEST does not have anything to compare floats/doubles
+    // But it can test if a difference of two values is within certain range 
+    // Inspiration taken from unity's TEST_ASSERT_EQUAL_FLOAT that computes delta (epsilon) 
+    // on the fly like so: expected * 0.00001
+    float epsilon = expected * 0.00001;
+    zassert_within(expected, actual, epsilon);
 }
 
 template<typename T>
@@ -36,7 +33,8 @@ void test_step(int N, const T input[], const T expected[], unsigned len)
     }
 }
 
-void test_step_N_4_int(void)
+
+ZTEST(exp_fileter_tests, test_step_N_4_int)
 {
     const int FILTER_N = 4;
     const int input[] = {0, 0, 0, 0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
@@ -45,7 +43,7 @@ void test_step_N_4_int(void)
     test_step(FILTER_N, input, expected, sizeof(input)/sizeof(input[0])); 
 }
 
-void test_step_N_4_float(void)
+ZTEST(exp_fileter_tests, test_step_N_4_float)
 {
     const int FILTER_N = 4;
     const float input[] = {0, 0, 0, 0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
@@ -58,7 +56,7 @@ void test_step_N_4_float(void)
     test_step(FILTER_N, input, expected, sizeof(input)/sizeof(input[0])); 
 }
 
-void test_step_N_10_int(void)
+ZTEST(exp_fileter_tests, test_step_N_10_int)
 {
     const int FILTER_N = 10;
     const int input[] = {0, 0, 0, 0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
@@ -67,7 +65,7 @@ void test_step_N_10_int(void)
     test_step(FILTER_N, input, expected, sizeof(input)/sizeof(input[0])); 
 }
 
-void test_step_N_10_float(void)
+ZTEST(exp_fileter_tests, test_step_N_10_float)
 {
     const int FILTER_N = 10;
     const float input[] = {0, 0, 0, 0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
@@ -77,24 +75,6 @@ void test_step_N_10_float(void)
                               79.4108867905351};
 
     test_step(FILTER_N, input, expected, sizeof(input)/sizeof(input[0])); 
-}
-
-
-int main( int argc, char **argv) {
-    UNITY_BEGIN();
-   
-    RUN_TEST(test_step_N_4_int);
-    RUN_TEST(test_step_N_4_float);
-    RUN_TEST(test_step_N_10_int);
-    RUN_TEST(test_step_N_10_float);
-
-    UNITY_END();
-
-    // Needed to stop simavr simulator after the test cases
-    cli();
-    sleep_cpu();
-
-    return 0; 
 }
 
 

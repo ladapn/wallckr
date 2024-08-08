@@ -1,0 +1,23 @@
+menu "wallckr libraries"
+
+config WALLCKR_MOTION
+	bool "Support for wallckr Motion library"
+	help
+	  This option enables the wallckr Motion library
+
+config WALLCKR_CONTROL
+	bool "Support for wallckr Control library"
+	help
+	  This option enables the wallckr Control library
+
+config WALLCKR_COMM
+	bool "Support for wallckr Communication library"
+	help
+	  This option enables the wallckr Communication library
+
+config WALLCKR_SENSING
+	bool "Support for wallckr Communication library"
+	help
+	  This option enables the wallckr Communication library
+
+endmenu

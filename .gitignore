@@ -5,4 +5,5 @@ latex/
 build*/
 compile_commands.json
 *.code-workspace
+*twister-out*/
 
