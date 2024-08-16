@@ -16,6 +16,7 @@ class Motor {
   const struct gpio_dt_spec enable = GPIO_DT_SPEC_GET(DT_NODELABEL(motor), en_gpios);
   const struct gpio_dt_spec in1 = GPIO_DT_SPEC_GET(DT_NODELABEL(motor), in1_gpios);
   const struct gpio_dt_spec in2 = GPIO_DT_SPEC_GET(DT_NODELABEL(motor), in2_gpios);
+  // TODO! Poznamenat, v bindingu musi byt -gpios a tady musi byt _ misto - ...
 
 public:
   Motor(int dir_pin, int pwm_control_pin, int break_control_pin);
@@ -27,6 +28,7 @@ public:
    * @return true if the motor is ready, false otherwise
    */
   bool is_ready();
+  int initialize();
 };
 
 #endif // MOTOR_H
