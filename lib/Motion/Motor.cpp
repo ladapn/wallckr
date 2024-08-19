@@ -3,11 +3,6 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/gpio.h>
 
-/**
- * Alias for pin states causing forward/backward motor run
- */
-//enum class MotorDirection { FORWARD = HIGH, BACKWARD = LOW };
-enum class MotorDirection { FORWARD = 1, BACKWARD = 0 };
 
 LOG_MODULE_DECLARE(Motion, LOG_LEVEL_INF);
 
@@ -42,6 +37,26 @@ int Motor::initialize()
 		LOG_ERR("Configuring motor's 'in2' GPIO pin failed: %d", err);
 		return err;
 	}
+
+    return 0;
+}
+
+int Motor::set_direction(MotorDirection dir) 
+{
+    int in1_state = (dir == MotorDirection::FORWARD) ? 1 : 0;
+    int in2_state = (dir == MotorDirection::FORWARD) ? 0 : 1;
+
+    int err = gpio_pin_set_dt(&in1, in1_state);
+    if (err != 0) {
+        LOG_ERR("Cannot set motor direction, setting in1 GPIO pin level failed: %d", err);
+        return err;
+    }
+
+    err = gpio_pin_set_dt(&in2, in2_state);
+    if (err != 0) {
+        LOG_ERR("Cannot set motor direction, setting in2 GPIO pin level failed: %d", err);
+        return err;
+    }
 
     return 0;
 }
