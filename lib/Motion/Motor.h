@@ -17,12 +17,13 @@ class Motor {
   const struct gpio_dt_spec in2 = GPIO_DT_SPEC_GET(DT_NODELABEL(motor), in2_gpios);
 
   int set_direction(MotorDirection dir);
+  int set_pwm(uint32_t pulse_width_ms);
 
 public:
   Motor(int dir_pin, int pwm_control_pin, int break_control_pin);
   Motor();
   int set_speed(int speed);
-  void stop();
+  int stop();
   /**
    * Checks if the motor is ready
    * @return true if the motor is ready, false otherwise

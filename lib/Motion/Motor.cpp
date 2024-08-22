@@ -2,6 +2,7 @@
 #include "MotionConstants.h"
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/gpio.h>
+#include <stdlib.h>
 
 
 LOG_MODULE_DECLARE(Motion, LOG_LEVEL_INF);
@@ -60,6 +61,18 @@ int Motor::set_direction(MotorDirection dir)
 
     return 0;
 }
+
+int Motor::set_pwm(uint32_t pulse_width_ms) 
+{
+    int err = pwm_set_pulse_dt(&pwm, PWM_MSEC(pulse_width_ms));
+	if (err < 0) {
+		LOG_ERR("Unable to adjust motor PWM pulse width to %d ms with error code: %d",
+			pulse_width_ms, err);
+		return err;
+	}
+
+    return 0;
+}
     
 int Motor::set_speed(int speed)
 {
@@ -71,23 +84,37 @@ int Motor::set_speed(int speed)
 		return -EINVAL;
     }
 
-    auto motorDirection = MotorDirection::FORWARD;
-
-    if (speed < 0)
-    {
-        motorDirection = MotorDirection::BACKWARD;
-        //speed = abs(speed);
+    if (speed == 0) {
+        return stop();
     }
 
-    //digitalWrite(direction_pin, static_cast<uint8_t>(motorDirection)); // Set motor direction
-    //analogWrite(pwm_pin, speed);                                       // Set the speed of the motor
+    auto motor_direction = MotorDirection::FORWARD;
 
-    return true;
+    if(speed < 0) {
+        motor_direction = MotorDirection::BACKWARD;
+        speed = abs(speed);
+    }
+
+    int err = set_direction(motor_direction);
+    if(err) {
+        LOG_ERR("Unable to set motor direction - error code: %d", err);
+        return err;
+    }
+
+    uint32_t pulse_width_ms = (pwm.period * speed) / 100;
+    err = set_pwm(pulse_width_ms);
+	if (err < 0) {
+		LOG_ERR("Unable to adjust the motor speed to %d %% with error code: %d",
+			speed, err);
+		return err;
+	}
+
+    return 0;
 }
 
-void Motor::stop()
+int Motor::stop()
 {
-    //analogWrite(pwm_pin, 0);
+    return set_pwm(0);
 }
 
 bool Motor::is_ready()
