@@ -62,12 +62,13 @@ int Motor::set_direction(MotorDirection dir)
     return 0;
 }
 
-int Motor::set_pwm(uint32_t pulse_width_ms) 
+int Motor::set_pwm(uint32_t pulse_width_ns) 
 {
-    int err = pwm_set_pulse_dt(&pwm, PWM_MSEC(pulse_width_ms));
+    LOG_DBG("Setting the motor PWM to %d ns", pulse_width_ns);
+    int err = pwm_set_pulse_dt(&pwm, PWM_NSEC(pulse_width_ns));
 	if (err < 0) {
-		LOG_ERR("Unable to adjust motor PWM pulse width to %d ms with error code: %d",
-			pulse_width_ms, err);
+		LOG_ERR("Unable to adjust motor PWM pulse width to %d ns with error code: %d",
+			pulse_width_ns, err);
 		return err;
 	}
 
@@ -101,11 +102,20 @@ int Motor::set_speed(int speed)
         return err;
     }
 
-    uint32_t pulse_width_ms = (pwm.period * speed) / 100;
-    err = set_pwm(pulse_width_ms);
+    uint32_t pulse_width_ns = (pwm.period * speed) / 100;
+    LOG_DBG("Setting the motor speed to %d %%", speed);
+    err = set_pwm(pulse_width_ns);
 	if (err < 0) {
 		LOG_ERR("Unable to adjust the motor speed to %d %% with error code: %d",
 			speed, err);
+		return err;
+	}
+
+
+    LOG_DBG("Setting motor's enable pin");
+    err = gpio_pin_set_dt(&enable, 1);
+	if (err != 0) {
+		LOG_ERR("Configuring motor's 'enable' GPIO pin failed: %d", err);
 		return err;
 	}
 
