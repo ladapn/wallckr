@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 
-LOG_MODULE_DECLARE(Motion, LOG_LEVEL_INF);
+LOG_MODULE_DECLARE(Motion, CONFIG_MOTION_LOG_LEVEL);
 
 Motor::Motor(int dir_pin, int pwm_control_pin, int brake_control_pin)
 {

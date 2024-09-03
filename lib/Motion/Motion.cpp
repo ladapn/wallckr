@@ -1,7 +1,7 @@
 #include "Motion.h"
 #include <zephyr/logging/log.h>
 
-LOG_MODULE_REGISTER(Motion, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(Motion, CONFIG_MOTION_LOG_LEVEL);
 
 bool Motion::is_ready()
 {
