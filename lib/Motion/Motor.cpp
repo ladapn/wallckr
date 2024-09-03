@@ -1,5 +1,4 @@
 #include "Motor.h"
-#include "MotionConstants.h"
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/gpio.h>
 #include <stdlib.h>
@@ -77,11 +76,11 @@ int Motor::set_pwm(uint32_t pulse_width_ns)
     
 int Motor::set_speed(int speed)
 {
-    if ((speed > MAX_SPEED) || (speed < -MAX_SPEED))
+    if ((speed >= max_speed) || (speed <= min_speed))
     {
         LOG_WRN("The specified motor speed of %d is beyond the "
 			"permissible range of <%d, %d>",
-			speed, -MAX_SPEED, MAX_SPEED);
+			speed, min_speed, max_speed);
 		return -EINVAL;
     }
 

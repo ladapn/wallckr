@@ -16,6 +16,10 @@ class Motor {
   const struct gpio_dt_spec in1 = GPIO_DT_SPEC_GET(DT_NODELABEL(motor), in1_gpios);
   const struct gpio_dt_spec in2 = GPIO_DT_SPEC_GET(DT_NODELABEL(motor), in2_gpios);
 
+  // TODO take these from DT
+  const int max_speed = 100;
+  const int min_speed = -100;
+
   int set_direction(MotorDirection dir);
   int set_pwm(uint32_t pulse_width_ns);
 
