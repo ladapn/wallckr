@@ -6,13 +6,6 @@
 
 LOG_MODULE_DECLARE(Motion, CONFIG_MOTION_LOG_LEVEL);
 
-Motor::Motor(int dir_pin, int pwm_control_pin, int brake_control_pin)
-{
-    /*direction_pin = dir_pin;
-    pwm_pin = pwm_control_pin;
-    brake_pin = brake_control_pin;*/
-}
-
 int Motor::initialize()
 {
     if (!is_ready()) {

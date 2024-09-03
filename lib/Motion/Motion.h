@@ -22,7 +22,6 @@ class Motion
 	 * motor as a safety measure
 	 */
 	Motion()
-		: motor(0, 0, 0) // FIXME
 	{
 		stop();
 	}

@@ -24,7 +24,6 @@ class Motor {
   int set_pwm(uint32_t pulse_width_ns);
 
 public:
-  Motor(int dir_pin, int pwm_control_pin, int break_control_pin);
   Motor() {};
   int set_speed(int speed);
   int stop();
