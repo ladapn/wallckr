@@ -1,0 +1,31 @@
+/ {
+    servo: servo {
+        compatible = "pwm-servo";
+        pwms = <&pwm2 1 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
+        min-pulse = <PWM_USEC(900)>;
+        max-pulse = <PWM_USEC(2100)>;
+    };
+
+    motor: motor {
+        compatible = "pwm-motor";
+        pwms = <&pwm3 1 PWM_USEC(50) PWM_POLARITY_NORMAL>;
+        en-gpios = <&arduino_header 0 GPIO_ACTIVE_HIGH>;
+        in1-gpios = <&arduino_header 13 GPIO_ACTIVE_HIGH>;
+        in2-gpios = <&arduino_header 14 GPIO_ACTIVE_HIGH>;
+    };
+};
+
+&pwm2 {
+    pinctrl-0 = < &tim2_ch1_pa15 >;
+};
+
+
+&timers3 {
+	status = "okay";
+
+	pwm3: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim3_ch1_pb4>;
+		pinctrl-names = "default";
+	};
+};
