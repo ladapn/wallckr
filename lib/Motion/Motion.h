@@ -18,13 +18,17 @@ class Motion
 
       public:
 	/**
-	 * Constructor method, configures pins attached to servo and motor controls, stops
-	 * motor as a safety measure
+	 * Constructor method
 	 */
-	Motion()
+	Motion(){}
+
+	/**
+	 * Initialize underlying components. This method MUST be called before first use of Motion
+	 */
+	int initialize()
 	{
-		stop();
-	}
+		return motor.initialize(); 
+	};
 
 	/**
 	 * Set motor speed to desired value. If the desired speed is the same as in previous call of
@@ -46,9 +50,9 @@ class Motion
 	/**
 	 * Stops motor
 	 */
-	void stop()
+	int stop()
 	{
-		motor.stop();
+		return motor.stop();
 	};
 	/**
 	 * Set motor speed and steering servo angle to desired values. This is equivalent to calling
