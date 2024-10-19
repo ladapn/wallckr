@@ -1,0 +1,3 @@
+module = MOTION
+module-str = motion
+source "subsys/logging/Kconfig.template.log_config"

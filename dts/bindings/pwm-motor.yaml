@@ -1,0 +1,24 @@
+description: PWM-driven DC motor.
+
+compatible: "pwm-motor"
+
+include: base.yaml
+
+properties:
+  pwms:
+    required: true
+    type: phandle-array
+    description: PWM specifier driving the DC motor.
+  en-gpios:
+    required: true
+    type: phandle-array
+    description: GPIO connected to DC motor enable pin.
+  in1-gpios:
+    required: true
+    type: phandle-array
+    description: GPIO connected to DC motor control input 1.
+  in2-gpios:
+    required: true
+    type: phandle-array
+    description: GPIO connected DC motor control input 2.
+  

@@ -20,4 +20,8 @@ config WALLCKR_SENSING
 	help
 	  This option enables the wallckr Communication library
 
+menu "Logging"
+rsource "Motion/Kconfig"
+endmenu 
+
 endmenu
