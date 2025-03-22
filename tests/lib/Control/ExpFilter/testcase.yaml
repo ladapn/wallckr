@@ -2,7 +2,7 @@ common:
   tags: extensibility
   integration_platforms:
     - nucleo_f401re
-    - nrf5340dk_nrf5340_cpuapp
+    - nrf5340dk/nrf5340/cpuapp
     - native_sim
 tests:
   lib.control.expfilter: {}
