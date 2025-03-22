@@ -1,9 +1,18 @@
+# Tools and extensions
 .pio/
-.vscode/
+.codechecker/
+cov-int/
+
+# Doc
 html/
 latex/
+
+# Build artifacts
 build*/
 compile_commands.json
-*.code-workspace
+*.tgz
 *twister-out*/
 
+# VS Code
+.vscode/
+*.code-workspace
