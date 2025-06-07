@@ -29,3 +29,18 @@
 		pinctrl-names = "default";
 	};
 };
+
+/* sacrifice scratch partition so we can store settings */
+/delete-node/ &scratch_partition;
+
+&flash0 {
+    partitions {
+        compatible = "fixed-partitions";
+        storage_partition: partition@60000 {
+			label = "storage";
+			reg = < 0x60000 0x20000 >;
+		};
+    };
+};
+
+
