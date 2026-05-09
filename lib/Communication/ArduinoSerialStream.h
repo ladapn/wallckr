@@ -1,5 +1,5 @@
-#ifndef ARDUINOSERIAKSTREAM_H
-#define ARDUINOSERIAKSTREAM_H
+#ifndef ARDUINO_SERIAL_STREAM_H
+#define ARDUINO_SERIAL_STREAM_H
 
 #include <Arduino.h>
 #include "IRobotIOStream.h"
@@ -30,4 +30,4 @@ public:
     }
 };
 
-#endif // ARDUINOSERIAKSTREAM_H
+#endif // ARDUINO_SERIAL_STREAM_H

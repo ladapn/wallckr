@@ -1,8 +1,23 @@
+# PlatformIO
 .pio/
+
+# Visual Studio Code
 .vscode/
+*.code-workspace
+
+# Doxygen
 html/
 latex/
+
+# Zephyr experiments
 build*/
 compile_commands.json
-*.code-workspace
+twister*/
+
+# Tools
+cov-int*/
+
+# Archives
+*.tgz
+
 

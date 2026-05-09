@@ -18,7 +18,7 @@
  * Class representing the robot. It encapsulates sensing, motion and automatic operation
  */
 class Robot
-{   
+{
     Sensing &robot_sensing;
     Motion &robot_motion;
     AutoSteering<int> &wall_following_steering;
@@ -33,19 +33,19 @@ class Robot
 public:
     /**
      * Constructor method
-     * @param[in] sensing object representing robot's sensing ability 
+     * @param[in] sensing object representing robot's sensing ability
      * @param[in] motion object representing robot's motion ability
      * @param[in] steering object responsible for automatic steering
      * @param[in] command_decoder object to decode external commands from user
-     * @param[in] bar object representing row of LEDs 
-     */ 
-    Robot(Sensing &sensing, Motion &motion, AutoSteering<int> &steering, ExternalCommandDecoder &command_decoder, LEDBar &bar) : robot_sensing(sensing), 
-    robot_motion(motion), 
+     * @param[in] bar object representing row of LEDs
+     */
+    Robot(Sensing &sensing, Motion &motion, AutoSteering<int> &steering, ExternalCommandDecoder &command_decoder, LEDBar &bar) : robot_sensing(sensing),
+    robot_motion(motion),
     wall_following_steering(steering),
     external_command_decoder(command_decoder),
     ledbar(bar)
     {
-        
+
     }
 
     /**
@@ -73,26 +73,33 @@ public:
      */
     void perform_automatic_action(unsigned long current_millis)
     {
-        if (time_manager.isTimeForAutomaticCommand(current_millis))
-        {
-            DistanceMeasurements distance_measurements;
-            robot_sensing.get_distance_measurements(current_millis, distance_measurements);   
-            robot_command.desired_servo_angle = wall_following_steering.get_steering_command(distance_measurements, robot_command.enable_automatic_operation);
+        if (!time_manager.isTimeForAutomaticCommand(current_millis)) {
+            return;
+        }
+
+        // Always evaluate measurements and desired servo angle, even if automatic operation is disabled, to be able to switch it on immediately when needed.
+        DistanceMeasurements distance_measurements;
+        robot_sensing.get_distance_measurements(current_millis, distance_measurements);
+        auto desired_servo_angle  = wall_following_steering.get_steering_command(distance_measurements);
+
+        // TODO: don't check the command, instead introduce robot state field that is set to AUTOMATIC or MANUAL based on external command, and check it here.
+        if(robot_command.enable_automatic_operation) {
+            robot_command.desired_servo_angle = desired_servo_angle;
         }
     }
 
     /**
      * Check if there is a new external command from user and if so, convert it into RobotCommand instance
-     */ 
+     */
     void check_external_command()
     {
         external_command_decoder.check_external_command(robot_command);
     }
 
     /**
-     * Perform one step of robot's main loop. Namely, check external command, perform status check, automatic action and command robot's motion 
+     * Perform one step of robot's main loop. Namely, check external command, perform status check, automatic action and command robot's motion
      * accordingly
-     * @param[in] current_millis current system time in ms 
+     * @param[in] current_millis current system time in ms
      */
     void main_loop(unsigned long current_millis)
     {
