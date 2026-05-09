@@ -31,14 +31,9 @@ public:
         AVOIDING_DISTANCE_THR_CM = side_distance_setpoint_cm + TURNING_RADIUS_CM; 
     };
 
-    int get_steering_command(const DistanceMeasurements &distance_measurements, bool enable_automatic_operation)
+    int get_steering_command(const DistanceMeasurements &distance_measurements)
     {
         auto desired_servo = servo_cmd_filter.next(side_distance_regulator.action(distance_measurements.right_distance_cm)) + SERVO_CENTER;
-        
-        if (!enable_automatic_operation)
-        {
-            return desired_servo;
-        }        
 
         switch(automatic_state)
         {
