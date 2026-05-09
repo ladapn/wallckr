@@ -39,7 +39,7 @@ void loop()
   const int INSENSITIV_CM = 2;
   Regulator_P<int> side_distance_regulator = Regulator_P<int>(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
   LEDBar ledbar;
-  AutoSteering<int> wall_following_steering = AutoSteering<int>(RIGHT_DISTANCE_SETPOINT_CM, ledbar, side_distance_regulator, servo_cmd_filter);
+  AutoSteering<int> wall_following_steering = AutoSteering<int>(RIGHT_DISTANCE_SETPOINT_CM, side_distance_regulator, servo_cmd_filter);
 
   Robot robot(robot_sensing, robot_motion, wall_following_steering, external_command_decoder, ledbar);
 
