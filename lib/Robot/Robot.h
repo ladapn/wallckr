@@ -85,6 +85,16 @@ public:
         // TODO: don't check the command, instead introduce robot state field that is set to AUTOMATIC or MANUAL based on external command, and check it here.
         if(robot_command.enable_automatic_operation) {
             robot_command.desired_servo_angle = desired_servo_angle;
+
+            auto steering_state = wall_following_steering.get_steering_state();
+            if (steering_state == SteeringState::AVOIDING) {
+                ledbar.switchLEDoff(LED1);
+                ledbar.switchLEDon(LED2);
+            }
+            else {
+                ledbar.switchLEDon(LED1);
+                ledbar.switchLEDoff(LED2);
+            }
         }
     }
 
