@@ -3,7 +3,8 @@
 #include <zephyr/drivers/gpio.h>
 #include <stdlib.h>
 
-
+// TODO: vlastni log module pro Motor
+// TODO: prejmenovat motor na motor_controller nebo neco podobneho, aby bylo jasne, ze to neni jenom wrapper pro PWM, ale i pro GPIO a logiku kolem toho
 LOG_MODULE_DECLARE(Motion, CONFIG_MOTION_LOG_LEVEL);
 
 int Motor::initialize()
@@ -13,21 +14,9 @@ int Motor::initialize()
         return -EBUSY; 
     }
 
-    int err = gpio_pin_configure_dt(&enable, GPIO_OUTPUT_INACTIVE);
+    int err = gpio_pin_configure_dt(&ph, GPIO_OUTPUT_INACTIVE);
 	if (err != 0) {
-		LOG_ERR("Configuring motor's 'enable' GPIO pin failed: %d", err);
-		return err;
-	}
-
-    err = gpio_pin_configure_dt(&in1, GPIO_OUTPUT_INACTIVE);
-	if (err != 0) {
-		LOG_ERR("Configuring motor's 'in1' GPIO pin failed: %d", err);
-		return err;
-	}
-
-    err = gpio_pin_configure_dt(&in2, GPIO_OUTPUT_INACTIVE);
-	if (err != 0) {
-		LOG_ERR("Configuring motor's 'in2' GPIO pin failed: %d", err);
+		LOG_ERR("Configuring motor's 'PH' GPIO pin failed: %d", err);
 		return err;
 	}
 
@@ -36,18 +25,11 @@ int Motor::initialize()
 
 int Motor::set_direction(MotorDirection dir) 
 {
-    int in1_state = (dir == MotorDirection::FORWARD) ? 1 : 0;
-    int in2_state = (dir == MotorDirection::FORWARD) ? 0 : 1;
+    int ph_state = (dir == MotorDirection::FORWARD) ? 1 : 0;
 
-    int err = gpio_pin_set_dt(&in1, in1_state);
+    int err = gpio_pin_set_dt(&ph, ph_state);
     if (err != 0) {
-        LOG_ERR("Cannot set motor direction, setting in1 GPIO pin level failed: %d", err);
-        return err;
-    }
-
-    err = gpio_pin_set_dt(&in2, in2_state);
-    if (err != 0) {
-        LOG_ERR("Cannot set motor direction, setting in2 GPIO pin level failed: %d", err);
+        LOG_ERR("Cannot set motor direction, setting ph GPIO pin level failed: %d", err);
         return err;
     }
 
@@ -103,14 +85,6 @@ int Motor::set_speed(int speed)
 		return err;
 	}
 
-
-    LOG_DBG("Setting motor's enable pin");
-    err = gpio_pin_set_dt(&enable, 1);
-	if (err != 0) {
-		LOG_ERR("Configuring motor's 'enable' GPIO pin failed: %d", err);
-		return err;
-	}
-
     return 0;
 }
 
@@ -126,18 +100,8 @@ bool Motor::is_ready()
 		return false;
 	}
 
-    if (!gpio_is_ready_dt(&enable)) {
-		LOG_ERR("Motor's 'enable' pin not ready");
-		return false;
-	}
-
-    if (!gpio_is_ready_dt(&in1)) {
-		LOG_ERR("Motor's 'in1' pin not ready");
-		return false;
-	}
-
-    if (!gpio_is_ready_dt(&in2)) {
-		LOG_ERR("Motor's 'in2' pin not ready");
+    if (!gpio_is_ready_dt(&ph)) {
+		LOG_ERR("Motor's Phase pin not ready");
 		return false;
 	}
 
