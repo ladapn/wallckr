@@ -3,9 +3,11 @@
 
 /**
  * Interface for sensors measuring distance
- */ 
+ */
 class IDistanceSensor {
 public:
+    virtual ~IDistanceSensor() = default;
+
     /**
      * Command sensor to measure distance
      * @return true if measurement was successful, false otherwise
