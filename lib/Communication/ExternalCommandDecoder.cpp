@@ -13,25 +13,25 @@ bool ExternalCommandDecoder::check_external_command(RobotCommand &robot_command)
       switch(incoming_cmd)
       {
         case JoystickCommand::UP:
-          if(robot_command.desired_speed < MAX_SPEED)
+          if(robot_command.desired_speed + SPEED_INCREMENT <= MAX_SPEED)
           {
             robot_command.desired_speed += SPEED_INCREMENT;
           }
         break;
         case JoystickCommand::DOWN:
-          if(robot_command.desired_speed > -MAX_SPEED)
+          if(robot_command.desired_speed - SPEED_INCREMENT >= -MAX_SPEED)
           {
             robot_command.desired_speed -= SPEED_INCREMENT;
           }
         break;
         case JoystickCommand::RIGHT:
-          if(robot_command.desired_servo_angle > SERVO_MIN_RIGHT)
+          if(robot_command.desired_servo_angle - SERVO_INCREMENT >= SERVO_MIN_RIGHT)
           {
             robot_command.desired_servo_angle -= SERVO_INCREMENT;
           }
         break;
         case JoystickCommand::LEFT:
-          if(robot_command.desired_servo_angle < SERVO_MAX_LEFT)
+          if(robot_command.desired_servo_angle + SERVO_INCREMENT <= SERVO_MAX_LEFT)
           {
             robot_command.desired_servo_angle += SERVO_INCREMENT;
           }
@@ -43,14 +43,14 @@ bool ExternalCommandDecoder::check_external_command(RobotCommand &robot_command)
           robot_command.enable_automatic_operation = !robot_command.enable_automatic_operation;
         break;
         default:
-          robot_command.desired_speed = 0; 
+          robot_command.desired_speed = 0;
       }
     }
     else
     {
-      return false; 
+      return false;
     }
 
-    return true; 
+    return true;
 
 }
