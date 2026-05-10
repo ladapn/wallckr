@@ -8,6 +8,8 @@ template <typename T>
 class IFilter
 {
 public:
+    virtual ~IFilter() = default;
+
     /**
      * Get next filter output value
      * @param[in] input filters input for current step
