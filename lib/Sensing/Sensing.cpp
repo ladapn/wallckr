@@ -1,5 +1,6 @@
 #include "Sensing.h"
 #include "RobotPackets.h"
+#include "RobotPrinter.h"
 
 bool Sensing::battery_voltage_ok(long currentMillis)
 {
