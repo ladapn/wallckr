@@ -4,6 +4,7 @@
 #include "../../common/simulated_uart.h"
 #include "../../common/stop_simavr.h"
 #include "RobotPackets.h"
+#include "RobotPrinter.h"
 #include "RobotCommand.h"
 #include "MotionConstants.h"
 #include "ArduinoSerialStream.h"
