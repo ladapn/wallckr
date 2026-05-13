@@ -92,9 +92,8 @@ uint8_t RobotPrinter::compute_xor_CRC(const uint8_t *buffer, size_t size)
     return CRC;
 }
 
-size_t RobotPrinter::add_CRC_and_print(uint8_t *buffer, size_t size)
+size_t RobotPrinter::write_serialized(uint8_t *buffer, size_t size)
 {
-
     buffer[size - 1] = compute_xor_CRC(buffer, size);
     return robot_serial.write(buffer, size);
 }

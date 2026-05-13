@@ -19,73 +19,73 @@ void tearDown(void) {
 
 void test_status_packet(void)
 {
-    const int CURRENT_TICK = 1000; 
+    const int CURRENT_TICK = 1000;
     const int BATTERY_VOLTAGE = 100;
     const int TOTAL_CURRENT = 0;
-    const int MOTOR_CURRENT = 0; 
+    const int MOTOR_CURRENT = 0;
     StatusPacket status_packet(CURRENT_TICK, BATTERY_VOLTAGE, TOTAL_CURRENT, MOTOR_CURRENT);
     status_packet.version_ID = 0xAB;
     // NOTE: AVR is little endian, i.e. LSB goes first
-    uint8_t expected[] = {0x50,                     // id 
+    uint8_t expected[] = {0x50,                     // id
                           0xE8, 0x03, 0x00, 0x00,   // tick
                           0xAB, 0x00, 0x00, 0x00,   // version ID
                           0x64, 0x00,               // battery voltage
                           0x00, 0x00,               // total current
                           0x00, 0x00,               // motor current
-                          0x74};                    // CRC    
+                          0x74};                    // CRC
 
     SimulatedUART sim_uart;
-    ArduinoSerialStream ard_stream(sim_uart); 
+    ArduinoSerialStream ard_stream(sim_uart);
     RobotPrinter printer(ard_stream);
 
-    printer.add_CRC_and_print(reinterpret_cast<uint8_t*>(&status_packet), sizeof(status_packet));
+    printer.print(status_packet);
 
     uint8_t actual[sizeof(expected)];
     for(unsigned i = 0; i < sizeof(expected); i++)
     {
         actual[i] = sim_uart.read();
-    }    
-    
+    }
+
     TEST_ASSERT_EQUAL_MEMORY(expected, actual, sizeof(expected));
 }
 
 void test_sonar_packet(void)
-{    
-    const int PACKET_ID = 101; 
-    const unsigned long CURRENT_TICK = 1000; 
+{
+    const int PACKET_ID = 101;
+    const unsigned long CURRENT_TICK = 1000;
     const unsigned long MEASUREMENT = 0xdeadbeef;
 
-    SonarPacket sonar_packet(PACKET_ID, CURRENT_TICK, MEASUREMENT); 
+    SonarPacket sonar_packet(PACKET_ID, CURRENT_TICK, MEASUREMENT);
     // NOTE: AVR is little endian, i.e. LSB goes first
-    uint8_t expected[] = {0x65,                     // id 
+    uint8_t expected[] = {0x65,                     // id
                           0xE8, 0x03, 0x00, 0x00,   // tick
                           0xEF, 0xBE, 0xAD, 0xDE,   // measurement
-                          0xAC};                    // CRC    
+                          0xAC};                    // CRC
 
     SimulatedUART sim_uart;
-    ArduinoSerialStream ard_stream(sim_uart); 
+    ArduinoSerialStream ard_stream(sim_uart);
     RobotPrinter printer(ard_stream);
 
-    printer.add_CRC_and_print(reinterpret_cast<uint8_t*>(&sonar_packet), sizeof(sonar_packet));
+    printer.print(sonar_packet);
 
     uint8_t actual[sizeof(expected)];
     for(unsigned i = 0; i < sizeof(expected); i++)
     {
         actual[i] = sim_uart.read();
-    }    
-    
+    }
+
     TEST_ASSERT_EQUAL_MEMORY(expected, actual, sizeof(expected));
 }
 
 int main( int argc, char **argv) {
     UNITY_BEGIN();
-   
+
     RUN_TEST(test_status_packet);
     RUN_TEST(test_sonar_packet);
-    
+
     UNITY_END();
 
     stop_simavr();
 
-    return 0; 
+    return 0;
 }

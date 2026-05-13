@@ -130,20 +130,36 @@ class RobotPrinter
      * @return computed CRC
      */
     uint8_t compute_xor_CRC(const uint8_t *buffer, size_t size);
-public:
-    /**
-     * Constructor method
-     * @param[in] serial serial interface packets are sent to
-     */
-    explicit RobotPrinter(IRobotIOStream &serial) : robot_serial(serial) {};
     /**
      * Compute packet's CRC and send it out
      * @param[in] buffer chunk of data containing packet
      * @param[in] size size of packet in bytes
      * @return number of bytes written
      */
-    size_t add_CRC_and_print(uint8_t *buffer, size_t size);
+    size_t write_serialized(uint8_t *buffer, size_t size);
+public:
+    /**
+     * Constructor method
+     * @param[in] serial serial interface packets are sent to
+     */
+    explicit RobotPrinter(IRobotIOStream &serial) : robot_serial(serial) {};
 
+    /**
+     * Serialize packet and send it out. CRC is computed and added to the end of serialized packet before sending.
+     * @param[in] packet packet to be sent out
+     * @return number of bytes written, 0 if serialization failed
+     */
+    template <typename PacketType>
+    size_t print(const PacketType &packet)
+    {
+        uint8_t buffer[PacketType::SERIALIZED_SIZE];
+        if(!packet.serialize(buffer, PacketType::SERIALIZED_SIZE))
+        {
+            return 0;
+        }
+
+        return write_serialized(buffer, PacketType::SERIALIZED_SIZE);
+    }
 };
 
 #endif
