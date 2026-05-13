@@ -49,6 +49,7 @@ struct SonarPacket {
  * Structure representing status packet - packet holding information about robot's status
  */
 struct StatusPacket {
+    static constexpr size_t SERIALIZED_SIZE = 16;
     uint8_t id = STATUS_ID;
     uint32_t tick;
     uint32_t version_ID = GIT_REV; // long -> 4 bytes, instead of 8 chars
@@ -72,12 +73,21 @@ struct StatusPacket {
     {
     }
 
+    /**
+     * Serialize packet fields in the wire format. CRC field is reserved for RobotPrinter.
+     * @param[out] buffer chunk of data to hold serialized packet
+     * @param[in] buffer_size size of buffer in bytes, it should be at least SERIALIZED_SIZE
+     * @return true if serialization was successful, false otherwise
+     */
+    bool serialize(uint8_t *buffer, size_t buffer_size) const;
+
 };
 
 /**
  * Structure representing motion command packet -> packet sent back when a motion command is received from user
  */
 struct MotionCommandPacket {
+    static constexpr size_t SERIALIZED_SIZE = 10;
     uint8_t id = MOTION_CMD_ID;
     uint32_t tick;
     uint16_t servo_cmd;
@@ -95,6 +105,14 @@ struct MotionCommandPacket {
     servo_cmd(servo_command),
     motor_cmd(motor_command)
     {}
+
+    /**
+     * Serialize packet fields in the wire format. CRC field is reserved for RobotPrinter.
+     * @param[out] buffer chunk of data to hold serialized packet
+     * @param[in] buffer_size size of buffer in bytes, it should be at least SERIALIZED_SIZE
+     * @return true if serialization was successful, false otherwise
+     */
+    bool serialize(uint8_t *buffer, size_t buffer_size) const;
 };
 
 class IRobotIOStream;

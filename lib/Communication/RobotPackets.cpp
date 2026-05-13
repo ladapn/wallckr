@@ -33,7 +33,43 @@ bool SonarPacket::serialize(uint8_t *buffer, size_t buffer_size) const
     append_uint8(buffer, offset, id);
     append_uint32_le(buffer, offset, tick);
     append_uint32_le(buffer, offset, sonar_data);
-    append_uint32_le(buffer, offset, 0); // CRC is reserved for RobotPrinter - it will be overwritten there
+    append_uint8(buffer, offset, 0); // CRC is reserved for RobotPrinter - it will be overwritten there
+
+    return true;
+}
+
+bool StatusPacket::serialize(uint8_t *buffer, size_t buffer_size) const
+{
+    if(buffer == nullptr || buffer_size < SERIALIZED_SIZE)
+    {
+        return false;
+    }
+
+    size_t offset = 0;
+    append_uint8(buffer, offset, id);
+    append_uint32_le(buffer, offset, tick);
+    append_uint32_le(buffer, offset, version_ID);
+    append_uint16_le(buffer, offset, battery_voltage_adc);
+    append_uint16_le(buffer, offset, total_current_adc);
+    append_uint16_le(buffer, offset, motor_current_adc);
+    append_uint8(buffer, offset, 0); // CRC is reserved for RobotPrinter - it will be overwritten there
+
+    return true;
+}
+
+bool MotionCommandPacket::serialize(uint8_t *buffer, size_t buffer_size) const
+{
+    if(buffer == nullptr || buffer_size < SERIALIZED_SIZE)
+    {
+        return false;
+    }
+
+    size_t offset = 0;
+    append_uint8(buffer, offset, id);
+    append_uint32_le(buffer, offset, tick);
+    append_uint16_le(buffer, offset, servo_cmd);
+    append_uint16_le(buffer, offset, static_cast<uint16_t>(motor_cmd)); // cast int16 to uint16 for little-endian bytes
+    append_uint8(buffer, offset, 0); // CRC is reserved for RobotPrinter - it will be overwritten there
 
     return true;
 }
