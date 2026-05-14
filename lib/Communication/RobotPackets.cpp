@@ -8,16 +8,16 @@ namespace {
 
     void append_uint16_le(uint8_t *buffer, size_t &offset, uint16_t value)
     {
-        buffer[offset++] = static_cast<uint8_t>(value & 0xFF);
-        buffer[offset++] = static_cast<uint8_t>((value >> 8) & 0xFF);
+        buffer[offset++] = static_cast<uint8_t>(value);
+        buffer[offset++] = static_cast<uint8_t>(value >> 8);
     }
 
     void append_uint32_le(uint8_t *buffer, size_t &offset, uint32_t value)
     {
-        buffer[offset++] = static_cast<uint8_t>(value & 0xFF);
-        buffer[offset++] = static_cast<uint8_t>((value >> 8) & 0xFF);
-        buffer[offset++] = static_cast<uint8_t>((value >> 16) & 0xFF);
-        buffer[offset++] = static_cast<uint8_t>((value >> 24) & 0xFF);
+        buffer[offset++] = static_cast<uint8_t>(value);
+        buffer[offset++] = static_cast<uint8_t>(value >> 8);
+        buffer[offset++] = static_cast<uint8_t>(value >> 16);
+        buffer[offset++] = static_cast<uint8_t>(value >> 24);
     }
 }
 
