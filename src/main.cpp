@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Robot.h"
 #include "ArduinoSerialStream.h"
+#include "ArduinoBatterySensor.h"
 #include "RobotPrinter.h"
 
 void setup()
@@ -26,7 +27,8 @@ void loop()
   UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE_CM);
   UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE_CM);
   DistanceSensors distance_sensors = { sonar_front, sonar_right_front, sonar_right_center };
-  Sensing robot_sensing(distance_sensors, BLE_out);
+  ArduinoBatterySensor battery_sensor;
+  Sensing robot_sensing(distance_sensors, battery_sensor, BLE_out);
 
   Motion robot_motion;
 

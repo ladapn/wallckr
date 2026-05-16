@@ -14,11 +14,6 @@ class ArduinoBatterySensor : public IBatterySensor
     static const uint16_t ADC_MAX = 1023;
 public:
     /**
-     * Constructor method
-     */
-    ArduinoBatterySensor();
-
-    /**
      * Method to get battery voltage in ADC units
      * @return battery voltage in ADC units
      */

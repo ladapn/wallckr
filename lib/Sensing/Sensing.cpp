@@ -4,11 +4,10 @@
 
 bool Sensing::battery_voltage_ok(long currentMillis)
 {
-    auto battery_voltage_adc = analogRead(SNS_BATTERY_VLTG);
+    auto battery_voltage_adc = battery_sensor.get_battery_voltage_adc();
 
     StatusPacket status_data(currentMillis, battery_voltage_adc, 0, 0);
 
-    //sensor_printer.BLE_print_status_data(STATUS_ID, currentMillis, battery_voltage_adc);
     sensor_printer.print(status_data);
 
     if(battery_voltage_adc <= BATTERY_PACK_CUTTOFF_ADC)
@@ -31,7 +30,6 @@ unsigned int Sensing::get_front_distance_cm(long currentMillis)
 
     SonarPacket sonar_packet(FRONT_US_ID, currentMillis, front_sonar_cm);
 
-    //sensor_printer.BLE_print_US_data(FRONT_US_ID, currentMillis, front_sonar_cm);
     sensor_printer.print(sonar_packet);
 
     return front_sonar_cm;

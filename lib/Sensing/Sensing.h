@@ -2,6 +2,7 @@
 #define SENSING_H
 
 #include "UltraSoundSensor.h"
+#include "IBatterySensor.h"
 
 class RobotPrinter;
 
@@ -46,6 +47,7 @@ class Sensing
     static const int SNS_BATTERY_VLTG = A8;
 
     DistanceSensors sensors;
+    IBatterySensor &battery_sensor;
 
     RobotPrinter &sensor_printer;
 
@@ -59,8 +61,9 @@ public:
      * @param[in] right_center reference to right center sensor (90 deg from front direction)
      * @param[in] printer reference to serial interface which is used to send out measured data
      */
-    Sensing(DistanceSensors &distance_sensors, RobotPrinter &printer) :
+    Sensing(DistanceSensors &distance_sensors, IBatterySensor &battery_sensor, RobotPrinter &printer) :
                 sensors(distance_sensors),
+                battery_sensor(battery_sensor),
                 sensor_printer(printer),
                 disabled(false) {};
 
