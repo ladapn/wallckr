@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Robot.h"
 #include "ArduinoSerialStream.h"
+#include "RobotPrinter.h"
 
 void setup()
 {

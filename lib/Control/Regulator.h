@@ -113,9 +113,12 @@ protected:
         {
             m_first_run = false;
             m_last_e = e; 
+            return this->m_gain * e;
         }
 
-        return this->m_gain * e + (e - m_last_e) * m_D_gain;
+        T result = this->m_gain * e + (e - m_last_e) * m_D_gain;
+        m_last_e = e;
+        return result;
     }
 
 public:
