@@ -2,7 +2,7 @@
 #define SENSING_H
 
 #include "IBatterySensor.h"
-#include "UltraSoundSensor.h"
+#include "IDistanceSensor.h"
 
 class RobotPrinter;
 
