@@ -41,7 +41,7 @@ class Sensing {
   static constexpr uint16_t BATTERY_CELL_CUTTOFF_mVDC = 900;
   static constexpr uint16_t BATTERY_PACK_CUTTOFF_mVDC =
       BATTERY_CELL_CUTTOFF_mVDC * BATTERY_CELL_COUNT / VOLTAGE_DIVIDER_FACTOR;
-  static constexpr uint16_t BATTERY_HYSITERESIS_mVDC = 100;
+  static constexpr uint16_t BATTERY_HYSITERESIS_mVDC = 50;
   DistanceSensors sensors;
   IBatterySensor &battery_sensor;
 
