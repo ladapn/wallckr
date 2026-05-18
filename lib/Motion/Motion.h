@@ -2,7 +2,6 @@
 #define MOTION_H
 
 #include "IMotorController.h"
-#include "MotionConstants.h"
 #include "ISteeringServo.h"
 
 // TODO: move elsewhere
@@ -18,7 +17,7 @@ const int MOTOR_BRAKE_PIN = 9;
  */
 class Motion {
   int prev_speed = 0;
-  int oldServo = SERVO_CENTER;
+  int oldServo = 0;
   IMotorController &motor;
   ISteeringServo &steering_servo;
   bool disabled = false;
