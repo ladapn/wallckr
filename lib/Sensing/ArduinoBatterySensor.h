@@ -23,7 +23,7 @@ public:
      * Method to get battery voltage in volts
      * @return battery voltage in volts
      */
-    uint16_t get_battery_voltage_V() override;
+    uint16_t get_battery_voltage_VDC() override;
 };
 
 #endif // ARDUINOBATTERYSENSOR_H

@@ -17,7 +17,7 @@ public:
      * Method to get battery voltage in volts
      * @return battery voltage in volts
      */
-    virtual uint16_t get_battery_voltage_V() = 0;
+    virtual uint16_t get_battery_voltage_VDC() = 0;
 
     virtual ~IBatterySensor() = default;
 };

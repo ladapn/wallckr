@@ -42,8 +42,9 @@ class Sensing
     static const int ADC_REFERENCE_V = 5;
     static const int ADC_MAX = 1023;
     static const int VOLTAGE_DIVIDER_FACTOR = 16;
-    static constexpr float BATTERY_CELL_CUTTOFF_V = 0.9f;
-    static const int BATTERY_PACK_CUTTOFF_ADC = (BATTERY_CELL_CUTTOFF_V / ADC_REFERENCE_V * ADC_MAX * BATTERY_CELL_COUNT) / VOLTAGE_DIVIDER_FACTOR;
+    static constexpr float BATTERY_CELL_CUTTOFF_VDC = 0.9f;
+    static constexpr float BATTERY_PACK_CUTTOFF_VDC = BATTERY_CELL_CUTTOFF_VDC * BATTERY_CELL_COUNT / VOLTAGE_DIVIDER_FACTOR;
+    static const int BATTERY_PACK_CUTTOFF_ADC = (BATTERY_CELL_CUTTOFF_VDC / ADC_REFERENCE_V * ADC_MAX * BATTERY_CELL_COUNT) / VOLTAGE_DIVIDER_FACTOR;
     static const int SNS_BATTERY_VLTG = A8;
 
     DistanceSensors sensors;
@@ -51,6 +52,7 @@ class Sensing
 
     RobotPrinter &sensor_printer;
 
+    bool battery_dead = false;
     bool disabled;
 
 public:

@@ -53,7 +53,7 @@ struct StatusPacket {
     uint8_t id = STATUS_ID;
     uint32_t tick;
     uint32_t version_ID = GIT_REV; // long -> 4 bytes, instead of 8 chars
-    uint16_t battery_voltage_adc; // analogRead() returns int; int is 2 bytes long on ATmega
+    uint16_t battery_voltage_vdc;
     uint16_t total_current_adc;
     uint16_t motor_current_adc;
     uint8_t crc = 0;
@@ -61,13 +61,13 @@ struct StatusPacket {
     /**
      * Constructor method
      * @param[in] tick_ms current system time in ms
-     * @param[in] battery_voltage current battery voltage in ADC units
+     * @param[in] battery_voltage current battery voltage in VDC units
      * @param[in] total_current total current drawn from battery in mA
      * @param[in] motor_current total current drawn by motor in mA
      */
     StatusPacket(uint32_t tick_ms, uint16_t battery_voltage, uint16_t total_current, uint16_t motor_current) :
     tick(tick_ms),
-    battery_voltage_adc(battery_voltage),
+    battery_voltage_vdc(battery_voltage),
     total_current_adc(total_current),
     motor_current_adc(motor_current)
     {
