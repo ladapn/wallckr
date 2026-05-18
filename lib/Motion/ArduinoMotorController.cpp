@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Motor.h"
+#include "ArduinoMotorController.h"
 #include "MotionConstants.h"
 
 /**
@@ -7,7 +7,7 @@
  */
 enum class MotorDirection { FORWARD = HIGH, BACKWARD = LOW };
 
-Motor::Motor(int dir_pin, int pwm_control_pin, int brake_control_pin)
+ArduinoMotorController::ArduinoMotorController(int dir_pin, int pwm_control_pin, int brake_control_pin)
 {
     direction_pin = dir_pin;
     pwm_pin = pwm_control_pin;
@@ -16,16 +16,16 @@ Motor::Motor(int dir_pin, int pwm_control_pin, int brake_control_pin)
     // Direction pin on channel A
     pinMode(direction_pin, OUTPUT);
 
-    // TODO: break is currently unused 
+    // TODO: break is currently unused
     pinMode(brake_pin, OUTPUT);
-        
+
     // set prescaler for Timer 3 (pin 3) to 1 to get 31372.55 Hz
-    // to get motor PWM from audible range 
-    TCCR3B = (TCCR3B & 0b11111000) | 0x01;  
+    // to get motor PWM from audible range
+    TCCR3B = (TCCR3B & 0b11111000) | 0x01;
 
 }
-    
-bool Motor::set_speed(int speed)
+
+bool ArduinoMotorController::set_speed(int speed)
 {
     if ((speed > MAX_SPEED) || (speed < -MAX_SPEED))
     {
@@ -46,7 +46,7 @@ bool Motor::set_speed(int speed)
     return true;
 }
 
-void Motor::stop()
+void ArduinoMotorController::stop()
 {
     analogWrite(pwm_pin, 0);
 }

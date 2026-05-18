@@ -1,15 +1,17 @@
-#ifndef MOTOR_H
-#define MOTOR_H
+#ifndef ARDUINO_MOTOR_CONTROLLER_H
+#define ARDUINO_MOTOR_CONTROLLER_H
 
-class Motor
+#include "IMotorController.h"
+
+class ArduinoMotorController : public IMotorController
 {
     int pwm_pin;
     int direction_pin;
     int brake_pin;
 public:
-    Motor(int dir_pin, int pwm_control_pin, int break_control_pin);
+    ArduinoMotorController(int dir_pin, int pwm_control_pin, int break_control_pin);
     bool set_speed(int speed);
     void stop();
 };
 
-#endif // MOTOR_H
+#endif // ARDUINO_MOTOR_CONTROLLER_H
