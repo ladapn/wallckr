@@ -9,7 +9,7 @@
  */
 class ArduinoBatterySensor : public IBatterySensor {
   static const uint8_t SNS_BATTERY_VLTG = A8;
-  static const uint16_t ADC_REFERENCE_V = 5;
+  static const uint16_t ADC_REFERENCE_mV = 5000;
   static const uint16_t ADC_MAX = 1023;
 
 public:
@@ -20,10 +20,10 @@ public:
   uint16_t get_battery_voltage_adc() override;
 
   /**
-   * Method to get battery voltage in volts
-   * @return battery voltage in volts
+   * Method to get battery voltage in millivolts
+   * @return battery voltage in millivolts
    */
-  uint16_t get_battery_voltage_VDC() override;
+  uint16_t get_battery_voltage_mVDC() override;
 };
 
 #endif // ARDUINOBATTERYSENSOR_H

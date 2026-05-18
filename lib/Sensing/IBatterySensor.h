@@ -1,6 +1,8 @@
 #ifndef IBATTERYSENSOR_H
 #define IBATTERYSENSOR_H
 
+#include <stdint.h>
+
 /**
  * Interface for battery voltage sensor
  */
@@ -13,10 +15,10 @@ public:
   virtual uint16_t get_battery_voltage_adc() = 0;
 
   /**
-   * Method to get battery voltage in volts
-   * @return battery voltage in volts
+   * Method to get battery voltage in millivolts
+   * @return battery voltage in millivolts
    */
-  virtual uint16_t get_battery_voltage_VDC() = 0;
+  virtual uint16_t get_battery_voltage_mVDC() = 0;
 
   virtual ~IBatterySensor() = default;
 };

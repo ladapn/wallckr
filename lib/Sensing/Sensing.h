@@ -38,15 +38,10 @@ class Sensing {
   static const int ADC_REFERENCE_V = 5;
   static const int ADC_MAX = 1023;
   static const int VOLTAGE_DIVIDER_FACTOR = 16;
-  static constexpr float BATTERY_CELL_CUTTOFF_VDC = 0.9f;
-  static constexpr float BATTERY_PACK_CUTTOFF_VDC =
-      BATTERY_CELL_CUTTOFF_VDC * BATTERY_CELL_COUNT / VOLTAGE_DIVIDER_FACTOR;
-  static const int BATTERY_PACK_CUTTOFF_ADC =
-      (BATTERY_CELL_CUTTOFF_VDC / ADC_REFERENCE_V * ADC_MAX *
-       BATTERY_CELL_COUNT) /
-      VOLTAGE_DIVIDER_FACTOR;
-  static const int SNS_BATTERY_VLTG = A8;
-
+  static constexpr uint16_t BATTERY_CELL_CUTTOFF_mVDC = 900;
+  static constexpr uint16_t BATTERY_PACK_CUTTOFF_mVDC =
+      BATTERY_CELL_CUTTOFF_mVDC * BATTERY_CELL_COUNT / VOLTAGE_DIVIDER_FACTOR;
+  static constexpr uint16_t BATTERY_HYSITERESIS_mVDC = 100;
   DistanceSensors sensors;
   IBatterySensor &battery_sensor;
 
@@ -72,7 +67,7 @@ public:
         sensor_printer(printer), disabled(false) {};
 
   /**
-   * Check if battery voltage is above threshold (BATTERY_PACK_CUTTOFF_ADC),
+   * Check if battery voltage is above threshold (BATTERY_PACK_CUTTOFF_mVDC),
    * also obtained measurement is sent out via serial interface
    * @param[in] current_millis current system tick
    * @return true if battery voltage is above threshold, false otherwise

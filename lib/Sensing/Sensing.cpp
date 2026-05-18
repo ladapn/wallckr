@@ -4,15 +4,15 @@
 
 bool Sensing::battery_voltage_ok(long currentMillis) {
   // TODO: add filtering
-  auto battery_voltage_VDC = battery_sensor.get_battery_voltage_VDC();
+  auto battery_voltage_mVDC = battery_sensor.get_battery_voltage_mVDC();
 
-  StatusPacket status_data(currentMillis, battery_voltage_VDC, 0, 0);
+  StatusPacket status_data(currentMillis, battery_voltage_mVDC, 0, 0);
 
   sensor_printer.print(status_data);
 
   if (battery_dead) {
-    if (battery_voltage_VDC >
-        (BATTERY_PACK_CUTTOFF_VDC * 1.1f)) // Add some hysteresis
+    if (battery_voltage_mVDC >
+        (BATTERY_PACK_CUTTOFF_mVDC + BATTERY_HYSITERESIS_mVDC)) // Add some hysteresis
     {
       battery_dead = false;
       return true;
@@ -21,7 +21,7 @@ bool Sensing::battery_voltage_ok(long currentMillis) {
     return false;
   }
 
-  if (battery_voltage_VDC <= BATTERY_PACK_CUTTOFF_VDC) {
+  if (battery_voltage_mVDC <= BATTERY_PACK_CUTTOFF_mVDC) {
     battery_dead = true;
     return false;
   }
