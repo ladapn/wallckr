@@ -1,14 +1,15 @@
 #ifndef STEERING_SERVO_H
 #define STEERING_SERVO_H
 
+#include "ISteeringServo.h"
 #include <Servo.h>
 
-class SteeringServo {
+class ArduinoSteeringServo : public ISteeringServo {
   Servo steering_servo;
 
 public:
-  explicit SteeringServo(int pin);
-  void set_angle(int angle);
+  explicit ArduinoSteeringServo(int pin);
+  bool set_angle(int angle);
 };
 
 #endif // STEERING_SERVO_H

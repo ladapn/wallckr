@@ -1,5 +1,5 @@
-#include "SteeringServo.h"
+#include "ArduinoSteeringServo.h"
 
-SteeringServo::SteeringServo(int pin) { steering_servo.attach(pin); }
+ArduinoSteeringServo::ArduinoSteeringServo(int pin) { steering_servo.attach(pin); }
 
-void SteeringServo::set_angle(int angle) { steering_servo.write(angle); }
+bool ArduinoSteeringServo::set_angle(int angle) { steering_servo.write(angle); return true; }

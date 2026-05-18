@@ -3,8 +3,9 @@
 
 #include "IMotorController.h"
 #include "MotionConstants.h"
-#include "SteeringServo.h"
+#include "ISteeringServo.h"
 
+// TODO: move elsewhere
 // Pin definitions
 const int MOTOR_PWM_PIN = 3;
 const int MOTOR_DIRECTION_PIN = 12;
@@ -19,7 +20,7 @@ class Motion {
   int prev_speed = 0;
   int oldServo = SERVO_CENTER;
   IMotorController &motor;
-  SteeringServo steering_servo;
+  ISteeringServo &steering_servo;
   bool disabled = false;
 
 public:
@@ -27,8 +28,8 @@ public:
    * Constructor method, configures pins attached to servo and motor controls,
    * stops motor as a safety measure
    */
-  Motion(IMotorController &motor_controller)
-      : motor(motor_controller), steering_servo(SERVO_PWM_PIN) {
+  Motion(IMotorController &motor_controller, ISteeringServo &steering_servo)
+      : motor(motor_controller), steering_servo(steering_servo) {
     stop();
   }
 
