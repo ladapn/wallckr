@@ -35,8 +35,8 @@ void loop()
   OvladackaParser ovladacka_parser;
   ExternalCommandDecoder external_command_decoder(arduino_serial_stream, ovladacka_parser);
 
-  const int FILTER_N = 4;
-  ExpFilter<int> servo_cmd_filter = ExpFilter<int>(FILTER_N);
+  constexpr int FILTER_N = 4;
+  ExpFilter<int, FILTER_N> servo_cmd_filter;
 
   const int K_GAIN = 5;
   const int RIGHT_DISTANCE_SETPOINT_CM = 25;

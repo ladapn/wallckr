@@ -16,8 +16,8 @@ class UltraSoundSensor : public IDistanceSensor {
   NewPing m_sonar;
   // TODO Would be better to accept reference to base class of filter as
   // constructor input
-  const int FILTER_N = 4;
-  ExpFilter<int> m_sonar_filter = ExpFilter<int>(FILTER_N);
+  static constexpr int FILTER_N = 4;
+  ExpFilter<int, FILTER_N> m_sonar_filter;
 
 public:
   UltraSoundSensor(uint8_t trigger_pin, uint8_t echo_pin,
