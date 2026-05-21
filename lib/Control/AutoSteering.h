@@ -1,6 +1,6 @@
 #ifndef AUTOSTEERING_H
 #define AUTOSTEERING_H
-#include "LEDBar.h"
+
 #include "MotionConstants.h"
 #include "Regulator.h"
 #include "IFilter.h"
