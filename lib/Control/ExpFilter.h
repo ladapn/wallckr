@@ -3,15 +3,14 @@
 
 #include "IFilter.h"
 
-template <typename T, int N> struct ExpFilterMath;
+namespace ExpFilterMath {
 
-template <int N> struct ExpFilterMath<int, N> {
+template <typename T, int N>
   static int compute(int input, int state) {
     return static_cast<int>(((N - 1L) * state + input) / N);
   }
-};
 
-template <int N> struct ExpFilterMath<float, N> {
+template <typename T,int N>
   static float compute(float input, float state) {
     constexpr float input_weight = 1.0f / N;
     constexpr float state_weight = 1.0f - input_weight;
@@ -20,6 +19,7 @@ template <int N> struct ExpFilterMath<float, N> {
   }
 };
 
+
 /**
  * Class implementing exponential filter template
  */
@@ -27,7 +27,7 @@ template <typename T, int N> class ExpFilter : public IFilter<T> {
 private:
   T m_state;
   bool m_first_step;
-  T core(T input) { return ExpFilterMath<T, N>::compute(input, m_state); }
+  T core(T input) { return ExpFilterMath::compute<T, N>(input, m_state); }
 
 public:
   ExpFilter() : m_state(0), m_first_step(true) {};
