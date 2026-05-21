@@ -2,6 +2,8 @@
 #include "Robot.h"
 #include "ArduinoSerialStream.h"
 #include "ArduinoBatterySensor.h"
+#include "ArduinoMotorController.h"
+#include "ArduinoSteeringServo.h"
 #include "RobotPrinter.h"
 
 void setup()
@@ -30,7 +32,9 @@ void loop()
   ArduinoBatterySensor battery_sensor;
   Sensing robot_sensing(distance_sensors, battery_sensor, BLE_out);
 
-  Motion robot_motion;
+  ArduinoMotorController motor_controller(MOTOR_DIRECTION_PIN, MOTOR_PWM_PIN, MOTOR_BRAKE_PIN);
+  ArduinoSteeringServo steering_servo(SERVO_PWM_PIN);
+  Motion robot_motion(motor_controller, steering_servo);
 
   OvladackaParser ovladacka_parser;
   ExternalCommandDecoder external_command_decoder(arduino_serial_stream, ovladacka_parser);
