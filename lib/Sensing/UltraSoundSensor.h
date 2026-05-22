@@ -5,6 +5,8 @@
 #include "IDistanceSensor.h"
 #include <NewPing.h>
 
+constexpr int MAX_DISTANCE_CM = 200;
+
 /**
  * Class representing ultrasound distance sensor, implements IDistanceSensor
  */

@@ -10,7 +10,6 @@
 #include "RobotCommand.h"
 #include "RobotPackets.h"
 #include "Sensing.h"
-#include "UltraSoundPins.h"
 #include "UltraSoundSensor.h"
 
 /**
