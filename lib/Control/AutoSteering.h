@@ -4,6 +4,7 @@
 #include "MotionConstants.h"
 #include "Regulator.h"
 #include "IFilter.h"
+#include "Sensing.h"
 
 enum class SteeringState {AVOIDING = 0, FOLLOWING};
 
