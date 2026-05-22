@@ -2,7 +2,7 @@
 #include "RobotPackets.h"
 #include "RobotPrinter.h"
 
-bool Sensing::battery_voltage_ok(long currentMillis) {
+bool Sensing::battery_voltage_ok(uint32_t currentMillis) {
   // TODO: add filtering
   auto battery_voltage_mVDC = battery_sensor.get_battery_voltage_mVDC();
 
@@ -29,7 +29,7 @@ bool Sensing::battery_voltage_ok(long currentMillis) {
   return true;
 }
 
-unsigned int Sensing::get_front_distance_cm(long currentMillis) {
+unsigned int Sensing::get_front_distance_cm(uint32_t currentMillis) {
   if (disabled) {
     return 0;
   }
@@ -45,7 +45,7 @@ unsigned int Sensing::get_front_distance_cm(long currentMillis) {
 }
 
 unsigned int
-Sensing::get_side_distance_cm(long currentMillis,
+Sensing::get_side_distance_cm(uint32_t currentMillis,
                               unsigned long &right_front_distance_cm,
                               unsigned long &right_center_distance_cm) {
   if (disabled) {
@@ -76,7 +76,7 @@ Sensing::get_side_distance_cm(long currentMillis,
 }
 
 void Sensing::get_distance_measurements(
-    long current_millis, DistanceMeasurements &distance_measurements) {
+    uint32_t current_millis, DistanceMeasurements &distance_measurements) {
 
   distance_measurements.front_distance_cm =
       get_front_distance_cm(current_millis);

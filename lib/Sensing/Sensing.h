@@ -72,7 +72,7 @@ public:
    * @param[in] current_millis current system tick
    * @return true if battery voltage is above threshold, false otherwise
    */
-  bool battery_voltage_ok(long current_millis);
+  bool battery_voltage_ok(uint32_t current_millis);
   /**
    * Measure side distance to wall or obstacle, also obtained measurements are
    * sent out via serial interface
@@ -84,7 +84,7 @@ public:
    * @return right distance in cm, right distance is the smaller one of those
    * two above
    */
-  unsigned int get_side_distance_cm(long current_millis,
+  unsigned int get_side_distance_cm(uint32_t current_millis,
                                     unsigned long &right_front_distance_cm,
                                     unsigned long &right_center_distance_cm);
   /**
@@ -93,14 +93,14 @@ public:
    * @param[in] current_millis current system tick
    * @return front distance in cm
    */
-  unsigned int get_front_distance_cm(long current_millis);
+  unsigned int get_front_distance_cm(uint32_t current_millis);
   /**
    * Get all possible distance measurements in form of DistanceMeasurements
    * structure, also obtained measurements are sent out via serial interface
    * @param[in] current_millis current system tick
    * @param[out] distance_measurements structure holding the measurements
    */
-  void get_distance_measurements(long current_millis,
+  void get_distance_measurements(uint32_t current_millis,
                                  DistanceMeasurements &distance_measurements);
   /**
    * Disable sensing module, when disable all measurement requests will be

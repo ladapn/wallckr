@@ -47,7 +47,7 @@ public:
    * not under threshold. If it is robot is disabled and battery led is toggled.
    * @param[in] current_millis current system time in ms
    */
-  void perform_status_check(unsigned long current_millis) {
+  void perform_status_check(uint32_t current_millis) {
     if (!robot_sensing.battery_voltage_ok(current_millis)) {
       robot_motion.disable();
       robot_sensing.disable();
@@ -61,7 +61,7 @@ public:
    * on sensor measurements
    * @param[in] current_millis current system time in ms
    */
-  void perform_automatic_action(unsigned long current_millis) {
+  void perform_automatic_action(uint32_t current_millis) {
     // Always evaluate measurements and desired servo angle, even if automatic
     // operation is disabled, to be able to switch it on immediately when
     // needed.
