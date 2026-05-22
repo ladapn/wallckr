@@ -12,7 +12,6 @@
 #include "AutoSteering.h"
 #include "RobotCommand.h"
 #include "OvladackaParser.h"
-#include "UltraSoundPins.h"
 
 /**
  * Class representing the robot. It encapsulates sensing, motion and automatic operation

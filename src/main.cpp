@@ -4,6 +4,7 @@
 #include "ArduinoBatterySensor.h"
 #include "ArduinoMotorController.h"
 #include "ArduinoSteeringServo.h"
+#include "ArduinoBoardConfig.h"
 #include "RobotPrinter.h"
 
 void setup()

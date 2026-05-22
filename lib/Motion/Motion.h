@@ -4,13 +4,6 @@
 #include "IMotorController.h"
 #include "ISteeringServo.h"
 
-// TODO: move elsewhere
-// Pin definitions
-const int MOTOR_PWM_PIN = 3;
-const int MOTOR_DIRECTION_PIN = 12;
-const int SERVO_PWM_PIN = 47;
-const int MOTOR_BRAKE_PIN = 9;
-
 /**
  * Class responsible for robot movement, namely for control of motor and
  * steering servo
