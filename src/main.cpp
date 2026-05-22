@@ -3,6 +3,7 @@
 #include "ArduinoMotorController.h"
 #include "ArduinoSerialStream.h"
 #include "ArduinoSteeringServo.h"
+#include "PollingRobotRunner.h"
 #include "Robot.h"
 #include "RobotPrinter.h"
 #include <Arduino.h>
@@ -50,16 +51,18 @@ void loop() {
   const int K_GAIN = 5;
   const int RIGHT_DISTANCE_SETPOINT_CM = 25;
   const int INSENSITIV_CM = 2;
-  Regulator_P<int> side_distance_regulator =
-      Regulator_P<int>(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM);
+  Regulator_P<int> side_distance_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM,
+                                           INSENSITIV_CM);
   LEDBar ledbar;
-  AutoSteering<int> wall_following_steering = AutoSteering<int>(
+  AutoSteering<int> wall_following_steering(
       RIGHT_DISTANCE_SETPOINT_CM, side_distance_regulator, servo_cmd_filter);
 
   Robot robot(robot_sensing, robot_motion, wall_following_steering,
               external_command_decoder, ledbar);
 
+  PollingRobotRunner robot_runner(robot);
+
   while (true) {
-    robot.main_loop(millis());
+    robot_runner.run_once(millis());
   }
 }
