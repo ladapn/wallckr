@@ -4,6 +4,7 @@
 #include "ArduinoSerialStream.h"
 #include "ArduinoSteeringServo.h"
 #include "Robot.h"
+#include "PollingRobotRunner.h"
 #include "RobotPrinter.h"
 #include <Arduino.h>
 
@@ -59,7 +60,9 @@ void loop() {
   Robot robot(robot_sensing, robot_motion, wall_following_steering,
               external_command_decoder, ledbar);
 
+  PollingRobotRunner robot_runner(robot);
+
   while (true) {
-    robot.main_loop(millis());
+    robot_runner.run_once(millis());
   }
 }
