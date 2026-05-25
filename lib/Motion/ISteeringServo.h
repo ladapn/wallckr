@@ -12,6 +12,8 @@ public: /**
          * @return true if the angle was set successfully, false otherwise
          */
   virtual bool set_angle(int angle) = 0;
+  virtual int initialize() = 0;
+  virtual bool is_ready() = 0;
   virtual ~ISteeringServo() = default;
 };
 

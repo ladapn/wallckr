@@ -11,8 +11,10 @@ class ArduinoMotorController : public IMotorController {
 public:
   ArduinoMotorController(int dir_pin, int pwm_control_pin,
                          int break_control_pin);
-  bool set_speed(int speed);
-  void stop();
+  bool set_speed(int speed) override;
+  void stop() override;
+  int initialize() override { return 0; }
+  bool is_ready() override { return true; }
 };
 
 #endif // ARDUINO_MOTOR_CONTROLLER_H

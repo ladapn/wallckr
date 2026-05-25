@@ -25,6 +25,15 @@ public:
     stop();
   }
 
+  int initialize() {
+    int motor_init = motor.initialize();
+    int servo_init = steering_servo.initialize();
+
+    return (motor_init == 0 && servo_init == 0) ? 0 : -1;
+  }
+
+  bool is_ready() { return motor.is_ready() && steering_servo.is_ready(); }
+
   /**
    * Set motor speed to desired value. If the desired speed is the same as in
    * previous call of this method, or if Motion module is disabled, nothing

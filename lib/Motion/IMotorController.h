@@ -16,6 +16,10 @@ public:
    * Stop the motor
    */
   virtual void stop() = 0;
+
+  virtual int initialize() = 0;
+  virtual bool is_ready() = 0;
+
   virtual ~IMotorController() = default;
 };
 

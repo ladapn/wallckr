@@ -57,6 +57,8 @@ void loop() {
   AutoSteering<int> wall_following_steering(
       RIGHT_DISTANCE_SETPOINT_CM, side_distance_regulator, servo_cmd_filter);
 
+  robot_motion.initialize();
+
   Robot robot(robot_sensing, robot_motion, wall_following_steering,
               external_command_decoder, ledbar);
 
