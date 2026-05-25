@@ -8,7 +8,7 @@ class PollingRobotRunner {
   Robot &robot;
   TimeManager time_manager;
 public:
-    PollingRobotRunner(Robot &robot) : robot(robot) {}
+    explicit PollingRobotRunner(Robot &robot) : robot(robot) {}
     void run_once(uint32_t now_ms) {
       robot.check_external_command();
       robot.apply_motion_command();
