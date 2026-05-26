@@ -23,9 +23,26 @@ void ArduinoRobotIndicators::setLED(unsigned int pin, bool state) {
   digitalWrite(pin, state ? LOW : HIGH);
 }
 
-int ArduinoRobotIndicators::indicate_robot_state() {
-  // TODO: Implement LED pattern for robot state indication
-  // Currently returns success code
+int ArduinoRobotIndicators::indicate_robot_state(RobotState state) {
+  switch (state) {
+  case RobotState::MOVING_AVOIDING:
+    // Indicate avoiding state (LED1 off, LED2 on)
+    setLED(static_cast<unsigned int>(LEDPin::LED1), false);
+    setLED(static_cast<unsigned int>(LEDPin::LED2), true);
+    break;
+  case RobotState::MOVING_FOLLOWING:
+    // Indicate following state (LED1 on, LED2 off)
+    setLED(static_cast<unsigned int>(LEDPin::LED1), true);
+    setLED(static_cast<unsigned int>(LEDPin::LED2), false);
+    break;
+  case RobotState::IDLE:
+  case RobotState::ERROR:
+    // Indicate idle state (LED1 off, LED2 off)
+    setLED(static_cast<unsigned int>(LEDPin::LED1), false);
+    setLED(static_cast<unsigned int>(LEDPin::LED2), false);
+    break;
+  }
+
   return 0;
 }
 

@@ -1,6 +1,7 @@
 #include "ArduinoBatterySensor.h"
 #include "ArduinoBoardConfig.h"
 #include "ArduinoMotorController.h"
+#include "ArduinoRobotIndicators.h"
 #include "ArduinoSerialStream.h"
 #include "ArduinoSteeringServo.h"
 #include "PollingRobotRunner.h"
@@ -53,12 +54,12 @@ void loop() {
   const int INSENSITIV_CM = 2;
   Regulator_P<int> side_distance_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM,
                                            INSENSITIV_CM);
-  LEDBar ledbar;
+  ArduinoRobotIndicators robot_indicators;
   AutoSteering<int> wall_following_steering(
       RIGHT_DISTANCE_SETPOINT_CM, side_distance_regulator, servo_cmd_filter);
 
   Robot robot(robot_sensing, robot_motion, wall_following_steering,
-              external_command_decoder, ledbar);
+              external_command_decoder, robot_indicators);
 
   PollingRobotRunner robot_runner(robot);
 

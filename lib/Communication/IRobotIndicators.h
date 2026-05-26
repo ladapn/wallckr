@@ -6,7 +6,7 @@ enum class RobotState { IDLE = 0, MOVING_AVOIDING, MOVING_FOLLOWING, ERROR };
 class IRobotIndicators {
 public:
   virtual ~IRobotIndicators() = default;
-  virtual int indicate_robot_state() = 0;
+  virtual int indicate_robot_state(RobotState state) = 0;
   virtual int indicate_battery_warning() = 0;
 };
 

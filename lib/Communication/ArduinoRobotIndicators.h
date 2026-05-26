@@ -58,7 +58,7 @@ public:
    */
   ArduinoRobotIndicators();
 
-  int indicate_robot_state() override;
+  int indicate_robot_state(RobotState state) override;
   int indicate_battery_warning() override;
 };
 
