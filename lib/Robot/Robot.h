@@ -81,10 +81,10 @@ public:
 
       auto steering_state = wall_following_steering.get_steering_state();
       if (steering_state == SteeringState::AVOIDING) {
-        robot_indicators.indicate_robot_state(RobotState::MOVING_AVOIDING);
+        robot_indicators.indicate_robot_state(RobotIndicatorState::MOVING_AVOIDING);
 
       } else {
-        robot_indicators.indicate_robot_state(RobotState::MOVING_FOLLOWING);
+        robot_indicators.indicate_robot_state(RobotIndicatorState::MOVING_FOLLOWING);
 
 
       }
