@@ -84,9 +84,7 @@ void test_check_external_command_speed_BLE_joy(void)
 
     rob_cmd_expected.desired_speed = 50;
 
-    for (int i = 0; i < sizeof(in_data) / sizeof(char); i++) {
-        ext_comm_dec.check_external_command(rob_cmd_actual);
-    }
+    ext_comm_dec.check_external_command(rob_cmd_actual);
 
     TEST_ASSERT_EQUAL_MEMORY(&rob_cmd_expected, &rob_cmd_actual, sizeof(rob_cmd_actual));
 }
@@ -104,9 +102,7 @@ void test_check_external_command_angle_BLE_joy(void)
 
     rob_cmd_expected.desired_servo_angle = 70;
 
-    for (int i = 0; i < sizeof(in_data) / sizeof(char); i++) {
-        ext_comm_dec.check_external_command(rob_cmd_actual);
-    }
+    ext_comm_dec.check_external_command(rob_cmd_actual);
 
     TEST_ASSERT_EQUAL_MEMORY(&rob_cmd_expected, &rob_cmd_actual, sizeof(rob_cmd_actual));
 }

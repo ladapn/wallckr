@@ -33,7 +33,7 @@ public:
 
     /* Limit number of characters to be processed in a row to prevent situation
      * when a long stream of incoming characters causes this function to block
-     * others. Yes, we do need an OS and threads... */
+     * others. */
     while (input_stream.available() && chars_processed++ < MAX_CHARS_PER_ITER) {
       auto current = input_stream.read();
 

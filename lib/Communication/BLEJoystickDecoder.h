@@ -19,6 +19,8 @@ enum class JoystickDecoderState {
 class BLEJoystickDecoder : public InputStreamParser {
   JoystickDecoderState state = JoystickDecoderState::WAITING_FOR_UPPER;
   int prev = 0;
+  int chars_processed = 0;
+  const int MAX_CHARS_PER_ITER = 10;
 public:
   /**
    * Decode input format into JoystickCommand format
@@ -30,38 +32,37 @@ public:
     int current;
     const int DIFF_LOWER_UPPER = 'a' - 'A';
 
-    if (!input_stream.available()) {
-      return JoystickCommand::NO_COMMAND;
-    }
+    while (input_stream.available() && chars_processed++ < MAX_CHARS_PER_ITER) {
 
-    current = input_stream.read();
+      current = input_stream.read();
 
-    switch (state) {
-    case JoystickDecoderState::WAITING_FOR_UPPER:
-      if (isupper(current)) {
-        state = JoystickDecoderState::WAITING_FOR_LOWER;
-        prev = current;
-      }
-      break;
-    case JoystickDecoderState::WAITING_FOR_LOWER:
-      if (islower(current) && current - prev == DIFF_LOWER_UPPER) {
-        state = JoystickDecoderState::WAITING_FOR_ZERO;
-        prev = current;
-      } else {
+      switch (state) {
+      case JoystickDecoderState::WAITING_FOR_UPPER:
+        if (isupper(current)) {
+          state = JoystickDecoderState::WAITING_FOR_LOWER;
+          prev = current;
+        }
+        break;
+      case JoystickDecoderState::WAITING_FOR_LOWER:
+        if (islower(current) && current - prev == DIFF_LOWER_UPPER) {
+          state = JoystickDecoderState::WAITING_FOR_ZERO;
+          prev = current;
+        } else {
+          state = JoystickDecoderState::WAITING_FOR_UPPER;
+        }
+        break;
+      case JoystickDecoderState::WAITING_FOR_ZERO:
         state = JoystickDecoderState::WAITING_FOR_UPPER;
-      }
-      break;
-    case JoystickDecoderState::WAITING_FOR_ZERO:
-      state = JoystickDecoderState::WAITING_FOR_UPPER;
-      if (current == '\0') {
-        return input_to_joystick_command(prev);
-      }
+        if (current == '\0') {
+          return input_to_joystick_command(prev);
+        }
 
-      break;
+        break;
+      }
     }
 
     return JoystickCommand::NO_COMMAND;
-  };
+  }
 };
 
 #endif
