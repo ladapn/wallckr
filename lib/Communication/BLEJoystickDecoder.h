@@ -3,6 +3,13 @@
 
 #include "IRobotIOStream.h"
 #include "InputStreamParser.h"
+#include <ctype.h>
+
+enum class JoystickDecoderState {
+  WAITING_FOR_UPPER = 0,
+  WAITING_FOR_LOWER,
+  WAITING_FOR_ZERO
+};
 
 /**
  * Implementation of communication protocol used by BLEJoystick application,
@@ -10,46 +17,50 @@
  * zero for each button press -> buttons are labeled from A to H
  */
 class BLEJoystickDecoder : public InputStreamParser {
+  JoystickDecoderState state = JoystickDecoderState::WAITING_FOR_UPPER;
+  int prev = 0;
+public:
   /**
-   * Decode input format into JoysticCommand format
+   * Decode input format into JoystickCommand format
    * @param input_stream stream to receive input data from
-   * @return decoded command in JoysticCommand format, or
+   * @return decoded command in JoystickCommand format, or
    * JoystickCommand::NO_COMMAND if no command was present
    */
   JoystickCommand decode(IRobotIOStream &input_stream) override {
-    JoystickCommand command = JoystickCommand::NO_COMMAND;
-    char current, prev;
-    bool waiting4zero = false;
+    int current;
     const int DIFF_LOWER_UPPER = 'a' - 'A';
 
-    // TODO: remove this active waiting, just check it and go
-    while (!input_stream.available()) {
-      ;
+    if (!input_stream.available()) {
+      return JoystickCommand::NO_COMMAND;
     }
 
-    prev = input_stream.read();
+    current = input_stream.read();
 
-    while (command == JoystickCommand::NO_COMMAND) {
-      while (!input_stream.available()) {
-        ;
+    switch (state) {
+    case JoystickDecoderState::WAITING_FOR_UPPER:
+      if (isupper(current)) {
+        state = JoystickDecoderState::WAITING_FOR_LOWER;
+        prev = current;
+      }
+      break;
+    case JoystickDecoderState::WAITING_FOR_LOWER:
+      if (islower(current) && current - prev == DIFF_LOWER_UPPER) {
+        state = JoystickDecoderState::WAITING_FOR_ZERO;
+        prev = current;
+      } else {
+        state = JoystickDecoderState::WAITING_FOR_UPPER;
+      }
+      break;
+    case JoystickDecoderState::WAITING_FOR_ZERO:
+      state = JoystickDecoderState::WAITING_FOR_UPPER;
+      if (current == '\0') {
+        return input_to_joystick_command(prev);
       }
 
-      current = input_stream.read();
-
-      if (waiting4zero) {
-        if (current == 0) {
-          command = input_to_joystick_command(prev);
-        } else {
-          waiting4zero = false;
-        }
-      } else if (current - prev == DIFF_LOWER_UPPER) {
-        waiting4zero = true;
-      }
-
-      prev = current;
+      break;
     }
 
-    return command;
+    return JoystickCommand::NO_COMMAND;
   };
 };
 
