@@ -2,8 +2,8 @@
 #define ROBOT_H
 
 #include "AutoSteering.h"
+#include "IRobotIndicators.h"
 #include "ExternalCommandDecoder.h"
-#include "LEDBar.h"
 #include "Motion.h"
 #include "OvladackaParser.h"
 #include "Regulator.h"
@@ -25,7 +25,7 @@ class Robot {
 
   RobotCommand robot_command;
 
-  LEDBar &ledbar;
+  IRobotIndicators &robot_indicators;
 
 public:
   /**
@@ -34,13 +34,15 @@ public:
    * @param[in] motion object representing robot's motion ability
    * @param[in] steering object responsible for automatic steering
    * @param[in] command_decoder object to decode external commands from user
-   * @param[in] bar object representing row of LEDs
+   * @param[in] indicators object representing indicator LEDs
    */
   Robot(Sensing &sensing, Motion &motion, AutoSteering<int> &steering,
-        ExternalCommandDecoder &command_decoder, LEDBar &bar)
+        ExternalCommandDecoder &command_decoder,
+        IRobotIndicators &indicators)
       : robot_sensing(sensing), robot_motion(motion),
         wall_following_steering(steering),
-        external_command_decoder(command_decoder), ledbar(bar) {}
+        external_command_decoder(command_decoder),
+        robot_indicators(indicators) {}
 
   /**
    * Evaluate robot status, currently just checks if battery voltage is or is
@@ -52,7 +54,7 @@ public:
       robot_motion.disable();
       robot_sensing.disable();
 
-      ledbar.toggleBatteryLED();
+      robot_indicators.indicate_battery_warning();
     }
   }
 
@@ -79,11 +81,12 @@ public:
 
       auto steering_state = wall_following_steering.get_steering_state();
       if (steering_state == SteeringState::AVOIDING) {
-        ledbar.switchLEDoff(LED1);
-        ledbar.switchLEDon(LED2);
+        robot_indicators.indicate_robot_state(RobotIndicatorState::MOVING_AVOIDING);
+
       } else {
-        ledbar.switchLEDon(LED1);
-        ledbar.switchLEDoff(LED2);
+        robot_indicators.indicate_robot_state(RobotIndicatorState::MOVING_FOLLOWING);
+
+
       }
     }
   }
