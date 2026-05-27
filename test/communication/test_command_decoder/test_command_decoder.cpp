@@ -39,12 +39,12 @@ void test_check_external_command_speed_ovladacka(void)
 {
     OvladackaParser in_parser;
     char in_data[] = ":a!";
-    SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
-    ArduinoSerialStream ard_stream(sim_uart); 
+    SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char));
+    ArduinoSerialStream ard_stream(sim_uart);
     ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
 
     RobotCommand rob_cmd_actual;
-    RobotCommand rob_cmd_expected;  
+    RobotCommand rob_cmd_expected;
 
     rob_cmd_expected.desired_speed = SPEED_INCREMENT;
 
@@ -57,12 +57,12 @@ void test_check_external_command_angle_ovladacka(void)
 {
     OvladackaParser in_parser;
     char in_data[] = ":b!";
-    SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
-    ArduinoSerialStream ard_stream(sim_uart); 
+    SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char));
+    ArduinoSerialStream ard_stream(sim_uart);
     ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
 
     RobotCommand rob_cmd_actual;
-    RobotCommand rob_cmd_expected;  
+    RobotCommand rob_cmd_expected;
 
     rob_cmd_expected.desired_servo_angle = SERVO_CENTER - SERVO_INCREMENT;
 
@@ -74,17 +74,19 @@ void test_check_external_command_angle_ovladacka(void)
 void test_check_external_command_speed_BLE_joy(void)
 {
     BLEJoystickDecoder in_parser;
-    char in_data[] = "Aa\0"; // Command to increase speed in BLE Joystick format
-    SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char)); 
+    char in_data[] = {'A', 'a', '\0'}; // Command to increase speed in BLE Joystick format
+    SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char));
     ArduinoSerialStream ard_stream(sim_uart);
     ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
 
     RobotCommand rob_cmd_actual;
-    RobotCommand rob_cmd_expected;  
+    RobotCommand rob_cmd_expected;
 
     rob_cmd_expected.desired_speed = 50;
 
-    ext_comm_dec.check_external_command(rob_cmd_actual);
+    for (int i = 0; i < sizeof(in_data) / sizeof(char); i++) {
+        ext_comm_dec.check_external_command(rob_cmd_actual);
+    }
 
     TEST_ASSERT_EQUAL_MEMORY(&rob_cmd_expected, &rob_cmd_actual, sizeof(rob_cmd_actual));
 }
@@ -92,17 +94,19 @@ void test_check_external_command_speed_BLE_joy(void)
 void test_check_external_command_angle_BLE_joy(void)
 {
     BLEJoystickDecoder in_parser;
-    char in_data[] = "Bb\0"; // Command to decrease servo angle in BLE Joystick format
+    char in_data[] = {'B', 'b', '\0'}; // Command to decrease servo angle in BLE Joystick format
     SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char));
-    ArduinoSerialStream ard_stream(sim_uart); 
+    ArduinoSerialStream ard_stream(sim_uart);
     ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
 
     RobotCommand rob_cmd_actual;
-    RobotCommand rob_cmd_expected;  
+    RobotCommand rob_cmd_expected;
 
     rob_cmd_expected.desired_servo_angle = 70;
 
-    ext_comm_dec.check_external_command(rob_cmd_actual);
+    for (int i = 0; i < sizeof(in_data) / sizeof(char); i++) {
+        ext_comm_dec.check_external_command(rob_cmd_actual);
+    }
 
     TEST_ASSERT_EQUAL_MEMORY(&rob_cmd_expected, &rob_cmd_actual, sizeof(rob_cmd_actual));
 }
@@ -110,17 +114,17 @@ void test_check_external_command_angle_BLE_joy(void)
 
 int main( int argc, char **argv) {
     UNITY_BEGIN();
-   
+
     RUN_TEST(test_simulated_uart);
     RUN_TEST(test_check_external_command_speed_ovladacka);
     RUN_TEST(test_check_external_command_angle_ovladacka);
 
     RUN_TEST(test_check_external_command_speed_BLE_joy);
     RUN_TEST(test_check_external_command_angle_BLE_joy);
-    
+
     UNITY_END();
 
     stop_simavr();
 
-    return 0; 
+    return 0;
 }
