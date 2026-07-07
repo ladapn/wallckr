@@ -34,7 +34,7 @@ private:
    * @param[in] pin LED pin to validate
    * @return true if pin is valid, false otherwise
    */
-  bool isValidLED(unsigned int pin) const {
+  bool is_valid_led(unsigned int pin) const {
     return pin >= MIN_LED_PIN && pin <= MAX_LED_PIN;
   }
 
@@ -43,14 +43,14 @@ private:
    * @param[in] pin LED pin (use LEDPin enum)
    * @param[in] state true to turn on, false to turn off
    */
-  void setLED(unsigned int pin, bool state);
+  void set_led(unsigned int pin, bool state);
 
   /**
    * Toggle battery indicator LED state
    */
-  void toggleBatteryLED() {
+  void toggle_battery_led() {
     battery_led_on = !battery_led_on;
-    setLED(static_cast<unsigned int>(BATTERY_LED), battery_led_on);
+    set_led(static_cast<unsigned int>(BATTERY_LED), battery_led_on);
   }
 
 public:

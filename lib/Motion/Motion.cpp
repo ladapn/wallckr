@@ -18,8 +18,8 @@ bool Motion::set_angle(int angle) {
     return false;
   }
 
-  if (oldServo != angle) {
-    oldServo = angle;
+  if (old_servo != angle) {
+    old_servo = angle;
     steering_servo.set_angle(angle);
   } else {
     return false;

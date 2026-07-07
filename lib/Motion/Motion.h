@@ -10,7 +10,7 @@
  */
 class Motion {
   int prev_speed = 0;
-  int oldServo = 0;
+  int old_servo = 0;
   IMotorController &motor;
   ISteeringServo &steering_servo;
   bool disabled = false;

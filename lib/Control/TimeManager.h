@@ -4,13 +4,13 @@
 /**
  * Class to check if it is time to perform certain action
  */
-class TimeManager 
+class TimeManager
 {
-    unsigned long lastStatusMillis = 0;
-    unsigned long lastCommandMillis = 0;
+    unsigned long last_status_millis = 0;
+    unsigned long last_command_millis = 0;
 
-    bool firstPassStatus = true;
-    bool firstPassCommand = true; 
+    bool first_pass_status = true;
+    bool first_pass_command = true;
 
     static const int STATUS_PRINT_INTERVAL_MS = 1000;
     static const int COMMAND_INTERVAL_MS = 100;
@@ -18,36 +18,36 @@ class TimeManager
 public:
     /**
      * Check if enough time elapsed to perform status check
-     * @param[in] currentMillis current system time in ms
+     * @param[in] current_millis current system time in ms
      * @return true if time elapsed from last status check is greater than threshold, false otherwise
      */
-    bool isTimeForStatusCheck(unsigned long currentMillis)
+    bool is_time_for_status_check(unsigned long current_millis)
     {
-        if((currentMillis - lastStatusMillis > STATUS_PRINT_INTERVAL_MS) || firstPassStatus )
+        if((current_millis - last_status_millis > STATUS_PRINT_INTERVAL_MS) || first_pass_status )
         {
-            lastStatusMillis = currentMillis; 
-            firstPassStatus = false;
+            last_status_millis = current_millis;
+            first_pass_status = false;
             return true;
         }
 
-        return false;         
+        return false;
     }
 
     /**
      * Check if enough time elapsed to perform automatic operation
-     * @param[in] currentMillis current system time in ms
+     * @param[in] current_millis current system time in ms
      * @return true if time elapsed from last automatic operation is greater than threshold, false otherwise
      */
-    bool isTimeForAutomaticCommand(unsigned long currentMillis)
+    bool is_time_for_automatic_command(unsigned long current_millis)
     {
-        if((currentMillis - lastCommandMillis > COMMAND_INTERVAL_MS) || firstPassCommand)
+        if((current_millis - last_command_millis > COMMAND_INTERVAL_MS) || first_pass_command)
         {
-            lastCommandMillis = currentMillis;
-            firstPassCommand = false; 
+            last_command_millis = current_millis;
+            first_pass_command = false;
             return true;
         }
 
-        return false; 
+        return false;
     }
 };
 
