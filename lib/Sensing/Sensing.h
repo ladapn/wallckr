@@ -1,8 +1,8 @@
 #ifndef SENSING_H
 #define SENSING_H
 
-#include "IBatterySensor.h"
 #include "IDistanceSensor.h"
+#include <stdint.h>
 
 class RobotPrinter;
 
@@ -30,24 +30,13 @@ struct DistanceSensors {
 };
 
 /**
- * Class encapsulating all measurement devices
+ * Class encapsulating all distance measurement devices
  */
 class Sensing {
-  // battery related constants
-  static const int BATTERY_CELL_COUNT = 8;
-  static const int ADC_REFERENCE_V = 5;
-  static const int ADC_MAX = 1023;
-  static const int VOLTAGE_DIVIDER_FACTOR = 16;
-  static constexpr uint16_t BATTERY_CELL_CUTTOFF_mVDC = 900;
-  static constexpr uint16_t BATTERY_PACK_CUTTOFF_mVDC =
-      BATTERY_CELL_CUTTOFF_mVDC * BATTERY_CELL_COUNT / VOLTAGE_DIVIDER_FACTOR;
-  static constexpr uint16_t BATTERY_HYSITERESIS_mVDC = 50;
   DistanceSensors sensors;
-  IBatterySensor &battery_sensor;
 
   RobotPrinter &sensor_printer;
 
-  bool battery_dead = false;
   bool disabled;
 
 public:
@@ -61,18 +50,9 @@ public:
    * @param[in] printer reference to serial interface which is used to send out
    * measured data
    */
-  Sensing(DistanceSensors &distance_sensors, IBatterySensor &battery_sensor,
-          RobotPrinter &printer)
-      : sensors(distance_sensors), battery_sensor(battery_sensor),
-        sensor_printer(printer), disabled(false) {};
+  Sensing(DistanceSensors &distance_sensors, RobotPrinter &printer)
+      : sensors(distance_sensors), sensor_printer(printer), disabled(false) {};
 
-  /**
-   * Check if battery voltage is above threshold (BATTERY_PACK_CUTTOFF_mVDC),
-   * also obtained measurement is sent out via serial interface
-   * @param[in] current_millis current system tick
-   * @return true if battery voltage is above threshold, false otherwise
-   */
-  bool battery_voltage_ok(uint32_t current_millis);
   /**
    * Measure side distance to wall or obstacle, also obtained measurements are
    * sent out via serial interface

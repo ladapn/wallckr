@@ -2,33 +2,6 @@
 #include "RobotPackets.h"
 #include "RobotPrinter.h"
 
-bool Sensing::battery_voltage_ok(uint32_t currentMillis) {
-  // TODO: add filtering
-  auto battery_voltage_mVDC = battery_sensor.get_battery_voltage_mVDC();
-
-  StatusPacket status_data(currentMillis, battery_voltage_mVDC, 0, 0);
-
-  sensor_printer.print(status_data);
-
-  if (battery_dead) {
-    if (battery_voltage_mVDC >
-        (BATTERY_PACK_CUTTOFF_mVDC + BATTERY_HYSITERESIS_mVDC)) // Add some hysteresis
-    {
-      battery_dead = false;
-      return true;
-    }
-
-    return false;
-  }
-
-  if (battery_voltage_mVDC <= BATTERY_PACK_CUTTOFF_mVDC) {
-    battery_dead = true;
-    return false;
-  }
-
-  return true;
-}
-
 unsigned int Sensing::get_front_distance_cm(uint32_t currentMillis) {
   if (disabled) {
     return 0;
