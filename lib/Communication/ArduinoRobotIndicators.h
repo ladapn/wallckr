@@ -1,17 +1,18 @@
 #ifndef ARDUINO_ROBOT_INDICATORS_H
 #define ARDUINO_ROBOT_INDICATORS_H
 
+#include "ArduinoBoardConfig.h"
 #include "IRobotIndicators.h"
 
 /**
- * Pin assignments for indicator LEDs (PA2 to PA6)
+ * Pin assignments for indicator LEDs
  */
 enum class LEDPin : unsigned int {
-  LED1 = 24,
-  LED2 = 25,
-  LED3 = 26,
-  LED4 = 27,
-  LED5 = 28
+  LED1 = LED1_PIN,
+  LED2 = LED2_PIN,
+  LED3 = LED3_PIN,
+  LED4 = LED4_PIN,
+  LED5 = LED5_PIN
 };
 
 /**

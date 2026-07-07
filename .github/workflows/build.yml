@@ -25,3 +25,6 @@ jobs:
 
       - name: Run tests on the native platform
         run: pio test --without-uploading
+
+      - name: Run static code analysis
+        run: pio check --skip-packages
