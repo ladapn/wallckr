@@ -20,6 +20,16 @@ namespace {
     public:
         int next(int input) override { return input; }
     };
+
+    // Mirrors AutoSteering's internal thresholds (see AutoSteering.h) so test
+    // measurements can be expressed relative to them instead of magic numbers.
+    const int SIDE_DISTANCE_SETPOINT_CM = 25;
+    const int TURNING_RADIUS_CM = 15;
+    const int AVOIDING_DISTANCE_RIGHT_FRONT_THR_CM = 15;
+    const int AVOIDING_DISTANCE_HYSTERESIS_CM = 20;
+    const int AVOIDING_DISTANCE_THR_CM = SIDE_DISTANCE_SETPOINT_CM + TURNING_RADIUS_CM;
+
+    const int FAR_DISTANCE_CM = 100; // clearly outside any threshold used below
 }
 
 void setUp(void) {
@@ -33,7 +43,7 @@ void tearDown(void) {
 void test_starts_in_following_state(void) {
     IdentityRegulator regulator;
     IdentityFilter filter;
-    AutoSteering<int> auto_steering(25, regulator, filter);
+    AutoSteering<int> auto_steering(SIDE_DISTANCE_SETPOINT_CM, regulator, filter);
 
     TEST_ASSERT_EQUAL(static_cast<int>(SteeringState::FOLLOWING),
                       static_cast<int>(auto_steering.get_steering_state()));
@@ -42,13 +52,12 @@ void test_starts_in_following_state(void) {
 void test_following_enters_avoiding_on_close_front_obstacle(void) {
     IdentityRegulator regulator;
     IdentityFilter filter;
-    AutoSteering<int> auto_steering(25, regulator, filter);
+    AutoSteering<int> auto_steering(SIDE_DISTANCE_SETPOINT_CM, regulator, filter);
 
-    // AVOIDING_DISTANCE_THR_CM = setpoint (25) + turning radius (15) = 40
     DistanceMeasurements measurements;
-    measurements.front_distance_cm = 39; // < 40
-    measurements.right_front_distance_cm = 100;
-    measurements.right_distance_cm = 25;
+    measurements.front_distance_cm = AVOIDING_DISTANCE_THR_CM - 1;
+    measurements.right_front_distance_cm = FAR_DISTANCE_CM;
+    measurements.right_distance_cm = SIDE_DISTANCE_SETPOINT_CM;
 
     auto_steering.get_steering_command(measurements);
 
@@ -59,12 +68,12 @@ void test_following_enters_avoiding_on_close_front_obstacle(void) {
 void test_following_enters_avoiding_on_close_right_front_obstacle(void) {
     IdentityRegulator regulator;
     IdentityFilter filter;
-    AutoSteering<int> auto_steering(25, regulator, filter);
+    AutoSteering<int> auto_steering(SIDE_DISTANCE_SETPOINT_CM, regulator, filter);
 
     DistanceMeasurements measurements;
-    measurements.front_distance_cm = 100;
-    measurements.right_front_distance_cm = 14; // < right front threshold (15)
-    measurements.right_distance_cm = 25;
+    measurements.front_distance_cm = FAR_DISTANCE_CM;
+    measurements.right_front_distance_cm = AVOIDING_DISTANCE_RIGHT_FRONT_THR_CM - 1;
+    measurements.right_distance_cm = SIDE_DISTANCE_SETPOINT_CM;
 
     auto_steering.get_steering_command(measurements);
 
@@ -75,12 +84,12 @@ void test_following_enters_avoiding_on_close_right_front_obstacle(void) {
 void test_avoiding_commands_max_left_steering(void) {
     IdentityRegulator regulator;
     IdentityFilter filter;
-    AutoSteering<int> auto_steering(25, regulator, filter);
+    AutoSteering<int> auto_steering(SIDE_DISTANCE_SETPOINT_CM, regulator, filter);
 
     DistanceMeasurements measurements;
-    measurements.front_distance_cm = 10;
-    measurements.right_front_distance_cm = 100;
-    measurements.right_distance_cm = 25;
+    measurements.front_distance_cm = AVOIDING_DISTANCE_THR_CM - 1;
+    measurements.right_front_distance_cm = FAR_DISTANCE_CM;
+    measurements.right_distance_cm = SIDE_DISTANCE_SETPOINT_CM;
 
     auto_steering.get_steering_command(measurements); // FOLLOWING -> AVOIDING
     auto servo = auto_steering.get_steering_command(measurements); // stays AVOIDING
@@ -91,19 +100,20 @@ void test_avoiding_commands_max_left_steering(void) {
 void test_avoiding_returns_to_following_once_clear(void) {
     IdentityRegulator regulator;
     IdentityFilter filter;
-    AutoSteering<int> auto_steering(25, regulator, filter);
+    AutoSteering<int> auto_steering(SIDE_DISTANCE_SETPOINT_CM, regulator, filter);
 
     DistanceMeasurements close_measurements;
-    close_measurements.front_distance_cm = 10;
-    close_measurements.right_front_distance_cm = 100;
-    close_measurements.right_distance_cm = 25;
+    close_measurements.front_distance_cm = AVOIDING_DISTANCE_THR_CM - 1;
+    close_measurements.right_front_distance_cm = FAR_DISTANCE_CM;
+    close_measurements.right_distance_cm = SIDE_DISTANCE_SETPOINT_CM;
     auto_steering.get_steering_command(close_measurements); // enter AVOIDING
 
-    // Recovery needs front > 40 + 20 = 60 and right_front > 40 - 15 = 25
+    // Recovery needs front > AVOIDING_DISTANCE_THR_CM + hysteresis and
+    // right_front > AVOIDING_DISTANCE_THR_CM - right front threshold
     DistanceMeasurements clear_measurements;
-    clear_measurements.front_distance_cm = 61;
-    clear_measurements.right_front_distance_cm = 26;
-    clear_measurements.right_distance_cm = 25;
+    clear_measurements.front_distance_cm = AVOIDING_DISTANCE_THR_CM + AVOIDING_DISTANCE_HYSTERESIS_CM + 1;
+    clear_measurements.right_front_distance_cm = AVOIDING_DISTANCE_THR_CM - AVOIDING_DISTANCE_RIGHT_FRONT_THR_CM + 1;
+    clear_measurements.right_distance_cm = SIDE_DISTANCE_SETPOINT_CM;
 
     auto_steering.get_steering_command(clear_measurements);
 
@@ -114,19 +124,20 @@ void test_avoiding_returns_to_following_once_clear(void) {
 void test_avoiding_stays_avoiding_until_both_thresholds_clear(void) {
     IdentityRegulator regulator;
     IdentityFilter filter;
-    AutoSteering<int> auto_steering(25, regulator, filter);
+    AutoSteering<int> auto_steering(SIDE_DISTANCE_SETPOINT_CM, regulator, filter);
 
     DistanceMeasurements close_measurements;
-    close_measurements.front_distance_cm = 10;
-    close_measurements.right_front_distance_cm = 100;
-    close_measurements.right_distance_cm = 25;
+    close_measurements.front_distance_cm = AVOIDING_DISTANCE_THR_CM - 1;
+    close_measurements.right_front_distance_cm = FAR_DISTANCE_CM;
+    close_measurements.right_distance_cm = SIDE_DISTANCE_SETPOINT_CM;
     auto_steering.get_steering_command(close_measurements); // enter AVOIDING
 
-    // Front is clear, but right front is still too close
+    // Front is clear, but right front sits exactly at its recovery threshold
+    // rather than past it, so recovery must not trigger yet (condition is '>')
     DistanceMeasurements partially_clear_measurements;
-    partially_clear_measurements.front_distance_cm = 61;
-    partially_clear_measurements.right_front_distance_cm = 24; // <= 25
-    partially_clear_measurements.right_distance_cm = 25;
+    partially_clear_measurements.front_distance_cm = AVOIDING_DISTANCE_THR_CM + AVOIDING_DISTANCE_HYSTERESIS_CM + 1;
+    partially_clear_measurements.right_front_distance_cm = AVOIDING_DISTANCE_THR_CM - AVOIDING_DISTANCE_RIGHT_FRONT_THR_CM;
+    partially_clear_measurements.right_distance_cm = SIDE_DISTANCE_SETPOINT_CM;
 
     auto_steering.get_steering_command(partially_clear_measurements);
 
