@@ -17,8 +17,8 @@ ArduinoRobotIndicators::ArduinoRobotIndicators() {
   digitalWrite(static_cast<unsigned int>(LEDPin::LED5), HIGH);
 }
 
-void ArduinoRobotIndicators::setLED(unsigned int pin, bool state) {
-  if (!isValidLED(pin))
+void ArduinoRobotIndicators::set_led(unsigned int pin, bool state) {
+  if (!is_valid_led(pin))
     return;
   digitalWrite(pin, state ? LOW : HIGH);
 }
@@ -27,19 +27,19 @@ int ArduinoRobotIndicators::indicate_robot_state(RobotIndicatorState state) {
   switch (state) {
   case RobotIndicatorState::MOVING_AVOIDING:
     // Indicate avoiding state (LED1 off, LED2 on)
-    setLED(static_cast<unsigned int>(LEDPin::LED1), false);
-    setLED(static_cast<unsigned int>(LEDPin::LED2), true);
+    set_led(static_cast<unsigned int>(LEDPin::LED1), false);
+    set_led(static_cast<unsigned int>(LEDPin::LED2), true);
     break;
   case RobotIndicatorState::MOVING_FOLLOWING:
     // Indicate following state (LED1 on, LED2 off)
-    setLED(static_cast<unsigned int>(LEDPin::LED1), true);
-    setLED(static_cast<unsigned int>(LEDPin::LED2), false);
+    set_led(static_cast<unsigned int>(LEDPin::LED1), true);
+    set_led(static_cast<unsigned int>(LEDPin::LED2), false);
     break;
   case RobotIndicatorState::IDLE:
   case RobotIndicatorState::ERROR:
     // Indicate idle state (LED1 off, LED2 off)
-    setLED(static_cast<unsigned int>(LEDPin::LED1), false);
-    setLED(static_cast<unsigned int>(LEDPin::LED2), false);
+    set_led(static_cast<unsigned int>(LEDPin::LED1), false);
+    set_led(static_cast<unsigned int>(LEDPin::LED2), false);
     break;
   }
 
@@ -48,6 +48,6 @@ int ArduinoRobotIndicators::indicate_robot_state(RobotIndicatorState state) {
 
 int ArduinoRobotIndicators::indicate_battery_warning() {
   // Toggle battery warning LED (LED5)
-  toggleBatteryLED();
+  toggle_battery_led();
   return 0;
 }
