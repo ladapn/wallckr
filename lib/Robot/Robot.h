@@ -14,6 +14,13 @@
 #include "UltraSoundSensor.h"
 
 /**
+ * Robot's own operating mode - AUTOMATIC follows/avoids walls, MANUAL only
+ * responds to direct speed/steering commands. See RobotCommand for the
+ * decoded external command that toggles it.
+ */
+enum class RobotState { MANUAL, AUTOMATIC };
+
+/**
  * Class representing the robot. It encapsulates sensing, motion and automatic
  * operation
  */
@@ -26,6 +33,7 @@ class Robot {
   ExternalCommandDecoder &external_command_decoder;
 
   RobotCommand robot_command;
+  RobotState robot_state = RobotState::AUTOMATIC;
 
   IRobotIndicators &robot_indicators;
 
@@ -76,10 +84,7 @@ public:
     auto desired_servo_angle =
         wall_following_steering.get_steering_command(distance_measurements);
 
-    // TODO: don't check the command, instead introduce robot state field that
-    // is set to AUTOMATIC or MANUAL based on external command, and check it
-    // here.
-    if (robot_command.enable_automatic_operation) {
+    if (robot_state == RobotState::AUTOMATIC) {
       robot_command.desired_servo_angle = desired_servo_angle;
 
       auto steering_state = wall_following_steering.get_steering_state();
@@ -96,10 +101,13 @@ public:
 
   /**
    * Check if there is a new external command from user and if so, convert it
-   * into RobotCommand instance
+   * into RobotCommand instance, updating robot_state to match
    */
   void check_external_command() {
     external_command_decoder.check_external_command(robot_command);
+    robot_state = robot_command.enable_automatic_operation
+                      ? RobotState::AUTOMATIC
+                      : RobotState::MANUAL;
   }
 
   void apply_motion_command() {
