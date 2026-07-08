@@ -2,6 +2,7 @@
 #define ROBOT_H
 
 #include "AutoSteering.h"
+#include "Battery.h"
 #include "IRobotIndicators.h"
 #include "ExternalCommandDecoder.h"
 #include "Motion.h"
@@ -18,6 +19,7 @@
  */
 class Robot {
   Sensing &robot_sensing;
+  Battery &robot_battery;
   Motion &robot_motion;
   AutoSteering<int> &wall_following_steering;
 
@@ -31,15 +33,16 @@ public:
   /**
    * Constructor method
    * @param[in] sensing object representing robot's sensing ability
+   * @param[in] battery object responsible for battery health monitoring
    * @param[in] motion object representing robot's motion ability
    * @param[in] steering object responsible for automatic steering
    * @param[in] command_decoder object to decode external commands from user
    * @param[in] indicators object representing indicator LEDs
    */
-  Robot(Sensing &sensing, Motion &motion, AutoSteering<int> &steering,
-        ExternalCommandDecoder &command_decoder,
+  Robot(Sensing &sensing, Battery &battery, Motion &motion,
+        AutoSteering<int> &steering, ExternalCommandDecoder &command_decoder,
         IRobotIndicators &indicators)
-      : robot_sensing(sensing), robot_motion(motion),
+      : robot_sensing(sensing), robot_battery(battery), robot_motion(motion),
         wall_following_steering(steering),
         external_command_decoder(command_decoder),
         robot_indicators(indicators) {}
@@ -50,7 +53,7 @@ public:
    * @param[in] current_millis current system time in ms
    */
   void perform_status_check(uint32_t current_millis) {
-    if (!robot_sensing.battery_voltage_ok(current_millis)) {
+    if (!robot_battery.is_ok(current_millis)) {
       robot_motion.disable();
       robot_sensing.disable();
 
