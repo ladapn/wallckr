@@ -1,7 +1,12 @@
 #ifndef IROBOT_INDICATORS_H
 #define IROBOT_INDICATORS_H
 
-enum class RobotIndicatorState { IDLE = 0, MOVING_AVOIDING, MOVING_FOLLOWING, ERROR };
+enum class RobotIndicatorState {
+  IDLE = 0,
+  MOVING_AVOIDING,
+  MOVING_FOLLOWING,
+  ERROR
+};
 
 class IRobotIndicators {
 public:

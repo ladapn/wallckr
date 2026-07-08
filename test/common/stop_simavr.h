@@ -1,8 +1,7 @@
-#include <avr/sleep.h>
 #include <avr/interrupt.h>
+#include <avr/sleep.h>
 
-void stop_simavr(void)
-{
-    cli();
-    sleep_cpu();
+void stop_simavr(void) {
+  cli();
+  sleep_cpu();
 }

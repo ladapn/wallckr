@@ -21,6 +21,7 @@ class BLEJoystickDecoder : public InputStreamParser {
   int prev = 0;
   int chars_processed = 0;
   const int MAX_CHARS_PER_ITER = 10;
+
 public:
   /**
    * Decode input format into JoystickCommand format

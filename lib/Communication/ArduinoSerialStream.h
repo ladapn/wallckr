@@ -1,33 +1,23 @@
 #ifndef ARDUINO_SERIAL_STREAM_H
 #define ARDUINO_SERIAL_STREAM_H
 
-#include <Arduino.h>
 #include "IRobotIOStream.h"
+#include <Arduino.h>
 
-class ArduinoSerialStream: public IRobotIOStream {
-    Stream &serial_stream;
+class ArduinoSerialStream : public IRobotIOStream {
+  Stream &serial_stream;
 
 public:
-    explicit ArduinoSerialStream(Stream &stream) : serial_stream(stream) {}
-    int available() override
-    {
-        return serial_stream.available();
-    }
+  explicit ArduinoSerialStream(Stream &stream) : serial_stream(stream) {}
+  int available() override { return serial_stream.available(); }
 
-    int read() override
-    {
-        return serial_stream.read();
-    }
+  int read() override { return serial_stream.read(); }
 
-    size_t write(uint8_t c) override
-    {
-        return serial_stream.write(c);
-    }
+  size_t write(uint8_t c) override { return serial_stream.write(c); }
 
-    size_t write(uint8_t *c, size_t size) override
-    {
-        return serial_stream.write(c, size);
-    }
+  size_t write(uint8_t *c, size_t size) override {
+    return serial_stream.write(c, size);
+  }
 };
 
 #endif // ARDUINO_SERIAL_STREAM_H

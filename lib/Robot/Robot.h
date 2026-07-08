@@ -3,8 +3,8 @@
 
 #include "AutoSteering.h"
 #include "Battery.h"
-#include "IRobotIndicators.h"
 #include "ExternalCommandDecoder.h"
+#include "IRobotIndicators.h"
 #include "Motion.h"
 #include "OvladackaParser.h"
 #include "Regulator.h"
@@ -89,12 +89,12 @@ public:
 
       auto steering_state = wall_following_steering.get_steering_state();
       if (steering_state == SteeringState::AVOIDING) {
-        robot_indicators.indicate_robot_state(RobotIndicatorState::MOVING_AVOIDING);
+        robot_indicators.indicate_robot_state(
+            RobotIndicatorState::MOVING_AVOIDING);
 
       } else {
-        robot_indicators.indicate_robot_state(RobotIndicatorState::MOVING_FOLLOWING);
-
-
+        robot_indicators.indicate_robot_state(
+            RobotIndicatorState::MOVING_FOLLOWING);
       }
     }
   }
