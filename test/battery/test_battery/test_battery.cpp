@@ -3,8 +3,6 @@
 #include "IRobotIOStream.h"
 #include "RobotPackets.h"
 #include "RobotPrinter.h"
-#include <avr/interrupt.h>
-#include <avr/sleep.h>
 #include <unity.h>
 
 namespace {
@@ -131,9 +129,7 @@ int main(int argc, char **argv) {
 
   UNITY_END();
 
-  // Needed to stop simavr simulator after the test cases
-  cli();
-  sleep_cpu();
+  stop_simavr();
 
   return 0;
 }
