@@ -11,7 +11,6 @@
 #include "RobotCommand.h"
 #include "RobotPackets.h"
 #include "Sensing.h"
-#include "UltraSoundSensor.h"
 
 /**
  * Robot's own operating mode - AUTOMATIC follows/avoids walls, MANUAL only

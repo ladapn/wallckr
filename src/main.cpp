@@ -8,6 +8,7 @@
 #include "PollingRobotRunner.h"
 #include "Robot.h"
 #include "RobotPrinter.h"
+#include "UltraSoundSensor.h"
 #include <Arduino.h>
 
 void setup() {
