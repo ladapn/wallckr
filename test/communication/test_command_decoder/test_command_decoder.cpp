@@ -1,13 +1,10 @@
 #include "../../common/simulated_uart.h"
 #include "../../common/stop_simavr.h"
-#include "ArduinoSerialStream.h"
 #include "BLEJoystickDecoder.h"
 #include "ExternalCommandDecoder.h"
 #include "MotionConstants.h"
 #include "OvladackaParser.h"
 #include "RobotCommand.h"
-#include <avr/interrupt.h>
-#include <avr/sleep.h>
 #include <unity.h>
 
 void setUp(void) {
@@ -35,8 +32,7 @@ void test_check_external_command_speed_ovladacka(void) {
   OvladackaParser in_parser;
   char in_data[] = ":a!";
   SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char));
-  ArduinoSerialStream ard_stream(sim_uart);
-  ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
+  ExternalCommandDecoder ext_comm_dec(sim_uart, in_parser);
 
   RobotCommand rob_cmd_actual;
   RobotCommand rob_cmd_expected;
@@ -45,16 +41,23 @@ void test_check_external_command_speed_ovladacka(void) {
 
   ext_comm_dec.check_external_command(rob_cmd_actual);
 
-  TEST_ASSERT_EQUAL_MEMORY(&rob_cmd_expected, &rob_cmd_actual,
-                           sizeof(rob_cmd_actual));
+  // Compare fields individually rather than raw struct bytes: RobotCommand
+  // has padding between its int fields and the trailing bool, and that
+  // padding is uninitialized - a memcmp of two separately constructed
+  // instances can spuriously differ even when every field matches.
+  TEST_ASSERT_EQUAL(rob_cmd_expected.desired_speed,
+                    rob_cmd_actual.desired_speed);
+  TEST_ASSERT_EQUAL(rob_cmd_expected.desired_servo_angle,
+                    rob_cmd_actual.desired_servo_angle);
+  TEST_ASSERT_EQUAL(rob_cmd_expected.enable_automatic_operation,
+                    rob_cmd_actual.enable_automatic_operation);
 }
 
 void test_check_external_command_angle_ovladacka(void) {
   OvladackaParser in_parser;
   char in_data[] = ":b!";
   SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char));
-  ArduinoSerialStream ard_stream(sim_uart);
-  ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
+  ExternalCommandDecoder ext_comm_dec(sim_uart, in_parser);
 
   RobotCommand rob_cmd_actual;
   RobotCommand rob_cmd_expected;
@@ -63,8 +66,16 @@ void test_check_external_command_angle_ovladacka(void) {
 
   ext_comm_dec.check_external_command(rob_cmd_actual);
 
-  TEST_ASSERT_EQUAL_MEMORY(&rob_cmd_expected, &rob_cmd_actual,
-                           sizeof(rob_cmd_actual));
+  // Compare fields individually rather than raw struct bytes: RobotCommand
+  // has padding between its int fields and the trailing bool, and that
+  // padding is uninitialized - a memcmp of two separately constructed
+  // instances can spuriously differ even when every field matches.
+  TEST_ASSERT_EQUAL(rob_cmd_expected.desired_speed,
+                    rob_cmd_actual.desired_speed);
+  TEST_ASSERT_EQUAL(rob_cmd_expected.desired_servo_angle,
+                    rob_cmd_actual.desired_servo_angle);
+  TEST_ASSERT_EQUAL(rob_cmd_expected.enable_automatic_operation,
+                    rob_cmd_actual.enable_automatic_operation);
 }
 
 void test_check_external_command_speed_BLE_joy(void) {
@@ -72,8 +83,7 @@ void test_check_external_command_speed_BLE_joy(void) {
   char in_data[] = {'A', 'a',
                     '\0'}; // Command to increase speed in BLE Joystick format
   SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char));
-  ArduinoSerialStream ard_stream(sim_uart);
-  ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
+  ExternalCommandDecoder ext_comm_dec(sim_uart, in_parser);
 
   RobotCommand rob_cmd_actual;
   RobotCommand rob_cmd_expected;
@@ -82,8 +92,16 @@ void test_check_external_command_speed_BLE_joy(void) {
 
   ext_comm_dec.check_external_command(rob_cmd_actual);
 
-  TEST_ASSERT_EQUAL_MEMORY(&rob_cmd_expected, &rob_cmd_actual,
-                           sizeof(rob_cmd_actual));
+  // Compare fields individually rather than raw struct bytes: RobotCommand
+  // has padding between its int fields and the trailing bool, and that
+  // padding is uninitialized - a memcmp of two separately constructed
+  // instances can spuriously differ even when every field matches.
+  TEST_ASSERT_EQUAL(rob_cmd_expected.desired_speed,
+                    rob_cmd_actual.desired_speed);
+  TEST_ASSERT_EQUAL(rob_cmd_expected.desired_servo_angle,
+                    rob_cmd_actual.desired_servo_angle);
+  TEST_ASSERT_EQUAL(rob_cmd_expected.enable_automatic_operation,
+                    rob_cmd_actual.enable_automatic_operation);
 }
 
 void test_check_external_command_angle_BLE_joy(void) {
@@ -91,8 +109,7 @@ void test_check_external_command_angle_BLE_joy(void) {
   char in_data[] = {
       'B', 'b', '\0'}; // Command to decrease servo angle in BLE Joystick format
   SimulatedUART sim_uart(in_data, sizeof(in_data) / sizeof(char));
-  ArduinoSerialStream ard_stream(sim_uart);
-  ExternalCommandDecoder ext_comm_dec(ard_stream, in_parser);
+  ExternalCommandDecoder ext_comm_dec(sim_uart, in_parser);
 
   RobotCommand rob_cmd_actual;
   RobotCommand rob_cmd_expected;
@@ -101,8 +118,16 @@ void test_check_external_command_angle_BLE_joy(void) {
 
   ext_comm_dec.check_external_command(rob_cmd_actual);
 
-  TEST_ASSERT_EQUAL_MEMORY(&rob_cmd_expected, &rob_cmd_actual,
-                           sizeof(rob_cmd_actual));
+  // Compare fields individually rather than raw struct bytes: RobotCommand
+  // has padding between its int fields and the trailing bool, and that
+  // padding is uninitialized - a memcmp of two separately constructed
+  // instances can spuriously differ even when every field matches.
+  TEST_ASSERT_EQUAL(rob_cmd_expected.desired_speed,
+                    rob_cmd_actual.desired_speed);
+  TEST_ASSERT_EQUAL(rob_cmd_expected.desired_servo_angle,
+                    rob_cmd_actual.desired_servo_angle);
+  TEST_ASSERT_EQUAL(rob_cmd_expected.enable_automatic_operation,
+                    rob_cmd_actual.enable_automatic_operation);
 }
 
 int main(int argc, char **argv) {

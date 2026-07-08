@@ -21,13 +21,13 @@ jobs:
         run: sudo apt-get install -y simavr
 
       - name: Build firmware
-        run: pio run
+        run: pio run -e megaatmega2560
 
-      - name: Run tests on the native platform
+      - name: Run tests (AVR/simavr + native)
         run: pio test --without-uploading
 
       - name: Run static code analysis
-        run: pio check --skip-packages
+        run: pio check --skip-packages -e megaatmega2560
 
       - name: Install clang-format
         run: pip install clang-format==22.1.5

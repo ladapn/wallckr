@@ -1,12 +1,9 @@
 #include "../../common/simulated_uart.h"
 #include "../../common/stop_simavr.h"
-#include "ArduinoSerialStream.h"
 #include "MotionConstants.h"
 #include "RobotCommand.h"
 #include "RobotPackets.h"
 #include "RobotPrinter.h"
-#include <avr/interrupt.h>
-#include <avr/sleep.h>
 #include <unity.h>
 
 void setUp(void) {
@@ -35,8 +32,7 @@ void test_status_packet(void) {
                         0x74};                  // CRC
 
   SimulatedUART sim_uart;
-  ArduinoSerialStream ard_stream(sim_uart);
-  RobotPrinter printer(ard_stream);
+  RobotPrinter printer(sim_uart);
 
   printer.print(status_packet);
 
@@ -61,8 +57,7 @@ void test_sonar_packet(void) {
                         0xAC};                  // CRC
 
   SimulatedUART sim_uart;
-  ArduinoSerialStream ard_stream(sim_uart);
-  RobotPrinter printer(ard_stream);
+  RobotPrinter printer(sim_uart);
 
   printer.print(sonar_packet);
 
