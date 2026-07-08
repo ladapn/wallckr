@@ -33,9 +33,6 @@ jobs:
         run: pip install clang-format==22.1.5
 
       - name: Check code formatting
-        # Informational only for now: most of the codebase doesn't conform
-        # to .clang-format yet, so this doesn't fail the build.
-        continue-on-error: true
         run: |
           find lib src test -regextype posix-extended -regex '.*\.(cpp|h)$' -print0 \
             | xargs -0 clang-format --dry-run -Werror
