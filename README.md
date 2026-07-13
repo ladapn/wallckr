@@ -96,5 +96,8 @@ You can disable/enable this automatic steering via ovladacka (press `left shift`
 ## Contributing
 In case you would like to fix or improve anything, feel free to create a pull request. 
 
+## Porting
+Looking to run this on different hardware? See [PORTING.md](PORTING.md) for the hardware abstraction boundary.
+
 ## License
 This project is licensed under the MIT license. Why? Because I wanted a permissive license that would give anybody a chance to do with this code whatever they please. Of course, with no warranty :) 
