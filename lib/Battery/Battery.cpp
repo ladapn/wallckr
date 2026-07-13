@@ -7,7 +7,7 @@ namespace {
 // high-side sensor for total robot current draw (see ICurrentSensor). 0
 // would read as "zero current draw," which is misleading, so send an
 // implausibly high mA value to signal "not measured" instead.
-const uint16_t MOTOR_CURRENT_NOT_MEASURED_mA = 0xFFFF;
+constexpr uint16_t MOTOR_CURRENT_NOT_MEASURED_mA = 0xFFFF;
 } // namespace
 
 bool Battery::is_ok(uint32_t current_millis) {
