@@ -23,6 +23,9 @@ constexpr int ECHO_PIN_RIGHT_CENTER = 37;
 // Battery voltage sensing pin
 constexpr uint8_t SNS_BATTERY_VLTG_PIN = A8;
 
+// High-side current sensing pin (op-amp based sense circuit)
+constexpr uint8_t SNS_CURRENT_PIN = A9;
+
 // Indicator LED pins (PA2 to PA6)
 constexpr unsigned int LED1_PIN = 24;
 constexpr unsigned int LED2_PIN = 25;

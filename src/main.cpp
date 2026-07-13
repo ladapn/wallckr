@@ -1,5 +1,6 @@
 #include "ArduinoBatterySensor.h"
 #include "ArduinoBoardConfig.h"
+#include "ArduinoCurrentSensor.h"
 #include "ArduinoMotorController.h"
 #include "ArduinoRobotIndicators.h"
 #include "ArduinoSerialStream.h"
@@ -41,6 +42,7 @@ void loop() {
   Sensing robot_sensing(distance_sensors, BLE_out);
 
   ArduinoBatterySensor battery_sensor;
+  ArduinoCurrentSensor current_sensor;
   const int BATTERY_CELL_COUNT = 8;
   const int BATTERY_VOLTAGE_DIVIDER_FACTOR = 16;
   const uint16_t BATTERY_CELL_CUTOFF_mVDC = 900;
@@ -48,8 +50,8 @@ void loop() {
                                             BATTERY_CELL_COUNT /
                                             BATTERY_VOLTAGE_DIVIDER_FACTOR;
   const uint16_t BATTERY_HYSTERESIS_mVDC = 50;
-  Battery robot_battery(battery_sensor, BLE_out, BATTERY_PACK_CUTOFF_mVDC,
-                        BATTERY_HYSTERESIS_mVDC);
+  Battery robot_battery(battery_sensor, current_sensor, BLE_out,
+                        BATTERY_PACK_CUTOFF_mVDC, BATTERY_HYSTERESIS_mVDC);
 
   ArduinoMotorController motor_controller(MOTOR_DIRECTION_PIN, MOTOR_PWM_PIN,
                                           MOTOR_BRAKE_PIN);

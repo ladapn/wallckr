@@ -2,11 +2,21 @@
 #include "RobotPackets.h"
 #include "RobotPrinter.h"
 
+namespace {
+// There's no dedicated motor-current sensor on this hardware, only a
+// high-side sensor for total robot current draw (see ICurrentSensor). 0
+// would read as "zero current draw," which is misleading, so send an ADC
+// value outside the valid 0-1023 range to signal "not measured" instead.
+const uint16_t MOTOR_CURRENT_NOT_MEASURED_ADC = 0xFFFF;
+} // namespace
+
 bool Battery::is_ok(uint32_t current_millis) {
   // TODO: add filtering
   auto battery_voltage_mVDC = battery_sensor.get_battery_voltage_mVDC();
 
-  StatusPacket status_data(current_millis, battery_voltage_mVDC, 0, 0);
+  StatusPacket status_data(current_millis, battery_voltage_mVDC,
+                           current_sensor.get_current_adc(),
+                           MOTOR_CURRENT_NOT_MEASURED_ADC);
 
   battery_printer.print(status_data);
 

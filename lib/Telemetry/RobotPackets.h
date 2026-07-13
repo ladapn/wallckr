@@ -68,8 +68,10 @@ struct StatusPacket {
    * Constructor method
    * @param[in] tick_ms current system time in ms
    * @param[in] battery_voltage current battery voltage in mVDC units
-   * @param[in] total_current total current drawn from battery in mA
-   * @param[in] motor_current total current drawn by motor in mA
+   * @param[in] total_current total current drawn from battery, in ADC units
+   * @param[in] motor_current current drawn by the motor, in ADC units (a
+   * value outside the sensor's valid ADC range signals "not measured" - see
+   * Battery::is_ok)
    */
   StatusPacket(uint32_t tick_ms, uint16_t battery_voltage,
                uint16_t total_current, uint16_t motor_current)
