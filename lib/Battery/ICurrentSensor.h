@@ -10,10 +10,10 @@
 class ICurrentSensor {
 public:
   /**
-   * Method to get sensed current in ADC units
-   * @return current reading in ADC units
+   * Method to get sensed current in milliamps
+   * @return current reading in mA
    */
-  virtual uint16_t get_current_adc() = 0;
+  virtual uint16_t get_current_mA() = 0;
 
   virtual ~ICurrentSensor() = default;
 };

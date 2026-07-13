@@ -44,8 +44,8 @@ bool StatusPacket::serialize(uint8_t *buffer, size_t buffer_size) const {
   append_uint32_le(buffer, offset, tick);
   append_uint32_le(buffer, offset, version_ID);
   append_uint16_le(buffer, offset, battery_voltage_mvdc);
-  append_uint16_le(buffer, offset, total_current_adc);
-  append_uint16_le(buffer, offset, motor_current_adc);
+  append_uint16_le(buffer, offset, total_current_mA);
+  append_uint16_le(buffer, offset, motor_current_mA);
   append_uint8(
       buffer, offset,
       0); // CRC is reserved for RobotPrinter - it will be overwritten there

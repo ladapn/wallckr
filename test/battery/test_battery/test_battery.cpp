@@ -15,11 +15,11 @@ public:
   uint16_t get_battery_voltage_mVDC() override { return voltage_mVDC; }
 };
 
-// Stub current sensor with a settable ADC reading.
+// Stub current sensor with a settable mA reading.
 class StubCurrentSensor : public ICurrentSensor {
 public:
-  uint16_t current_adc = 0;
-  uint16_t get_current_adc() override { return current_adc; }
+  uint16_t current_mA = 0;
+  uint16_t get_current_mA() override { return current_mA; }
 };
 
 // Minimal IRobotIOStream that just captures what was written, so tests
@@ -138,7 +138,7 @@ void test_battery_sends_status_packet_with_measured_voltage(void) {
 void test_battery_sends_status_packet_with_measured_current(void) {
   StubBatterySensor sensor;
   StubCurrentSensor current_sensor;
-  current_sensor.current_adc = 512;
+  current_sensor.current_mA = 512;
   CapturingIOStream io_stream;
   RobotPrinter printer(io_stream);
   Battery battery(sensor, current_sensor, printer, CUTOFF_mVDC,
@@ -146,20 +146,20 @@ void test_battery_sends_status_packet_with_measured_current(void) {
 
   battery.is_ok(2000);
 
-  // total_current_adc and motor_current_adc are little-endian uint16_t
+  // total_current_mA and motor_current_mA are little-endian uint16_t
   // fields right after battery_voltage_mvdc - see RobotPackets.h
-  uint16_t reported_total_current_adc =
+  uint16_t reported_total_current_mA =
       static_cast<uint16_t>(io_stream.buffer[11]) |
       (static_cast<uint16_t>(io_stream.buffer[12]) << 8);
-  uint16_t reported_motor_current_adc =
+  uint16_t reported_motor_current_mA =
       static_cast<uint16_t>(io_stream.buffer[13]) |
       (static_cast<uint16_t>(io_stream.buffer[14]) << 8);
 
   // total current comes from the sensor...
-  TEST_ASSERT_EQUAL(512, reported_total_current_adc);
+  TEST_ASSERT_EQUAL(512, reported_total_current_mA);
   // ...but there's no motor-specific sensor, so it must be flagged as not
   // measured rather than sent as a misleading 0.
-  TEST_ASSERT_EQUAL(0xFFFF, reported_motor_current_adc);
+  TEST_ASSERT_EQUAL(0xFFFF, reported_motor_current_mA);
 }
 
 int main(int argc, char **argv) {

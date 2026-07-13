@@ -35,8 +35,8 @@ public:
 
 class StubCurrentSensor : public ICurrentSensor {
 public:
-  uint16_t current_adc = 0;
-  uint16_t get_current_adc() override { return current_adc; }
+  uint16_t current_mA = 0;
+  uint16_t get_current_mA() override { return current_mA; }
 };
 
 class StubMotorController : public IMotorController {
