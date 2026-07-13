@@ -9,7 +9,7 @@ class ArduinoSteeringServo : public ISteeringServo {
 
 public:
   explicit ArduinoSteeringServo(int pin);
-  bool set_angle(int angle);
+  bool set_angle(int angle) override;
 };
 
 #endif // STEERING_SERVO_H
