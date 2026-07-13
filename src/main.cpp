@@ -11,6 +11,7 @@
 #include "UltraSoundSensor.h"
 #include <Arduino.h>
 
+// cppcheck-suppress unusedFunction ; called by the Arduino core's own main()
 void setup() {
   // Initialize serial communication representing wired UART over USB connection
   Serial.begin(115200);
@@ -24,6 +25,7 @@ void setup() {
   Serial3.write("AT NAMEwallckr\r\n");
 }
 
+// cppcheck-suppress unusedFunction ; called by the Arduino core's own main()
 void loop() {
 
   ArduinoSerialStream arduino_serial_stream(Serial3);
