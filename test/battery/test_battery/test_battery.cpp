@@ -15,6 +15,13 @@ public:
   uint16_t get_battery_voltage_mVDC() override { return voltage_mVDC; }
 };
 
+// Stub current sensor with a settable mA reading.
+class StubCurrentSensor : public ICurrentSensor {
+public:
+  uint16_t current_mA = 0;
+  uint16_t get_current_mA() override { return current_mA; }
+};
+
 // Minimal IRobotIOStream that just captures what was written, so tests
 // can inspect the telemetry Battery::is_ok sends out.
 class CapturingIOStream : public IRobotIOStream {
@@ -54,9 +61,11 @@ void tearDown(void) {
 void test_battery_ok_above_cutoff(void) {
   StubBatterySensor sensor;
   sensor.voltage_mVDC = CUTOFF_mVDC + 1;
+  StubCurrentSensor current_sensor;
   CapturingIOStream io_stream;
   RobotPrinter printer(io_stream);
-  Battery battery(sensor, printer, CUTOFF_mVDC, HYSTERESIS_mVDC);
+  Battery battery(sensor, current_sensor, printer, CUTOFF_mVDC,
+                  HYSTERESIS_mVDC);
 
   TEST_ASSERT_TRUE(battery.is_ok(0));
 }
@@ -64,18 +73,22 @@ void test_battery_ok_above_cutoff(void) {
 void test_battery_dead_at_or_below_cutoff(void) {
   StubBatterySensor sensor;
   sensor.voltage_mVDC = CUTOFF_mVDC; // exactly at cutoff, not below
+  StubCurrentSensor current_sensor;
   CapturingIOStream io_stream;
   RobotPrinter printer(io_stream);
-  Battery battery(sensor, printer, CUTOFF_mVDC, HYSTERESIS_mVDC);
+  Battery battery(sensor, current_sensor, printer, CUTOFF_mVDC,
+                  HYSTERESIS_mVDC);
 
   TEST_ASSERT_FALSE(battery.is_ok(0));
 }
 
 void test_battery_stays_dead_until_hysteresis_cleared(void) {
   StubBatterySensor sensor;
+  StubCurrentSensor current_sensor;
   CapturingIOStream io_stream;
   RobotPrinter printer(io_stream);
-  Battery battery(sensor, printer, CUTOFF_mVDC, HYSTERESIS_mVDC);
+  Battery battery(sensor, current_sensor, printer, CUTOFF_mVDC,
+                  HYSTERESIS_mVDC);
 
   sensor.voltage_mVDC = CUTOFF_mVDC - 1;
   battery.is_ok(0); // drains below cutoff, enters dead state
@@ -88,9 +101,11 @@ void test_battery_stays_dead_until_hysteresis_cleared(void) {
 
 void test_battery_recovers_once_hysteresis_cleared(void) {
   StubBatterySensor sensor;
+  StubCurrentSensor current_sensor;
   CapturingIOStream io_stream;
   RobotPrinter printer(io_stream);
-  Battery battery(sensor, printer, CUTOFF_mVDC, HYSTERESIS_mVDC);
+  Battery battery(sensor, current_sensor, printer, CUTOFF_mVDC,
+                  HYSTERESIS_mVDC);
 
   sensor.voltage_mVDC = CUTOFF_mVDC - 1;
   battery.is_ok(0); // drains below cutoff, enters dead state
@@ -102,9 +117,11 @@ void test_battery_recovers_once_hysteresis_cleared(void) {
 void test_battery_sends_status_packet_with_measured_voltage(void) {
   StubBatterySensor sensor;
   sensor.voltage_mVDC = 1234;
+  StubCurrentSensor current_sensor;
   CapturingIOStream io_stream;
   RobotPrinter printer(io_stream);
-  Battery battery(sensor, printer, CUTOFF_mVDC, HYSTERESIS_mVDC);
+  Battery battery(sensor, current_sensor, printer, CUTOFF_mVDC,
+                  HYSTERESIS_mVDC);
 
   battery.is_ok(2000);
 
@@ -118,6 +135,33 @@ void test_battery_sends_status_packet_with_measured_voltage(void) {
   TEST_ASSERT_EQUAL(1234, reported_voltage_mVDC);
 }
 
+void test_battery_sends_status_packet_with_measured_current(void) {
+  StubBatterySensor sensor;
+  StubCurrentSensor current_sensor;
+  current_sensor.current_mA = 512;
+  CapturingIOStream io_stream;
+  RobotPrinter printer(io_stream);
+  Battery battery(sensor, current_sensor, printer, CUTOFF_mVDC,
+                  HYSTERESIS_mVDC);
+
+  battery.is_ok(2000);
+
+  // total_current_mA and motor_current_mA are little-endian uint16_t
+  // fields right after battery_voltage_mvdc - see RobotPackets.h
+  uint16_t reported_total_current_mA =
+      static_cast<uint16_t>(io_stream.buffer[11]) |
+      (static_cast<uint16_t>(io_stream.buffer[12]) << 8);
+  uint16_t reported_motor_current_mA =
+      static_cast<uint16_t>(io_stream.buffer[13]) |
+      (static_cast<uint16_t>(io_stream.buffer[14]) << 8);
+
+  // total current comes from the sensor...
+  TEST_ASSERT_EQUAL(512, reported_total_current_mA);
+  // ...but there's no motor-specific sensor, so it must be flagged as not
+  // measured rather than sent as a misleading 0.
+  TEST_ASSERT_EQUAL(0xFFFF, reported_motor_current_mA);
+}
+
 int main(int argc, char **argv) {
   UNITY_BEGIN();
 
@@ -126,6 +170,7 @@ int main(int argc, char **argv) {
   RUN_TEST(test_battery_stays_dead_until_hysteresis_cleared);
   RUN_TEST(test_battery_recovers_once_hysteresis_cleared);
   RUN_TEST(test_battery_sends_status_packet_with_measured_voltage);
+  RUN_TEST(test_battery_sends_status_packet_with_measured_current);
 
   UNITY_END();
 

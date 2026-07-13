@@ -51,6 +51,7 @@ Main HW components:
     - Front facing, front right facing and right facing one
     - 45 deg angular spacing between them
 - Custom PCB to distribute power 
+    - Includes a voltage divider for battery voltage sensing and an op-amp based high-side current sensing circuit
 - Custom PCB to extend IO capabilities
 - HM-10 BLE module 
 - Chassis made of Merkur construction set

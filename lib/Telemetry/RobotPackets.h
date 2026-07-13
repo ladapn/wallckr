@@ -60,21 +60,22 @@ struct StatusPacket {
   uint32_t tick;
   uint32_t version_ID = GIT_REV; // long -> 4 bytes, instead of 8 chars
   uint16_t battery_voltage_mvdc;
-  uint16_t total_current_adc;
-  uint16_t motor_current_adc;
+  uint16_t total_current_mA;
+  uint16_t motor_current_mA;
   uint8_t crc = 0;
 
   /**
    * Constructor method
    * @param[in] tick_ms current system time in ms
    * @param[in] battery_voltage current battery voltage in mVDC units
-   * @param[in] total_current total current drawn from battery in mA
-   * @param[in] motor_current total current drawn by motor in mA
+   * @param[in] total_current total current drawn from battery, in mA
+   * @param[in] motor_current current drawn by the motor, in mA (an
+   * implausibly high value signals "not measured" - see Battery::is_ok)
    */
   StatusPacket(uint32_t tick_ms, uint16_t battery_voltage,
                uint16_t total_current, uint16_t motor_current)
       : tick(tick_ms), battery_voltage_mvdc(battery_voltage),
-        total_current_adc(total_current), motor_current_adc(motor_current) {}
+        total_current_mA(total_current), motor_current_mA(motor_current) {}
 
   /**
    * Serialize packet fields in the wire format. CRC field is reserved for

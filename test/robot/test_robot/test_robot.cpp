@@ -33,6 +33,12 @@ public:
   uint16_t get_battery_voltage_mVDC() override { return voltage_mVDC; }
 };
 
+class StubCurrentSensor : public ICurrentSensor {
+public:
+  uint16_t current_mA = 0;
+  uint16_t get_current_mA() override { return current_mA; }
+};
+
 class StubMotorController : public IMotorController {
 public:
   int last_speed = 0;
@@ -119,11 +125,12 @@ void test_perform_status_check_battery_ok_does_not_warn(void) {
   Sensing robot_sensing(distance_sensors, sensing_printer);
 
   StubBatterySensor battery_sensor;
+  StubCurrentSensor current_sensor;
   battery_sensor.voltage_mVDC = BATTERY_CUTOFF_mVDC + 1;
   SimulatedUART battery_stream;
   RobotPrinter battery_printer(battery_stream);
-  Battery robot_battery(battery_sensor, battery_printer, BATTERY_CUTOFF_mVDC,
-                        BATTERY_HYSTERESIS_mVDC);
+  Battery robot_battery(battery_sensor, current_sensor, battery_printer,
+                        BATTERY_CUTOFF_mVDC, BATTERY_HYSTERESIS_mVDC);
 
   StubMotorController motor;
   StubSteeringServo servo;
@@ -158,11 +165,12 @@ void test_perform_status_check_battery_dead_disables_motion_and_sensing(void) {
   Sensing robot_sensing(distance_sensors, sensing_printer);
 
   StubBatterySensor battery_sensor;
+  StubCurrentSensor current_sensor;
   battery_sensor.voltage_mVDC = BATTERY_CUTOFF_mVDC - 1;
   SimulatedUART battery_stream;
   RobotPrinter battery_printer(battery_stream);
-  Battery robot_battery(battery_sensor, battery_printer, BATTERY_CUTOFF_mVDC,
-                        BATTERY_HYSTERESIS_mVDC);
+  Battery robot_battery(battery_sensor, current_sensor, battery_printer,
+                        BATTERY_CUTOFF_mVDC, BATTERY_HYSTERESIS_mVDC);
 
   StubMotorController motor;
   StubSteeringServo servo;
@@ -215,11 +223,12 @@ void test_perform_automatic_action_updates_command_when_automatic(void) {
   Sensing robot_sensing(distance_sensors, sensing_printer);
 
   StubBatterySensor battery_sensor;
+  StubCurrentSensor current_sensor;
   battery_sensor.voltage_mVDC = BATTERY_CUTOFF_mVDC + 1;
   SimulatedUART battery_stream;
   RobotPrinter battery_printer(battery_stream);
-  Battery robot_battery(battery_sensor, battery_printer, BATTERY_CUTOFF_mVDC,
-                        BATTERY_HYSTERESIS_mVDC);
+  Battery robot_battery(battery_sensor, current_sensor, battery_printer,
+                        BATTERY_CUTOFF_mVDC, BATTERY_HYSTERESIS_mVDC);
 
   StubMotorController motor;
   StubSteeringServo servo;
@@ -265,11 +274,12 @@ void test_perform_automatic_action_ignored_when_manual(void) {
   Sensing robot_sensing(distance_sensors, sensing_printer);
 
   StubBatterySensor battery_sensor;
+  StubCurrentSensor current_sensor;
   battery_sensor.voltage_mVDC = BATTERY_CUTOFF_mVDC + 1;
   SimulatedUART battery_stream;
   RobotPrinter battery_printer(battery_stream);
-  Battery robot_battery(battery_sensor, battery_printer, BATTERY_CUTOFF_mVDC,
-                        BATTERY_HYSTERESIS_mVDC);
+  Battery robot_battery(battery_sensor, current_sensor, battery_printer,
+                        BATTERY_CUTOFF_mVDC, BATTERY_HYSTERESIS_mVDC);
 
   StubMotorController motor;
   StubSteeringServo servo;
@@ -311,11 +321,12 @@ void test_check_external_command_speed_applies_through_motion(void) {
   Sensing robot_sensing(distance_sensors, sensing_printer);
 
   StubBatterySensor battery_sensor;
+  StubCurrentSensor current_sensor;
   battery_sensor.voltage_mVDC = BATTERY_CUTOFF_mVDC + 1;
   SimulatedUART battery_stream;
   RobotPrinter battery_printer(battery_stream);
-  Battery robot_battery(battery_sensor, battery_printer, BATTERY_CUTOFF_mVDC,
-                        BATTERY_HYSTERESIS_mVDC);
+  Battery robot_battery(battery_sensor, current_sensor, battery_printer,
+                        BATTERY_CUTOFF_mVDC, BATTERY_HYSTERESIS_mVDC);
 
   StubMotorController motor;
   StubSteeringServo servo;
