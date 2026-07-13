@@ -64,8 +64,11 @@ void loop() {
   const int K_GAIN = 5;
   const int RIGHT_DISTANCE_SETPOINT_CM = 25;
   const int INSENSITIV_CM = 2;
-  Regulator_P<int> side_distance_regulator(K_GAIN, RIGHT_DISTANCE_SETPOINT_CM,
-                                           INSENSITIV_CM);
+  const int REGULATOR_ACTION_LIMIT_UP = 45;
+  const int REGULATOR_ACTION_LIMIT_BOTTOM = -30;
+  Regulator_P<int> side_distance_regulator(
+      K_GAIN, RIGHT_DISTANCE_SETPOINT_CM, INSENSITIV_CM,
+      REGULATOR_ACTION_LIMIT_UP, REGULATOR_ACTION_LIMIT_BOTTOM);
   ArduinoRobotIndicators robot_indicators;
   AutoSteering<int> wall_following_steering(
       RIGHT_DISTANCE_SETPOINT_CM, side_distance_regulator, servo_cmd_filter);
