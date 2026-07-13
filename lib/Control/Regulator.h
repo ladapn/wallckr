@@ -13,9 +13,8 @@ protected:
   T m_setpoint;
   T m_insensitivity;
 
-  // TODO this should be also an input
-  const T m_action_limit_up = 45;
-  const T m_action_limit_bottom = -30;
+  T m_action_limit_up;
+  T m_action_limit_bottom;
 
   /**
    * Internal equation specific for each regulator type
@@ -32,9 +31,15 @@ public:
    * @param[in] setpoint required value - the goal of the regulated quantity
    * @param[in] insen regulator insensitivity - if difference between required
    * and actual value is lower than insensitivity, it is considered zero
+   * @param[in] action_limit_up upper clamp applied to the regulator action
+   * @param[in] action_limit_bottom lower clamp applied to the regulator
+   * action
    */
-  Regulator(T gain, T setpoint, T insen)
-      : m_gain(gain), m_setpoint(setpoint), m_insensitivity(insen) {};
+  Regulator(T gain, T setpoint, T insen, T action_limit_up,
+            T action_limit_bottom)
+      : m_gain(gain), m_setpoint(setpoint), m_insensitivity(insen),
+        m_action_limit_up(action_limit_up),
+        m_action_limit_bottom(action_limit_bottom) {};
   /**
    * Perform regulator action
    * @param[in] in current value of regulated quantity
@@ -79,9 +84,14 @@ public:
    * @param[in] setpoint required value - the goal of the regulated quantity
    * @param[in] insen regulator insensitivity - if difference between required
    * and actual value is lower than insensitivity, it is considered zero
+   * @param[in] action_limit_up upper clamp applied to the regulator action
+   * @param[in] action_limit_bottom lower clamp applied to the regulator
+   * action
    */
-  Regulator_P(T gain, T setpoint, T insen)
-      : Regulator<T>(gain, setpoint, insen) {};
+  Regulator_P(T gain, T setpoint, T insen, T action_limit_up,
+              T action_limit_bottom)
+      : Regulator<T>(gain, setpoint, insen, action_limit_up,
+                     action_limit_bottom) {};
 };
 
 /**
@@ -118,10 +128,15 @@ public:
    * @param[in] setpoint required value - the goal of the regulated quantity
    * @param[in] insen regulator insensitivity - if difference between required
    * and actual value is lower than insensitivity, it is considered zero
+   * @param[in] action_limit_up upper clamp applied to the regulator action
+   * @param[in] action_limit_bottom lower clamp applied to the regulator
+   * action
    */
-  Regulator_PD(T gain, T D_gain, T setpoint, T insen)
-      : Regulator<T>(gain, setpoint, insen), m_D_gain(D_gain),
-        m_first_run(true), m_last_e(0) {};
+  Regulator_PD(T gain, T D_gain, T setpoint, T insen, T action_limit_up,
+               T action_limit_bottom)
+      : Regulator<T>(gain, setpoint, insen, action_limit_up,
+                     action_limit_bottom),
+        m_D_gain(D_gain), m_first_run(true), m_last_e(0) {};
 };
 
 #endif

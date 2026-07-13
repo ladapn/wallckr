@@ -11,7 +11,9 @@ protected:
   int regulator_equation(int e) override { return e; }
 
 public:
-  IdentityRegulator() : Regulator<int>(1, 0, 0) {}
+  // Action limits mirror Regulator's old hardcoded defaults - irrelevant to
+  // what this test double is standing in for here.
+  IdentityRegulator() : Regulator<int>(1, 0, 0, 45, -30) {}
 };
 
 class IdentityFilter : public IFilter<int> {
