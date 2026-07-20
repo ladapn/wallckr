@@ -5,11 +5,11 @@
 #include "ArduinoRobotIndicators.h"
 #include "ArduinoSerialStream.h"
 #include "ArduinoSteeringServo.h"
+#include "ArduinoUltraSoundSensor.h"
 #include "Battery.h"
 #include "PollingRobotRunner.h"
 #include "Robot.h"
 #include "RobotPrinter.h"
-#include "UltraSoundSensor.h"
 #include <Arduino.h>
 
 // cppcheck-suppress unusedFunction ; called by the Arduino core's own main()
@@ -31,12 +31,12 @@ void loop() {
 
   ArduinoSerialStream arduino_serial_stream(Serial3);
   RobotPrinter BLE_out(arduino_serial_stream);
-  UltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT,
-                               MAX_DISTANCE_CM);
-  UltraSoundSensor sonar_right_front(TRIGGER_PIN_RIGHT_FRONT,
-                                     ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE_CM);
-  UltraSoundSensor sonar_right_center(TRIGGER_PIN_RIGHT_CENTER,
-                                      ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE_CM);
+  ArduinoUltraSoundSensor sonar_front(TRIGGER_PIN_FRONT, ECHO_PIN_FRONT,
+                                      MAX_DISTANCE_CM);
+  ArduinoUltraSoundSensor sonar_right_front(
+      TRIGGER_PIN_RIGHT_FRONT, ECHO_PIN_RIGHT_FRONT, MAX_DISTANCE_CM);
+  ArduinoUltraSoundSensor sonar_right_center(
+      TRIGGER_PIN_RIGHT_CENTER, ECHO_PIN_RIGHT_CENTER, MAX_DISTANCE_CM);
   DistanceSensors distance_sensors = {sonar_front, sonar_right_front,
                                       sonar_right_center};
   Sensing robot_sensing(distance_sensors, BLE_out);

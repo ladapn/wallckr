@@ -1,5 +1,5 @@
-#ifndef ULTRASOUNT_SENSOR_H
-#define ULTRASOUNT_SENSOR_H
+#ifndef ARDUINO_ULTRASOUND_SENSOR_H
+#define ARDUINO_ULTRASOUND_SENSOR_H
 
 #include "ExpFilter.h"
 #include "IDistanceSensor.h"
@@ -10,7 +10,7 @@ constexpr int MAX_DISTANCE_CM = 200;
 /**
  * Class representing ultrasound distance sensor, implements IDistanceSensor
  */
-class UltraSoundSensor : public IDistanceSensor {
+class ArduinoUltraSoundSensor : public IDistanceSensor {
   unsigned long m_measurement_raw_cm = 0;
   unsigned long m_measurement_filtered_cm = 0;
   unsigned int m_max_cm_distance;
@@ -22,8 +22,8 @@ class UltraSoundSensor : public IDistanceSensor {
   ExpFilter<int, FILTER_N> m_sonar_filter;
 
 public:
-  UltraSoundSensor(uint8_t trigger_pin, uint8_t echo_pin,
-                   unsigned int max_cm_distance)
+  ArduinoUltraSoundSensor(uint8_t trigger_pin, uint8_t echo_pin,
+                          unsigned int max_cm_distance)
       : m_max_cm_distance(max_cm_distance),
         m_sonar(trigger_pin, echo_pin, max_cm_distance) {};
 
