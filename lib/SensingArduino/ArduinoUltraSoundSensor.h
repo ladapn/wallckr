@@ -16,8 +16,6 @@ class ArduinoUltraSoundSensor : public IDistanceSensor {
   unsigned int m_max_cm_distance;
 
   NewPing m_sonar;
-  // TODO Would be better to accept reference to base class of filter as
-  // constructor input
   static constexpr int FILTER_N = 4;
   ExpFilter<int, FILTER_N> m_sonar_filter;
 
