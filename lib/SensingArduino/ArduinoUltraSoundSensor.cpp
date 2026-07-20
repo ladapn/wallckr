@@ -1,6 +1,6 @@
-#include "UltraSoundSensor.h"
+#include "ArduinoUltraSoundSensor.h"
 
-bool UltraSoundSensor::trigger_measurement() {
+bool ArduinoUltraSoundSensor::trigger_measurement() {
   m_measurement_raw_cm = m_sonar.ping_cm();
 
   // Zero means out of range -> change the library, so I can distinguish
@@ -12,13 +12,13 @@ bool UltraSoundSensor::trigger_measurement() {
   return true;
 }
 
-unsigned long UltraSoundSensor::get_distance_raw_cm() {
+unsigned long ArduinoUltraSoundSensor::get_distance_raw_cm() {
   trigger_measurement();
 
   return m_measurement_raw_cm;
 }
 
-unsigned long UltraSoundSensor::get_distance_filtered_cm() {
+unsigned long ArduinoUltraSoundSensor::get_distance_filtered_cm() {
   trigger_measurement();
 
   m_measurement_filtered_cm = m_sonar_filter.next(m_measurement_raw_cm);
