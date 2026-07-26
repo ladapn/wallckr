@@ -16,8 +16,12 @@ ArduinoMotorController::ArduinoMotorController(int dir_pin, int pwm_control_pin,
   // Direction pin on channel A
   pinMode(direction_pin, OUTPUT);
 
-  // TODO: break is currently unused
   pinMode(brake_pin, OUTPUT);
+  // Start braked rather than coasting; released once actively driven in
+  // set_speed(). Also set explicitly here (not just relied upon via Motion's
+  // constructor calling stop()) so the motor is never left coasting due to
+  // construction order between ArduinoMotorController and Motion.
+  digitalWrite(brake_pin, HIGH);
 
   // set prescaler for Timer 3 (pin 3) to 1 to get 31372.55 Hz
   // to get motor PWM from audible range
@@ -36,6 +40,7 @@ bool ArduinoMotorController::set_speed(int speed) {
     speed = abs(speed);
   }
 
+  digitalWrite(brake_pin, LOW); // Release the brake to drive
   digitalWrite(direction_pin,
                static_cast<uint8_t>(motorDirection)); // Set motor direction
   analogWrite(pwm_pin, speed); // Set the speed of the motor
@@ -43,4 +48,7 @@ bool ArduinoMotorController::set_speed(int speed) {
   return true;
 }
 
-void ArduinoMotorController::stop() { analogWrite(pwm_pin, 0); }
+void ArduinoMotorController::stop() {
+  analogWrite(pwm_pin, 0);
+  digitalWrite(brake_pin, HIGH);
+}
