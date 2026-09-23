@@ -33,14 +33,14 @@ If anyone gets inspired by this to build a similar project, it would be a very n
 - Simplistic UI
     - 5 red LEDs that indicate current status on connection shield
       - LED1 on and LED2 off - wall following mode
-      - LED1 off and LED2 of - obstacle avoiding mode
+      - LED1 off and LED2 on - obstacle avoiding mode
       - LED3 and 4 always off, reserved for future use
       - LED5 blinking - battery voltage too low, robot stops and is not allowed to move until recharged
     - 1 green LED on power board - on when power board is alive 
 
 # Getting Started
-## Hardware Prerequisities
-Well, this is the tricky part, because you need to have your own wallckr robot and as far as I know there happens to be only one - the one in my possession :) Anyway, it should take only minor changes to make the software running on a similar car-like robot you can build or buy. 
+## Hardware Prerequisites
+Well, this is the tricky part, because you need to have your own wallckr robot and as far as I know there happens to be only one - the one in my possession :) Anyway, it should take only minor changes to make the software run on a similar car-like robot you can build or buy. 
 
 Main HW components: 
 - Arduino Mega2560
@@ -57,7 +57,7 @@ Main HW components:
 - Chassis made of Merkur construction set
 - 8x 1.2V NiMH batteries
 
-## Software Prerequisities
+## Software Prerequisites
 - PlatformIO
   - Used as a build management tool 
   - [Install platformio](https://platformio.org/install) either as a standalone tool or as an extension for your favorite IDE
@@ -79,7 +79,7 @@ You can either execute the below listed commands or click the corresponding butt
 ### Executing Unit Tests
 On simulated target:
 - `pio test --without-uploading`
-- simavr has to be present, see [prerequisities](#software-prerequisities)
+- simavr has to be present, see [prerequisites](#software-prerequisites)
 
 On real HW:
 - `pio test`
@@ -88,7 +88,7 @@ On real HW:
 
 
 ## Controlling your Robot
-When you power your robot on, it does not move. It waits for a `up arrow` command to start. This command can be sent via [ovladacka](https://github.com/ladapn/ovladacka) - the official tool to communicate with wallckr. Once this command is received, the robot starts going forward and enters wall following mode (see [Features](#features) above). If no wall is present, it will keep turning right until a wall is found. 
+When you power your robot on, it does not move. It waits for an `up arrow` command to start. This command can be sent via [ovladacka](https://github.com/ladapn/ovladacka) - the official tool to communicate with wallckr. Once this command is received, the robot starts going forward and enters wall following mode (see [Features](#features) above). If no wall is present, it will keep turning right until a wall is found. 
 
 In both - wall following and obstacle avoidance - modes, the steering angle of the front wheels is controlled automatically, while the speed is always user controlled via `up` and `down` arrows.  
 
