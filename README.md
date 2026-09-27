@@ -23,7 +23,7 @@ If anyone gets inspired by this to build a similar project, it would be a very n
     - This is achieved by a controller commanding a servo to change steering angle of the front wheels. The servo command is based on measurements from right front and right distance sensors 
     - Currently only Proportional (P) and Proportional Derivative (PD) controllers are implemented and P is used by default
 - Obstacle avoidance
-    - If front sensor measurement is lower than 40 cm, or if right front sensor measurement is lower than 15 cm, obstacle avoidance mode is entered. In this mode, side distance is no longer maintained. Instead, the robot simply turns front wheels left to the maximal allowed angle. When the front measurement is less than 60 cm and the front right measurement is less than 25 cm, wall following mode is entered again. 
+    - If front sensor measurement is lower than 40 cm, or if right front sensor measurement is lower than 15 cm, obstacle avoidance mode is entered. In this mode, side distance is no longer maintained. Instead, the robot simply turns front wheels left to the maximal allowed angle. When the front measurement is more than 60 cm and the right front measurement is more than 25 cm, wall following mode is entered again. 
 - Motor control
     - Currently open loop control is used - i.e. if the robot goes uphill or its batteries are weaker, the speed will decrease, because there's no speed feedback
 - Communication via Bluetooth Low Energy (BLE) 
