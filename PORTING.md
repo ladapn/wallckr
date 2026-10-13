@@ -10,9 +10,9 @@ will be organized.
 ## TL;DR
 
 Implement `IMotorController`, `ISteeringServo`, `IBatterySensor`,
-`IDistanceSensor`, `IRobotIndicators`, and `IRobotIOStream` for your target,
-write your own entry point (like `src/main.cpp`) that wires them into
-`Robot`, and reuse everything else in `lib/` unchanged.
+`ICurrentSensor`, `IDistanceSensor`, `IRobotIndicators`, and `IRobotIOStream`
+for your target, write your own entry point (like `src/main.cpp`) that wires
+them into `Robot`, and reuse everything else in `lib/` unchanged.
 
 ## The longer version
 
@@ -33,7 +33,7 @@ reused unchanged.
 | Folder | What it is |
 | --- | --- |
 | `lib/Control` | `Regulator`/`Regulator_P`/`Regulator_PD`, `AutoSteering` (FOLLOWING/AVOIDING state machine), `ExpFilter`, `TimeManager`, `RobotCommand` |
-| `lib/Battery` | `Battery` health/cutoff-with-hysteresis logic, `IBatterySensor` interface |
+| `lib/Battery` | `Battery` health/cutoff-with-hysteresis logic, `IBatterySensor`/`ICurrentSensor` interfaces |
 | `lib/Sensing` | `Sensing` (aggregates distance measurements, sends telemetry), `IDistanceSensor` interface |
 | `lib/Communication` | `ExternalCommandDecoder`, `OvladackaParser`/`BLEJoystickDecoder` protocol decoders, `IRobotIndicators` interface |
 | `lib/Telemetry` | `RobotPackets` (wire format), `RobotPrinter` |
@@ -46,16 +46,17 @@ reused unchanged.
 | Folder | Implements | Needs |
 | --- | --- | --- |
 | `lib/MotionArduino` | `IMotorController`, `ISteeringServo` | `<Arduino.h>`, `<Servo.h>` |
-| `lib/BatteryArduino` | `IBatterySensor` | `<Arduino.h>` (ADC read) |
+| `lib/BatteryArduino` | `IBatterySensor`, `ICurrentSensor` | `<Arduino.h>` (ADC read) |
 | `lib/SensingArduino` | `IDistanceSensor` | `<NewPing.h>` |
 | `lib/CommunicationArduino` | `IRobotIndicators`, plus `IRobotIOStream` for the BLE UART | `<Arduino.h>` |
 | `lib/BoardConfig` | Pin assignments (`ArduinoBoardConfig.h`) | `<Arduino.h>` |
 
-A port implements these six interfaces - `IMotorController`, `ISteeringServo`,
-`IBatterySensor`, `IDistanceSensor`, `IRobotIndicators`, and `IRobotIOStream`
-(used both for the BLE command stream and for outgoing telemetry) - for the
-new target, and writes a new entry point (like `src/main.cpp`) that wires
-them into `Robot` the same way `src/main.cpp` does today.
+A port implements these seven interfaces - `IMotorController`, `ISteeringServo`,
+`IBatterySensor`, `ICurrentSensor`, `IDistanceSensor`, `IRobotIndicators`, and
+`IRobotIOStream` (used both for the BLE command stream and for outgoing
+telemetry) - for the new target, and writes a new entry point (like
+`src/main.cpp`) that wires them into `Robot` the same way `src/main.cpp` does
+today.
 
 ## Testing
 
